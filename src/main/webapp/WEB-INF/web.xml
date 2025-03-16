@@ -10,7 +10,7 @@
 
     <!-- Welcome-Datei (Startseite) -->
     <welcome-file-list>
-        <welcome-file>index.xhtml</welcome-file>
+        <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
     <!-- CDI-Listener für die Initialisierung von CDI -->
@@ -20,7 +20,7 @@
 
     <!-- JSF-Listener für die Initialisierung von JavaServer Faces -->
     <listener>
-        <listener-class>jakarta.faces.config.ConfigureListener</listener-class>
+        <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
     </listener>
 
     <!-- Kontextparameter für JSF (optional) -->

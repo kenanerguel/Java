@@ -9,25 +9,15 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <!-- Repository für LanguageTool -->
-    <repositories>
-        <repository>
-            <id>languagetool-repository</id>
-            <url>https://languagetool.org/download/maven2/</url>
-        </repository>
-    </repositories>
-
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jakarta.jakartaee-api.version>10.0.0</jakarta.jakartaee-api.version>
-        <!-- 🚨 GEÄNDERT: Spring 6 für Jakarta EE 10 -->
-        <spring.version>6.0.13</spring.version>
     </properties>
 
     <dependencies>
-        <!-- Jakarta EE API -->
+        <!-- Jakarta EE API (bereitgestellt vom Server, daher 'provided') -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
@@ -35,36 +25,21 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- 🚨 GEÄNDERT: Explizite JSF-API (ersetzt Mojarra) -->
-        <dependency>
-            <groupId>jakarta.faces</groupId>
-            <artifactId>jakarta.faces-api</artifactId>
-            <version>4.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Weld Servlet Core (CDI-Implementierung) -->
-        <dependency>
-            <groupId>org.jboss.weld.servlet</groupId>
-            <artifactId>weld-servlet-core</artifactId>
-            <version>5.1.0.Final</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.spec.javax.servlet</groupId>
-                    <artifactId>jboss-servlet-api_4.0_spec</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- 🚨 ENTFERNT: Mojarra-Implementierung (redundant)
+        <!-- JSF Implementierung (Mojarra) -->
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.faces</artifactId>
             <version>4.0.2</version>
         </dependency>
-        -->
 
-        <!-- PrimeFaces 12 (Jakarta-Variante) -->
+        <!-- CDI Implementierung (Weld für Servlet) -->
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet-core</artifactId>
+            <version>5.1.0.Final</version>
+        </dependency>
+
+        <!-- PrimeFaces für JSF -->
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
@@ -72,33 +47,18 @@
             <classifier>jakarta</classifier>
         </dependency>
 
-        <!-- 🚨 HINZUGEFÜGT: Spring Web (für CharacterEncodingFilter) -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
-        <!-- Hibernate 6.x für Jakarta EE 10 -->
+        <!-- Hibernate ORM für Jakarta Persistence API -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>6.2.13.Final</version>
         </dependency>
 
-        <!-- 🚨 GEÄNDERT: Jakarta Persistence-API (bereits in Hibernate enthalten) -->
+        <!-- JPA Implementierung (EclipseLink) -->
         <dependency>
-            <groupId>jakarta.persistence</groupId>
-            <artifactId>jakarta.persistence-api</artifactId>
-            <version>3.1.0</version>
-            <scope>provided</scope> <!-- Server liefert die Implementierung -->
-        </dependency>
-
-        <!-- LanguageTool -->
-        <dependency>
-            <groupId>org.languagetool</groupId>
-            <artifactId>language-de</artifactId>
-            <version>6.4</version>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <version>3.0.2</version>
         </dependency>
 
         <!-- MySQL Connector -->
@@ -106,6 +66,38 @@
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>8.2.0</version>
+        </dependency>
+
+        <!-- LanguageTool für deutsche Grammatikprüfung -->
+        <dependency>
+            <groupId>org.languagetool</groupId>
+            <artifactId>language-de</artifactId>
+            <version>6.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.faces</groupId>
+            <artifactId>jakarta.faces-api</artifactId>
+            <version>4.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>6.0.13</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>6.0.13</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>6.0.13</version>
         </dependency>
     </dependencies>
 
@@ -123,7 +115,7 @@
                 </configuration>
             </plugin>
 
-            <!-- War-Plugin -->
+            <!-- WAR-Plugin zur Erstellung der .war Datei -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>

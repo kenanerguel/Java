@@ -18,13 +18,9 @@
             <property name="jakarta.persistence.jdbc.driver"
                       value="com.mysql.cj.jdbc.Driver"/>
             <property name="jakarta.persistence.jdbc.url"
-                      value="jdbc:mysql://localhost:3306/like_hero_zero?useSSL=false&amp;serverTimezone=UTC"/>
+                      value="jdbc:mysql://localhost:3306/like_hero_zero"/>
             <property name="jakarta.persistence.jdbc.user" value="root"/>
             <property name="jakarta.persistence.jdbc.password" value=""/>
-
-            <!-- Hibernate Dialect für MySQL 8 -->
-            <property name="hibernate.dialect"
-                      value="org.hibernate.dialect.MySQL8Dialect"/>
 
             <!-- Schema-Aktualisierung: update, create, create-drop, validate -->
             <property name="hibernate.hbm2ddl.auto" value="update"/>
