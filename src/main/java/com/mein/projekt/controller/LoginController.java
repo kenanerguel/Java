@@ -68,6 +68,8 @@ public class LoginController implements Serializable {
      * Prüft zu Beginn, ob der Benutzer eingeloggt ist.
      * Falls nicht, wird zur Login-Seite navigiert.
      */
+
+    /*
     public void checkLogin() {
         if (!currentUser.isValid()) {
             failureMessage = "Bitte loggen Sie sich ein.";
@@ -76,14 +78,18 @@ public class LoginController implements Serializable {
             nh.handleNavigation(fc, null, "login.xhtml?faces-redirect=true");
         }
     }
+    */
 
     /**
      * Meldet den Benutzer ab und leitet zur Login-Seite weiter.
      */
+
+    /*
     public String logout() {
         currentUser.reset();
         return "login.xhtml?faces-redirect=true";
     }
+    */
 
     /**
      * Speichert den Benutzernamen nach der Post-Validierung eines Eingabefelds.
@@ -97,6 +103,7 @@ public class LoginController implements Serializable {
      * Validiert das eingegebene Passwort.
      * Wenn der Login fehlschlägt, wird eine Fehlermeldung erzeugt.
      */
+    /*
     public void validateLogin(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         String passwordValue = (String) value;
         shop.validateUsernameAndPassword(currentUser, tempUsername, passwordValue, salt);
@@ -104,6 +111,7 @@ public class LoginController implements Serializable {
             throw new ValidatorException(new FacesMessage("Login falsch!"));
         }
     }
+    */
 
     /**
      * Versucht, den Benutzer einzuloggen.
@@ -112,15 +120,13 @@ public class LoginController implements Serializable {
      * in eine Client-Ansicht (z. B. Shop-Client) weitergeleitet werden.
      */
     public String login() {
-        if (currentUser.isAdmin()) {
+        currentUser.handleUser(user, password);
+        if (currentUser.getIsAdmin()) {
             failureMessage = "";
             return "backoffice.xhtml?faces-redirect=true";
-        } else if (currentUser.isClient()) {
+        } else {
             failureMessage = "";
             return "shopclient.xhtml?faces-redirect=true";
-        } else {
-            failureMessage = "Passwort und Benutzername nicht erkannt.";
-            return "";
         }
     }
 

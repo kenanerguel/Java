@@ -9,18 +9,19 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <!-- Hier alle Entities eintragen -->
-        <!-- Beispiel: -->
-        <!-- <class>com.hero.zero.model.Artikel</class> -->
-        <!-- <class>com.hero.zero.model.DeineZweiteEntity</class> -->
+        <class>com.mein.projekt.model.User</class>
 
         <properties>
             <!-- JDBC-Verbindungsdaten -->
             <property name="jakarta.persistence.jdbc.driver"
                       value="com.mysql.cj.jdbc.Driver"/>
+            <!-- Hier wurde der Port auf 3306 angepasst, da der Docker-Container diesen Port nutzt -->
             <property name="jakarta.persistence.jdbc.url"
                       value="jdbc:mysql://localhost:3306/like_hero_zero"/>
             <property name="jakarta.persistence.jdbc.user" value="root"/>
             <property name="jakarta.persistence.jdbc.password" value=""/>
+
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
 
             <!-- Schema-Aktualisierung: update, create, create-drop, validate -->
             <property name="hibernate.hbm2ddl.auto" value="update"/>
@@ -31,5 +32,3 @@
         </properties>
     </persistence-unit>
 </persistence>
-
-

@@ -59,6 +59,8 @@ public class Shop implements Serializable {
         }
     }
 
+    /*
+
     // Validierung von Benutzername und Passwort
     public void validateUsernameAndPassword(CurrentUser currentUser, String name, String pass, String salt) {
         String passHash = hashPassword(name, pass, salt);
@@ -79,5 +81,6 @@ public class Shop implements Serializable {
             }
         }
     }
+    */
 }
 

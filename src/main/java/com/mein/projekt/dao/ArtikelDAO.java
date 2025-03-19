@@ -1,5 +1,6 @@
 package com.mein.projekt.dao;
 
+import com.mein.projekt.util.EntityManagerProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
@@ -20,10 +21,12 @@ public class ArtikelDAO {
     private EntityManager entityManager;
     private CriteriaBuilder criteriaBuilder;
 
+
     public ArtikelDAO() {
         try {
+            EntityManagerProvider entityManagerProvider = new EntityManagerProvider();
             // Verwende die neue Persistence Unit "likeHeroPU"
-            entityManager = Persistence.createEntityManagerFactory("likeHeroPU").createEntityManager();
+            entityManager = entityManagerProvider.getEntityManager();
             criteriaBuilder = entityManager.getCriteriaBuilder();
 
             // Initialisierung der Daten, falls noch keine Datensätze vorhanden sind
@@ -86,6 +89,10 @@ public class ArtikelDAO {
 
     public static void main(String[] args) {
         ArtikelDAO dao = new ArtikelDAO();
+        List<Artikel> artikelListe = dao.entityManager.createQuery("SELECT a FROM Artikel a", Artikel.class).getResultList();
+        for (Artikel art : artikelListe) {
+            System.out.println(art.getText());
+        }
         System.err.println("Es gibt " + dao.getArtikelCount() + " CO₂-Datensätze.");
     }
 }
