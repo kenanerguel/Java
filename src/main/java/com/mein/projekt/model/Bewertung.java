@@ -1,8 +1,7 @@
 package com.mein.projekt.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 
 @Entity
@@ -14,6 +13,11 @@ public class Bewertung implements Serializable {
 
     private double wert;
     private String text;
+
+    @ManyToOne
+    @JoinColumn(name = "artikel_id")
+    private Artikel artikel;
+
 
     // Default-Konstruktor (muss vorhanden sein)
     public Bewertung() {
@@ -49,4 +53,6 @@ public class Bewertung implements Serializable {
     public void setText(String text) {
         this.text = text;
     }
+
+    public void setArtikel(Artikel artikel) { this.artikel = artikel; }
 }

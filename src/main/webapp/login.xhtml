@@ -1,26 +1,56 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<html xmlns="http://xmlns.jcp.org/jsf/html"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 <h:head>
-    <title>Login</title>
+    <h:outputStylesheet name="/css/style.css" />
 </h:head>
 <h:body>
-    <h:form id="loginForm">
-        <p:panel header="Login">
-            <h:panelGrid columns="2" cellpadding="5">
-                <h:outputLabel for="username" value="Benutzername:" />
-                <p:inputText id="username" value="#{loginController.user}" required="true" />
 
-                <h:outputLabel for="password" value="Passwort:" />
-                <p:password id="password" value="#{loginController.password}" required="true" />
+    <!-- Gesamter Container mit relativer Positionierung -->
+    <h:panelGroup layout="block" style="position: relative; width: 100%; min-height: 600px;">
 
-                <h:outputText />
-                <p:commandButton value="Einloggen" action="#{loginController.login}" update="loginForm messages" />
-            </h:panelGrid>
-            <p:messages id="messages" autoUpdate="true" />
-        </p:panel>
-    </h:form>
+        <!-- Login-Panel oben rechts -->
+        <h:panelGroup layout="block" style="position: absolute; top: 20px; right: 60px; width: 520px;">
+            <h:form id="loginForm">
+                <p:panel header="Login" style="width: 100%;">
+                    <h:panelGrid columns="2" cellpadding="10">
+                        <h:outputLabel for="username" value="User:" />
+                        <p:inputText id="username" value="#{mainController.userInput}" required="true" />
+
+                        <h:outputLabel for="password" value="Passwort:" />
+                        <p:password id="password" value="#{mainController.passwordInput}" required="true" />
+                    </h:panelGrid>
+                    <p:commandButton value="Einloggen"
+                                     action="#{mainController.login}"
+                                     update="loginForm messages"
+                                     style="margin-top:10px;" />
+                    <p:messages id="messages" autoUpdate="true" />
+                </p:panel>
+            </h:form>
+        </h:panelGroup>
+
+        <!-- Hauptbereich für CO₂-Daten -->
+        <h:panelGroup layout="block" style="margin: 0 auto; padding: 20px; max-width: 800px;">
+            <p:panel header="Öffentlicher CO₂-Bereich" style="width: 100%;">
+                <h:form id="co2Form">
+                    <h:panelGrid columns="1" cellpadding="10">
+                        <h:outputText value="Wähle dein Land aus:" style="font-weight:bold;" />
+                        <p:selectOneMenu value="#{mainController.selectedCountry}" style="width:300px; height: 50px" panelStyle="width:300px;" scrollHeight="200">
+                            <f:selectItems value="#{mainController.countries}" var="c"
+                                           itemValue="#{c}" itemLabel="#{c}" />
+                            <p:ajax event="change" listener="#{mainController.onCountryChange}" update="co2Output" />
+                        </p:selectOneMenu>
+                        <p:outputPanel id="co2Output" style="margin-top:10px;">
+                            <h:outputText value="Aktueller CO₂-Ausstoß: #{mainController.latestCO2} kt (Stand: #{mainController.latestYear})" />
+                        </p:outputPanel>
+                    </h:panelGrid>
+                </h:form>
+            </p:panel>
+        </h:panelGroup>
+
+
+    </h:panelGroup>
 </h:body>
 </html>

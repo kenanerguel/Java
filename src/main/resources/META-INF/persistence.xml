@@ -10,6 +10,8 @@
 
         <!-- Hier alle Entities eintragen -->
         <class>com.mein.projekt.model.User</class>
+        <class>com.mein.projekt.model.Artikel</class>
+        <class>com.mein.projekt.model.Bewertung</class>
 
         <properties>
             <!-- JDBC-Verbindungsdaten -->

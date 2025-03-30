@@ -1,15 +1,18 @@
 package com.mein.projekt.auth;
 
+import com.mein.projekt.dao.UserDAO;
+import com.mein.projekt.model.Bewertung;
+import com.mein.projekt.util.EntityManagerProvider;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.Base64;
-import java.util.Arrays;
-import java.util.List;
-import java.util.GregorianCalendar;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.mein.projekt.dao.ArtikelDAO;
 import com.mein.projekt.model.Artikel;
 
@@ -17,70 +20,69 @@ import com.mein.projekt.model.Artikel;
 @SessionScoped
 public class Shop implements Serializable {
 
-    @Inject
-    private ArtikelDAO artikelDAO;
+    private EntityManagerProvider provider = new EntityManagerProvider();
+    private ArtikelDAO artikelDAO = new ArtikelDAO(provider);
 
-    // Beispielhafte Benutzer für die Authentifizierung im Backend
-    private final String[][] users = new String[][]{
-            // Hier sind z. B. zwei Test-Accounts definiert:
-            new String[]{"science1",
-                    "oLBbZ3YF...HashForScience1...", // Ersetze diesen Platzhalter durch den korrekten Hash
-                    "admin"},
-            new String[]{"science2",
-                    "9JXkL2Pf...HashForScience2...", // Ersetze diesen Platzhalter durch den korrekten Hash
-                    "client"}
-    };
+    public List<Artikel> getSortiment() {
+        return baseSortiment;
+    }
 
-    // Basis-Datensatz: Beispiel-Daten zu CO₂-Emissionen pro Land (für den öffentlichen Bereich)
-    public static final List<Artikel> baseSortiment = Arrays.asList(new Artikel[]{
-            new Artikel("Germany",
-                    "Aktueller CO₂-Ausstoß: 8,5 t pro Kopf (Stand 2023).",
-                    "germany.png", (new GregorianCalendar(2023, 0, 1).getTime())),
-            new Artikel("USA",
-                    "Aktueller CO₂-Ausstoß: 15,2 t pro Kopf (Stand 2023).",
-                    "usa.png", (new GregorianCalendar(2023, 0, 1).getTime())),
-            new Artikel("France",
-                    "Aktueller CO₂-Ausstoß: 5,4 t pro Kopf (Stand 2023).",
-                    "france.png", (new GregorianCalendar(2023, 0, 1).getTime()))
-            // Weitere Länder können hier hinzugefügt werden
+    public static final List<Artikel> baseSortiment = Arrays.asList(new Artikel[] {
+            new Artikel("Germany", "Aktueller CO₂-Ausstoß: 8,5 t pro Kopf (Stand 2023).", "germany.png", (new GregorianCalendar(2023, 0, 1).getTime())),
+            new Artikel("USA", "Aktueller CO₂-Ausstoß: 15,2 t pro Kopf (Stand 2023).", "usa.png", (new GregorianCalendar(2023, 0, 1).getTime())),
+            new Artikel("France", "Aktueller CO₂-Ausstoß: 5,4 t pro Kopf (Stand 2023).", "france.png", (new GregorianCalendar(2023, 0, 1).getTime()))
     });
 
     public Shop() {
     }
 
-    // Passwort-Hashing-Methode mit SHA-512 (unverändert)
-    public static String hashPassword(String name, String pass, String salt) {
+    public List<String> getCountries() {
+        return artikelDAO.getAllCountries();
+    }
+
+    public void handleArtikel(Artikel artikel, CurrentUser user) {
+        artikel.setUser(user.getUser());
+        Bewertung bewertung = new Bewertung("Sehr informativ", 4.5);
+
+        bewertung.setArtikel(artikel);
+        artikel.addBewertung(bewertung);
+
+        artikelDAO.saveArtikel(artikel);
+    }
+
+    public List<Number> handleLatestValues(String selectedCountry) {
+        List<Number> values = new LinkedList<>();
+        String response = artikelDAO.findLatestBeschreibungByCountry(selectedCountry);
+        values.add(extractCO2FromBeschreibung(response));
+        values.add(extractYearFromBeschreibung(response));
+        return values;
+    }
+
+    private double extractCO2FromBeschreibung(String beschreibung) {
         try {
-            MessageDigest digester = MessageDigest.getInstance("SHA-512");
-            byte[] hashBytes = digester.digest((name + pass + salt).getBytes(StandardCharsets.UTF_8));
-            return new String(Base64.getEncoder().encode(hashBytes));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /*
-
-    // Validierung von Benutzername und Passwort
-    public void validateUsernameAndPassword(CurrentUser currentUser, String name, String pass, String salt) {
-        String passHash = hashPassword(name, pass, salt);
-        currentUser.reset();
-        for (String[] user : users) {
-            if (user[0].equals(name)) {
-                if (user[1].equals(passHash)) {
-                    if (user[2].equals("admin")) {
-                        currentUser.admin = true;
-                        return;
-                    } else if (user[2].equals("client")) {
-                        currentUser.client = true;
-                        return;
-                    } else {
-                        throw new RuntimeException("Benutzer " + name + " ist falsch angelegt.");
-                    }
-                }
+            Pattern pattern = Pattern.compile("([\\d,.]+)\\s*t.*?\\(Stand:?\\s*(\\d{4})\\)");
+            Matcher matcher = pattern.matcher(beschreibung);
+            if (matcher.find()) {
+                String co2String = matcher.group(1).replace(",", "."); // "15.2"
+                double co2Double = Double.parseDouble(co2String);
+                return co2Double; // z.B. 15 (gerundet)
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return -1; // Fehlerindikator
     }
-    */
-}
 
+    private int extractYearFromBeschreibung(String beschreibung) {
+        try {
+            Pattern pattern = Pattern.compile("\\(Stand:?\\s*(\\d{4})\\)");
+            Matcher matcher = pattern.matcher(beschreibung);
+            if (matcher.find()) {
+                return Integer.parseInt(matcher.group(1));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1; // Fehlerindikator
+    }
+}

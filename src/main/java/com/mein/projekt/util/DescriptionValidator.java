@@ -26,26 +26,22 @@ public class DescriptionValidator implements Validator<String> {
 
     @Override
     public void validate(FacesContext ctx, UIComponent cmp, String text) throws ValidatorException {
-        // Kriterium 1: Der Text soll mit einem gültigen Satzzeichen enden.
-        if (!(text.endsWith(".") || text.endsWith("!") || text.endsWith("?"))) {
+        // Formatprüfung (Regex)
+        String regex = "^Aktueller CO₂-Ausstoß: [\\d]{1,2},[\\d] t pro Kopf \\(Stand 20\\d{2}\\)\\.$";
+        if (!text.matches(regex)) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Ungültige Interpunktion",
-                    "Bitte beenden Sie Ihren Satz mit einem Punkt, Ausrufezeichen oder Fragezeichen!"));
+                    "Ungültiges Format",
+                    "Bitte verwenden Sie genau dieses Format: Aktueller CO₂-Ausstoß: 15,2 t pro Kopf (Stand 2023)."));
         }
 
-        // Kriterium 2: Der Text muss zwischen 100 und 300 Zeichen lang sein.
-        if (text.length() < 100) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Text zu kurz",
-                    "Die Beschreibung muss mindestens 100 Zeichen lang sein!"));
-        }
+        // Kriterium 2: Textlänge (nicht mehr wirklich nötig, aber optional)
         if (text.length() > 300) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     "Text zu lang",
                     "Die Beschreibung darf maximal 300 Zeichen lang sein!"));
         }
 
-        // Kriterium 3: Grammatikprüfung mittels MyLanguageTool (Wrapper für LanguageTool)
+        // Optional: Grammatikprüfung
         try {
             List<RuleMatch> matches = myLangTool.checkText(text);
             if (matches != null && !matches.isEmpty()) {

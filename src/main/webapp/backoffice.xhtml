@@ -11,21 +11,21 @@
         <p:panel header="Datenverwaltung">
             <h:panelGrid columns="2" cellpadding="5">
                 <h:outputLabel for="name" value="Name (Land):" />
-                <p:inputText id="name" value="#{backofficeController.artikel.name}" required="true" />
+                <p:inputText id="name" value="#{mainController.nameInput}" required="true" />
 
                 <h:outputLabel for="text" value="Beschreibung:" />
-                <p:inputTextarea id="text" value="#{backofficeController.artikel.text}" required="true">
+                <p:inputTextarea id="text" value="#{mainController.beschreibungInput}" required="true">
                     <f:validator validatorId="descriptionValidator" />
                 </p:inputTextarea>
 
                 <h:outputLabel for="bild" value="Bild URL:" />
-                <p:inputText id="bild" value="#{backofficeController.artikel.bild}" />
+                <p:inputText id="bild" value="#{mainController.bildInput}" />
 
                 <h:outputLabel for="verfuegbarAb" value="Verfügbar ab:" />
-                <p:calendar id="verfuegbarAb" value="#{backofficeController.artikel.verfuegbarAb}" pattern="dd.MM.yyyy" />
+                <p:calendar id="verfuegbarAb" value="#{mainController.verfuegbarInput}" pattern="dd.MM.yyyy" />
 
                 <h:outputText />
-                <p:commandButton value="Speichern" action="#{backofficeController.saveArtikel}" update="backofficeForm messages" />
+                <p:commandButton value="Speichern" action="#{mainController.saveArtikel}" update="backofficeForm messages" />
             </h:panelGrid>
             <p:messages id="messages" autoUpdate="true" />
         </p:panel>
