@@ -4,28 +4,42 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
-    <title>Backoffice</title>
+    <title>CO₂-Dateneingabe</title>
 </h:head>
 <h:body>
     <h:form id="backofficeForm">
-        <p:panel header="Datenverwaltung">
+        <p:panel header="CO₂-Dateneingabe">
             <h:panelGrid columns="2" cellpadding="5">
-                <h:outputLabel for="name" value="Name (Land):" />
-                <p:inputText id="name" value="#{mainController.nameInput}" required="true" />
+                <h:outputLabel for="land" value="Land:" />
+                <p:selectOneMenu id="land" value="#{mainController.landInput}" required="true">
+                    <f:selectItems value="#{mainController.availableCountries}" var="country" 
+                                 itemLabel="#{country}" itemValue="#{country}" />
+                </p:selectOneMenu>
 
-                <h:outputLabel for="text" value="Beschreibung:" />
-                <p:inputTextarea id="text" value="#{mainController.beschreibungInput}" required="true">
+                <h:outputLabel for="jahr" value="Jahr:" />
+                <p:spinner id="jahr" value="#{mainController.jahrInput}" required="true" 
+                          minValue="1900" maxValue="2100" />
+
+                <h:outputLabel for="co2Ausstoss" value="CO₂-Ausstoß:" />
+                <p:inputNumber id="co2Ausstoss" value="#{mainController.co2AusstossInput}" 
+                             required="true" decimalPlaces="2" />
+
+                <h:outputLabel for="einheit" value="Einheit:" />
+                <p:selectOneMenu id="einheit" value="#{mainController.einheitInput}" required="true">
+                    <f:selectItem itemLabel="Tonnen" itemValue="t" />
+                    <f:selectItem itemLabel="Kilotonnen" itemValue="kt" />
+                    <f:selectItem itemLabel="Megatonnen" itemValue="Mt" />
+                </p:selectOneMenu>
+
+                <h:outputLabel for="beschreibung" value="Beschreibung/Quelle:" />
+                <p:inputTextarea id="beschreibung" value="#{mainController.beschreibungInput}" 
+                               rows="3" cols="50">
                     <f:validator validatorId="descriptionValidator" />
                 </p:inputTextarea>
 
-                <h:outputLabel for="bild" value="Bild URL:" />
-                <p:inputText id="bild" value="#{mainController.bildInput}" />
-
-                <h:outputLabel for="verfuegbarAb" value="Verfügbar ab:" />
-                <p:calendar id="verfuegbarAb" value="#{mainController.verfuegbarInput}" pattern="dd.MM.yyyy" />
-
                 <h:outputText />
-                <p:commandButton value="Speichern" action="#{mainController.saveArtikel}" update="backofficeForm messages" />
+                <p:commandButton value="Daten speichern" action="#{mainController.saveCO2Data}" 
+                               update="backofficeForm messages" />
             </h:panelGrid>
             <p:messages id="messages" autoUpdate="true" />
         </p:panel>

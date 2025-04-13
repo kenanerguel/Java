@@ -25,23 +25,20 @@ public class MainController implements Serializable {
     @Inject
     private CurrentUser currentUser;
 
-    private String nameInput;
+    // Neue Eingabefelder für CO₂-Daten
+    private String landInput;
+    private int jahrInput;
+    private double co2AusstossInput;
+    private String einheitInput;
     private String beschreibungInput;
-    private String bildInput;
-    private Date verfuegbarInput;
 
     private String userInput;
     private String passwordInput;
     private String failureMessage = "";
 
-    private int index = 0;
-    private Artikel artikel;
-
     private String selectedCountry;
-
     private double latestCO2;
     private int latestYear;
-
     private List<String> countries;
 
     @PostConstruct
@@ -65,11 +62,20 @@ public class MainController implements Serializable {
         return currentUser.getUser().isAdmin() ? "backoffice.xhtml?faces-redirect=true" : "shopclient.xhtml?faces-redirect=true";
     }
 
-    // Artikel speichern
-    public void saveArtikel() {
-        Artikel newArtikel = new Artikel(nameInput, beschreibungInput, bildInput, verfuegbarInput);
+    // CO₂-Daten speichern
+    public void saveCO2Data() {
+        Artikel newArtikel = new Artikel(landInput, jahrInput, co2AusstossInput, einheitInput, beschreibungInput);
         shop.handleArtikel(newArtikel, currentUser);
-        this.countries = shop.getCountries();
+        
+        // Felder zurücksetzen
+        landInput = null;
+        jahrInput = 0;
+        co2AusstossInput = 0.0;
+        einheitInput = null;
+        beschreibungInput = null;
+        
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Erfolg", "CO₂-Daten wurden erfolgreich gespeichert."));
     }
 
     public void onCountryChange() {
@@ -83,90 +89,41 @@ public class MainController implements Serializable {
         }
     }
 
+    // Getter & Setter für die neuen Felder
+    public String getLandInput() { return landInput; }
+    public void setLandInput(String landInput) { this.landInput = landInput; }
+    
+    public int getJahrInput() { return jahrInput; }
+    public void setJahrInput(int jahrInput) { this.jahrInput = jahrInput; }
+    
+    public double getCo2AusstossInput() { return co2AusstossInput; }
+    public void setCo2AusstossInput(double co2AusstossInput) { this.co2AusstossInput = co2AusstossInput; }
+    
+    public String getEinheitInput() { return einheitInput; }
+    public void setEinheitInput(String einheitInput) { this.einheitInput = einheitInput; }
+    
+    public String getBeschreibungInput() { return beschreibungInput; }
+    public void setBeschreibungInput(String beschreibungInput) { this.beschreibungInput = beschreibungInput; }
 
-    // --- Getter & Setter ---
-
-    public String getNameInput() {
-        return nameInput;
-    }
-
-    public void setNameInput(String nameInput) {
-        this.nameInput = nameInput;
-    }
-
-    public String getBeschreibungInput() {
-        return beschreibungInput;
-    }
-
-    public void setBeschreibungInput(String beschreibungInput) {
-        this.beschreibungInput = beschreibungInput;
-    }
-
-    public String getBildInput() {
-        return bildInput;
-    }
-
-    public void setBildInput(String bildInput) {
-        this.bildInput = bildInput;
-    }
-
-    public Date getVerfuegbarInput() {
-        return verfuegbarInput;
-    }
-
-    public void setVerfuegbarInput(Date verfuegbarInput) {
-        this.verfuegbarInput = verfuegbarInput;
-    }
-
-    public String getUserInput() {
-        return userInput;
-    }
-
-    public void setUserInput(String userInput) {
-        this.userInput = userInput;
-    }
-
-    public String getPasswordInput() {
-        return passwordInput;
-    }
-
-    public void setPasswordInput(String passwordInput) {
-        this.passwordInput = passwordInput;
-    }
-
-    public String getFailureMessage() {
-        return failureMessage;
-    }
-
-    public void setFailureMessage(String failureMessage) {
-        this.failureMessage = failureMessage;
-    }
-
-    public double getLatestCO2() {
-        return latestCO2;
-    }
-
-    public int getLatestYear() {
-        return latestYear;
-    }
-
-    public void setLatestCO2(double latestCO2) {
-        this.latestCO2 = latestCO2;
-    }
-
-    public void setLatestYear(int latestYear) {
-        this.latestCO2 = latestYear;
-    }
-    // Getter und Setter
-    public String getSelectedCountry() {
-        return selectedCountry;
-    }
-
-    public void setSelectedCountry(String selectedCountry) {
-        this.selectedCountry = selectedCountry;
-    }
-
-    public List<String> getCountries() {
-        return countries;
-    }
+    // Bestehende Getter & Setter
+    public String getUserInput() { return userInput; }
+    public void setUserInput(String userInput) { this.userInput = userInput; }
+    
+    public String getPasswordInput() { return passwordInput; }
+    public void setPasswordInput(String passwordInput) { this.passwordInput = passwordInput; }
+    
+    public String getFailureMessage() { return failureMessage; }
+    public void setFailureMessage(String failureMessage) { this.failureMessage = failureMessage; }
+    
+    public double getLatestCO2() { return latestCO2; }
+    public void setLatestCO2(double latestCO2) { this.latestCO2 = latestCO2; }
+    
+    public int getLatestYear() { return latestYear; }
+    public void setLatestYear(int latestYear) { this.latestYear = latestYear; }
+    
+    public String getSelectedCountry() { return selectedCountry; }
+    public void setSelectedCountry(String selectedCountry) { this.selectedCountry = selectedCountry; }
+    
+    public List<String> getCountries() { return countries; }
+    public List<String> getAvailableCountries() { return Arrays.asList("Deutschland", "Frankreich", "USA", "China", "Japan", "Indien", "Brasilien", "Russland"); }
 }

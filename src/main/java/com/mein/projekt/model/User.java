@@ -88,8 +88,8 @@ public class User {
         userDAO.saveUser(scientist2);
 
         // Artikel anlegen
-        Artikel artikel1 = new Artikel("Japan", "8,5 t CO₂-Ausstoß pro Kopf", "germany.png", new Date());
-        Artikel artikel2 = new Artikel("Brazil", "5,4 t CO₂-Ausstoß pro Kopf", "france.png", new Date());
+        Artikel artikel1 = new Artikel("Japan", 2023, 8.5, "t", "CO₂-Ausstoß pro Kopf");
+        Artikel artikel2 = new Artikel("Brasilien", 2023, 5.4, "t", "CO₂-Ausstoß pro Kopf");
 
         artikel1.setUser(admin);
         artikel2.setUser(scientist1);
