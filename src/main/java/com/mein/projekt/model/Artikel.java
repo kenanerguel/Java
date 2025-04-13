@@ -13,48 +13,62 @@ public class Artikel implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int nr;
 
-    private String name;
+    private String land;
+    private int jahr;
+    private double co2Ausstoss;
+    private String einheit;
     private String beschreibung;
-    private String bild;
+    private String status = "pending"; // pending, approved, rejected
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;  // Ein Artikel gehört einem User
-
+    private User user;
 
     @Temporal(TemporalType.DATE)
-    private Date verfuegbarAb;
+    private Date erstelltAm;
 
     @OneToMany(mappedBy = "artikel", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Bewertung> bewertungen = new ArrayList<>();
 
     public Artikel() {}
 
-    public Artikel(String name, String beschreibung, String bild) {
-        this(name, beschreibung, bild, new Date());
-    }
-
-    public Artikel(String name, String beschreibung, String bild, Date verfuegbarAb) {
-        this.name = name;
+    public Artikel(String land, int jahr, double co2Ausstoss, String einheit, String beschreibung) {
+        this.land = land;
+        this.jahr = jahr;
+        this.co2Ausstoss = co2Ausstoss;
+        this.einheit = einheit;
         this.beschreibung = beschreibung;
-        this.bild = bild;
-        this.verfuegbarAb = verfuegbarAb;
+        this.erstelltAm = new Date();
     }
 
     // Getter & Setter
     public int getNr() { return nr; }
-    public String getBeschreibung() { return beschreibung; }
     public void setNr(int nr) { this.nr = nr; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getText() { return beschreibung; }
+    
+    public String getLand() { return land; }
+    public void setLand(String land) { this.land = land; }
+    
+    public int getJahr() { return jahr; }
+    public void setJahr(int jahr) { this.jahr = jahr; }
+    
+    public double getCo2Ausstoss() { return co2Ausstoss; }
+    public void setCo2Ausstoss(double co2Ausstoss) { this.co2Ausstoss = co2Ausstoss; }
+    
+    public String getEinheit() { return einheit; }
+    public void setEinheit(String einheit) { this.einheit = einheit; }
+    
+    public String getBeschreibung() { return beschreibung; }
     public void setBeschreibung(String beschreibung) { this.beschreibung = beschreibung; }
-    public String getBild() { return bild; }
-    public void setBild(String bild) { this.bild = bild; }
-    public Date getVerfuegbarAb() { return verfuegbarAb; }
-    public void setVerfuegbarAb(Date verfuegbarAb) { this.verfuegbarAb = verfuegbarAb; }
+    
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    
+    public Date getErstelltAm() { return erstelltAm; }
+    public void setErstelltAm(Date erstelltAm) { this.erstelltAm = erstelltAm; }
+    
     public List<Bewertung> getBewertungen() { return bewertungen; }
     public void addBewertung(Bewertung bewertung) { bewertungen.add(bewertung); }
+    
     public void setUser(User user) { this.user = user; }
     public User getUser() { return this.user; }
 }

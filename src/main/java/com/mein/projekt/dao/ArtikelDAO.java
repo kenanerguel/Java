@@ -9,6 +9,7 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.TypedQuery;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,15 +21,14 @@ import com.mein.projekt.auth.Shop;
 @ApplicationScoped
 public class ArtikelDAO {
 
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
     private CriteriaBuilder criteriaBuilder;
 
 
     @Inject
     public ArtikelDAO(EntityManagerProvider entityManagerProvider) {
+        this.entityManager = entityManagerProvider.getEntityManager();
         try {
-            // Verwende die neue Persistence Unit "likeHeroPU"
-            entityManager = entityManagerProvider.getEntityManager();
             criteriaBuilder = entityManager.getCriteriaBuilder();
 
             // Initialisierung der Daten, falls noch keine Datensätze vorhanden sind
@@ -52,20 +52,15 @@ public class ArtikelDAO {
     }
 
     public List<String> getAllCountries() {
-        try {
-            return entityManager.createQuery(
-                            "SELECT DISTINCT a.name FROM Artikel a", String.class)
-                    .getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        TypedQuery<String> query = entityManager.createQuery(
+                "SELECT DISTINCT a.land FROM Artikel a ORDER BY a.land", String.class);
+        return query.getResultList();
     }
 
     public String findLatestBeschreibungByCountry(String selectedCountry) {
         try {
             return entityManager.createQuery(
-                            "SELECT a.beschreibung FROM Artikel a WHERE a.name = :name ORDER BY a.verfuegbarAb DESC", String.class)
+                            "SELECT a.beschreibung FROM Artikel a WHERE a.land = :name ORDER BY a.jahr DESC", String.class)
                     .setParameter("name", selectedCountry)
                     .setMaxResults(1)
                     .getSingleResult();
@@ -119,22 +114,36 @@ public class ArtikelDAO {
         ArtikelDAO dao = new ArtikelDAO(provider);
         List<Artikel> artikelListe = dao.entityManager.createQuery("SELECT a FROM Artikel a", Artikel.class).getResultList();
         for (Artikel art : artikelListe) {
-            System.out.println(art.getText());
+            System.out.println(art.getBeschreibung());
         }
         System.err.println("Es gibt " + dao.getArtikelCount() + " CO₂-Datensätze.");
     }
 
-    public void saveArtikel(Artikel artikel1) {
-        EntityTransaction tx = entityManager.getTransaction();
+    public void saveArtikel(Artikel artikel) {
+        EntityTransaction transaction = entityManager.getTransaction();
         try {
-            tx.begin();
-            entityManager.persist(artikel1);
-            tx.commit();
-            System.out.println("Artikel erfolgreich gespeichert: " + artikel1.getName());
+            transaction.begin();
+            entityManager.persist(artikel);
+            transaction.commit();
         } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
             e.printStackTrace();
-            throw new RuntimeException("Fehler beim Speichern des Artikels.");
         }
+    }
+
+    public List<Number> getLatestValues(String country) {
+        TypedQuery<Artikel> query = entityManager.createQuery(
+                "SELECT a FROM Artikel a WHERE a.land = :country ORDER BY a.jahr DESC", Artikel.class);
+        query.setParameter("country", country);
+        query.setMaxResults(1);
+        
+        List<Artikel> results = query.getResultList();
+        if (!results.isEmpty()) {
+            Artikel latest = results.get(0);
+            return List.of(latest.getCo2Ausstoss(), latest.getJahr());
+        }
+        return List.of(-1.0, -1);
     }
 }

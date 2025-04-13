@@ -28,9 +28,9 @@ public class Shop implements Serializable {
     }
 
     public static final List<Artikel> baseSortiment = Arrays.asList(new Artikel[] {
-            new Artikel("Germany", "Aktueller CO₂-Ausstoß: 8,5 t pro Kopf (Stand 2023).", "germany.png", (new GregorianCalendar(2023, 0, 1).getTime())),
-            new Artikel("USA", "Aktueller CO₂-Ausstoß: 15,2 t pro Kopf (Stand 2023).", "usa.png", (new GregorianCalendar(2023, 0, 1).getTime())),
-            new Artikel("France", "Aktueller CO₂-Ausstoß: 5,4 t pro Kopf (Stand 2023).", "france.png", (new GregorianCalendar(2023, 0, 1).getTime()))
+            new Artikel("Deutschland", 2023, 8.5, "t", "Aktueller CO₂-Ausstoß pro Kopf"),
+            new Artikel("USA", 2023, 15.2, "t", "Aktueller CO₂-Ausstoß pro Kopf"),
+            new Artikel("Frankreich", 2023, 5.4, "t", "Aktueller CO₂-Ausstoß pro Kopf")
     });
 
     public Shop() {
@@ -50,39 +50,7 @@ public class Shop implements Serializable {
         artikelDAO.saveArtikel(artikel);
     }
 
-    public List<Number> handleLatestValues(String selectedCountry) {
-        List<Number> values = new LinkedList<>();
-        String response = artikelDAO.findLatestBeschreibungByCountry(selectedCountry);
-        values.add(extractCO2FromBeschreibung(response));
-        values.add(extractYearFromBeschreibung(response));
-        return values;
-    }
-
-    private double extractCO2FromBeschreibung(String beschreibung) {
-        try {
-            Pattern pattern = Pattern.compile("([\\d,.]+)\\s*t.*?\\(Stand:?\\s*(\\d{4})\\)");
-            Matcher matcher = pattern.matcher(beschreibung);
-            if (matcher.find()) {
-                String co2String = matcher.group(1).replace(",", "."); // "15.2"
-                double co2Double = Double.parseDouble(co2String);
-                return co2Double; // z.B. 15 (gerundet)
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return -1; // Fehlerindikator
-    }
-
-    private int extractYearFromBeschreibung(String beschreibung) {
-        try {
-            Pattern pattern = Pattern.compile("\\(Stand:?\\s*(\\d{4})\\)");
-            Matcher matcher = pattern.matcher(beschreibung);
-            if (matcher.find()) {
-                return Integer.parseInt(matcher.group(1));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return -1; // Fehlerindikator
+    public List<Number> handleLatestValues(String country) {
+        return artikelDAO.getLatestValues(country);
     }
 }

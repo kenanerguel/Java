@@ -26,19 +26,18 @@ public class DescriptionValidator implements Validator<String> {
 
     @Override
     public void validate(FacesContext ctx, UIComponent cmp, String text) throws ValidatorException {
-        // Formatprüfung (Regex)
-        String regex = "^Aktueller CO₂-Ausstoß: [\\d]{1,2},[\\d] t pro Kopf \\(Stand 20\\d{2}\\)\\.$";
-        if (!text.matches(regex)) {
+        // Prüfe ob die Beschreibung nicht leer ist
+        if (text == null || text.trim().isEmpty()) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Ungültiges Format",
-                    "Bitte verwenden Sie genau dieses Format: Aktueller CO₂-Ausstoß: 15,2 t pro Kopf (Stand 2023)."));
+                    "Beschreibung erforderlich",
+                    "Bitte geben Sie eine Beschreibung oder Quelle an."));
         }
 
-        // Kriterium 2: Textlänge (nicht mehr wirklich nötig, aber optional)
-        if (text.length() > 300) {
+        // Prüfe die maximale Länge
+        if (text.length() > 500) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     "Text zu lang",
-                    "Die Beschreibung darf maximal 300 Zeichen lang sein!"));
+                    "Die Beschreibung darf maximal 500 Zeichen lang sein!"));
         }
 
         // Optional: Grammatikprüfung
