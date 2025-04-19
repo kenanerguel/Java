@@ -26,7 +26,7 @@
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
 
             <!-- Schema-Aktualisierung: update, create, create-drop, validate -->
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
 
             <!-- SQL-Ausgaben (optional) -->
             <property name="hibernate.show_sql" value="true"/>

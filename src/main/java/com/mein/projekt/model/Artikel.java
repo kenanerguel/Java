@@ -7,17 +7,29 @@ import java.util.List;
 import java.util.ArrayList;
 
 @Entity
+@Table(name = "artikel")
 public class Artikel implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int nr;
 
+    @Column(name = "land", nullable = false)
     private String land;
+    
+    @Column(name = "jahr", nullable = false)
     private int jahr;
+    
+    @Column(name = "co2_ausstoss", nullable = false)
     private double co2Ausstoss;
+    
+    @Column(name = "einheit", nullable = false)
     private String einheit;
+    
+    @Column(name = "beschreibung", length = 1000)
     private String beschreibung;
+    
+    @Column(name = "status", nullable = false)
     private String status = "pending"; // pending, approved, rejected
 
     @ManyToOne
@@ -25,6 +37,7 @@ public class Artikel implements Serializable {
     private User user;
 
     @Temporal(TemporalType.DATE)
+    @Column(name = "erstellt_am", nullable = false)
     private Date erstelltAm;
 
     @OneToMany(mappedBy = "artikel", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
