@@ -41,13 +41,35 @@ public class Shop implements Serializable {
     }
 
     public void handleArtikel(Artikel artikel, CurrentUser user) {
-        artikel.setUser(user.getUser());
-        Bewertung bewertung = new Bewertung("Sehr informativ", 4.5);
-
-        bewertung.setArtikel(artikel);
-        artikel.addBewertung(bewertung);
-
-        artikelDAO.saveArtikel(artikel);
+        System.out.println("Speichere neuen Artikel: Land=" + artikel.getLand() + 
+                         ", Jahr=" + artikel.getJahr() + 
+                         ", CO2=" + artikel.getCo2Ausstoss());
+        
+        try {
+            artikel.setUser(user.getUser());
+            artikel.setStatus("approved"); // Stelle sicher, dass der Status gesetzt ist
+            
+            // Starte eine neue Transaktion
+            var transaction = provider.getEntityManager().getTransaction();
+            transaction.begin();
+            
+            try {
+                artikelDAO.persist(artikel);
+                transaction.commit();
+                System.out.println("Artikel erfolgreich gespeichert");
+            } catch (Exception e) {
+                if (transaction.isActive()) {
+                    transaction.rollback();
+                }
+                System.err.println("Fehler beim Speichern des Artikels: " + e.getMessage());
+                e.printStackTrace();
+                throw e;
+            }
+        } catch (Exception e) {
+            System.err.println("Allgemeiner Fehler in handleArtikel: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public List<Number> handleLatestValues(String country) {

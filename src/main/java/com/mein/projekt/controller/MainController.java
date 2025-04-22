@@ -65,6 +65,7 @@ public class MainController implements Serializable {
     // CO₂-Daten speichern
     public void saveCO2Data() {
         Artikel newArtikel = new Artikel(landInput, jahrInput, co2AusstossInput, einheitInput, beschreibungInput);
+        newArtikel.setStatus("approved");
         shop.handleArtikel(newArtikel, currentUser);
         
         // Felder zurücksetzen

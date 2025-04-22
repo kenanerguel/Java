@@ -43,7 +43,11 @@
                             <p:ajax event="change" listener="#{mainController.onCountryChange}" update="co2Output" />
                         </p:selectOneMenu>
                         <p:outputPanel id="co2Output" style="margin-top:10px;">
-                            <h:outputText value="Aktueller CO₂-Ausstoß: #{mainController.latestCO2} kt (Stand: #{mainController.latestYear})" />
+                            <h:panelGrid columns="1" rendered="#{mainController.latestYear != -1}">
+                                <h:outputText value="Aktueller CO₂-Ausstoß: #{mainController.latestCO2} #{mainController.einheitInput}" style="font-weight: bold;"/>
+                                <h:outputText value="Jahr: #{mainController.latestYear}"/>
+                            </h:panelGrid>
+                            <h:outputText value="Keine Daten verfügbar" rendered="#{mainController.latestYear == -1}" style="color: red;"/>
                         </p:outputPanel>
                     </h:panelGrid>
                 </h:form>

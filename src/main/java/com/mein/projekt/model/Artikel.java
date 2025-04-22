@@ -8,6 +8,12 @@ import java.util.ArrayList;
 
 @Entity
 @Table(name = "artikel")
+@NamedQueries({
+    @NamedQuery(
+        name = "Artikel.findLatestByLand",
+        query = "SELECT a FROM Artikel a WHERE a.land = :land AND a.status = 'approved' ORDER BY a.jahr DESC"
+    )
+})
 public class Artikel implements Serializable {
 
     @Id
@@ -20,7 +26,7 @@ public class Artikel implements Serializable {
     @Column(name = "jahr", nullable = false)
     private int jahr;
     
-    @Column(name = "co2_ausstoss", nullable = false)
+    @Column(name = "co2ausstoss", nullable = false)
     private double co2Ausstoss;
     
     @Column(name = "einheit", nullable = false)

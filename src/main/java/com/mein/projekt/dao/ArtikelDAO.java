@@ -134,16 +134,29 @@ public class ArtikelDAO {
     }
 
     public List<Number> getLatestValues(String country) {
-        TypedQuery<Artikel> query = entityManager.createQuery(
-                "SELECT a FROM Artikel a WHERE a.land = :country ORDER BY a.jahr DESC", Artikel.class);
-        query.setParameter("country", country);
-        query.setMaxResults(1);
-        
-        List<Artikel> results = query.getResultList();
-        if (!results.isEmpty()) {
-            Artikel latest = results.get(0);
-            return List.of(latest.getCo2Ausstoss(), latest.getJahr());
+        System.out.println("Suche nach Daten für Land: " + country);
+        try {
+            TypedQuery<Artikel> query = entityManager.createQuery(
+                    "SELECT a FROM Artikel a WHERE a.land = :country ORDER BY a.jahr DESC", Artikel.class);
+            query.setParameter("country", country);
+            query.setMaxResults(1);
+            
+            List<Artikel> results = query.getResultList();
+            System.out.println("Gefundene Ergebnisse: " + results.size());
+            
+            if (!results.isEmpty()) {
+                Artikel latest = results.get(0);
+                System.out.println("Gefundene Daten: CO2=" + latest.getCo2Ausstoss() + 
+                                 ", Jahr=" + latest.getJahr() + 
+                                 ", Status=" + latest.getStatus());
+                return List.of(latest.getCo2Ausstoss(), latest.getJahr());
+            }
+            System.out.println("Keine Daten gefunden für: " + country);
+            return List.of(-1.0, -1);
+        } catch (Exception e) {
+            System.err.println("Fehler beim Abrufen der Daten: " + e.getMessage());
+            e.printStackTrace();
+            return List.of(-1.0, -1);
         }
-        return List.of(-1.0, -1);
     }
 }
