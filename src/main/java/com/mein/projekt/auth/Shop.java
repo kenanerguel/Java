@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import com.mein.projekt.dao.ArtikelDAO;
 import com.mein.projekt.model.Artikel;
+import jakarta.annotation.PostConstruct;
 
 @Named("shop")
 @SessionScoped
@@ -41,7 +42,9 @@ public class Shop implements Serializable {
     public Shop() {
     }
 
+    @PostConstruct
     public void init() {
+        System.out.println("Initialisiere Shop...");
         countries = artikelDAO.getAllCountries();
         System.out.println("Verfügbare Länder: " + countries);
     }
@@ -52,11 +55,13 @@ public class Shop implements Serializable {
             aktuellerArtikel = artikelDAO.getAktuellerArtikelByLand(selectedCountry);
             if (aktuellerArtikel != null) {
                 System.out.println("Gefundene Daten: CO2=" + aktuellerArtikel.getCo2Ausstoss() + 
+                                 " " + aktuellerArtikel.getEinheit() + 
                                  ", Jahr=" + aktuellerArtikel.getJahr());
             } else {
                 System.out.println("Keine Daten gefunden für: " + selectedCountry);
             }
         } else {
+            System.out.println("Kein Land ausgewählt");
             aktuellerArtikel = null;
         }
     }
