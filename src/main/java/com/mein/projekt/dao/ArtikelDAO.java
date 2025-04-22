@@ -4,6 +4,7 @@ import com.mein.projekt.util.EntityManagerProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -21,12 +22,18 @@ import com.mein.projekt.auth.Shop;
 @ApplicationScoped
 public class ArtikelDAO {
 
-    private final EntityManager entityManager;
+    @Inject
+    private EntityManagerProvider entityManagerProvider;
+    
+    private EntityManager entityManager;
     private CriteriaBuilder criteriaBuilder;
 
+    public ArtikelDAO() {
+        // Standard-Konstruktor für CDI
+    }
 
-    @Inject
-    public ArtikelDAO(EntityManagerProvider entityManagerProvider) {
+    @PostConstruct
+    public void init() {
         this.entityManager = entityManagerProvider.getEntityManager();
         try {
             criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -111,7 +118,9 @@ public class ArtikelDAO {
 
     public static void main(String[] args) {
         EntityManagerProvider provider = new EntityManagerProvider();
-        ArtikelDAO dao = new ArtikelDAO(provider);
+        ArtikelDAO dao = new ArtikelDAO();
+        dao.entityManagerProvider = provider;
+        dao.init();
         List<Artikel> artikelListe = dao.entityManager.createQuery("SELECT a FROM Artikel a", Artikel.class).getResultList();
         for (Artikel art : artikelListe) {
             System.out.println(art.getBeschreibung());
