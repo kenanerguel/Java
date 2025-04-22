@@ -74,15 +74,18 @@ public class User {
     public static void main(String[] args) {
         // EntityManager holen
         EntityManagerProvider provider = new EntityManagerProvider();
-
+        
         // DAOs erstellen
         UserDAO userDAO = new UserDAO(provider);
-        ArtikelDAO artikelDAO = new ArtikelDAO(provider);
+        ArtikelDAO artikelDAO = new ArtikelDAO();
+        artikelDAO.init();
+        artikelDAO.setEntityManagerProvider(provider);
 
         // Benutzer anlegen
         User admin = new User("admin", "admin123", true);
         User scientist1 = new User("science1", "pass123", false);
         User scientist2 = new User("science2", "pass456", false);
+        
         userDAO.saveUser(admin);
         userDAO.saveUser(scientist1);
         userDAO.saveUser(scientist2);

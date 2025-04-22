@@ -32,6 +32,10 @@ public class ArtikelDAO {
         // Standard-Konstruktor für CDI
     }
 
+    public void setEntityManagerProvider(EntityManagerProvider provider) {
+        this.entityManagerProvider = provider;
+    }
+
     @PostConstruct
     public void init() {
         this.entityManager = entityManagerProvider.getEntityManager();
