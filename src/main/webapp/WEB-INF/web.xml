@@ -30,7 +30,7 @@
 
     <!-- Kontextparameter für JSF (optional, um FacesServlet zu konfigurieren) -->
     <context-param>
-        <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+        <param-name>jakarta.faces.DEFAULT_SUFFIX</param-name>
         <param-value>.xhtml</param-value>
     </context-param>
 
@@ -55,20 +55,16 @@
 
     <!-- Konfiguration für die Zeichenkodierung (optional, aber empfohlen) -->
     <filter>
-        <filter-name>CharacterEncodingFilter</filter-name>
-        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>jakarta.servlet.FilterChain</filter-class>
         <init-param>
-            <param-name>encoding</param-name>
+            <param-name>requestEncoding</param-name>
             <param-value>UTF-8</param-value>
-        </init-param>
-        <init-param>
-            <param-name>forceEncoding</param-name>
-            <param-value>true</param-value>
         </init-param>
     </filter>
 
     <filter-mapping>
-        <filter-name>CharacterEncodingFilter</filter-name>
+        <filter-name>encodingFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
