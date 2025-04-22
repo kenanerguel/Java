@@ -10,11 +10,18 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 @Named
 @SessionScoped
 public class CurrentUser implements Serializable {
 
+    private static final Logger LOGGER = Logger.getLogger(CurrentUser.class.getName());
+    
+    @Inject
+    private EntityManagerProvider entityManagerProvider;
+    
     private UserDAO userDAO;
     private User user = null;
 
@@ -26,7 +33,12 @@ public class CurrentUser implements Serializable {
     
     @Inject
     public void setUserDAO(EntityManagerProvider entityManagerProvider) {
-        this.userDAO = new UserDAO(entityManagerProvider);
+        try {
+            this.userDAO = new UserDAO(entityManagerProvider);
+            LOGGER.info("UserDAO erfolgreich initialisiert");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler beim Initialisieren des UserDAO", e);
+        }
     }
 
     /**

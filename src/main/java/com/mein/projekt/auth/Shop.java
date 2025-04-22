@@ -16,18 +16,23 @@ import java.util.regex.Pattern;
 import com.mein.projekt.dao.ArtikelDAO;
 import com.mein.projekt.model.Artikel;
 import jakarta.annotation.PostConstruct;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Named("shop")
 @SessionScoped
 public class Shop implements Serializable {
 
-    private EntityManagerProvider provider = new EntityManagerProvider();
+    private static final Logger LOGGER = Logger.getLogger(Shop.class.getName());
+    
     @Inject
+    private EntityManagerProvider entityManagerProvider;
+    
     private ArtikelDAO artikelDAO;
-
+    
     private List<String> countries;
     private String selectedCountry;
-    private Artikel aktuellerArtikel;
+    private Artikel currentArtikel;
 
     public List<Artikel> getSortiment() {
         return baseSortiment;
@@ -40,75 +45,81 @@ public class Shop implements Serializable {
     });
 
     public Shop() {
+        // Leerer Konstruktor für CDI
     }
-
-    @PostConstruct
-    public void init() {
-        System.out.println("Initialisiere Shop...");
-        countries = artikelDAO.getAllCountries();
-        System.out.println("Verfügbare Länder: " + countries);
-    }
-
-    public void onCountryChange() {
-        System.out.println("Land geändert zu: " + selectedCountry);
-        if (selectedCountry != null && !selectedCountry.isEmpty()) {
-            aktuellerArtikel = artikelDAO.getAktuellerArtikelByLand(selectedCountry);
-            if (aktuellerArtikel != null) {
-                System.out.println("Gefundene Daten: CO2=" + aktuellerArtikel.getCo2Ausstoss() + 
-                                 " " + aktuellerArtikel.getEinheit() + 
-                                 ", Jahr=" + aktuellerArtikel.getJahr());
-            } else {
-                System.out.println("Keine Daten gefunden für: " + selectedCountry);
-            }
-        } else {
-            System.out.println("Kein Land ausgewählt");
-            aktuellerArtikel = null;
+    
+    @Inject
+    public void setArtikelDAO(EntityManagerProvider entityManagerProvider) {
+        try {
+            this.artikelDAO = new ArtikelDAO(entityManagerProvider);
+            LOGGER.info("ArtikelDAO erfolgreich initialisiert");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler beim Initialisieren des ArtikelDAO", e);
         }
     }
 
-    public void handleArtikel(Artikel artikel, CurrentUser user) {
-        System.out.println("Speichere neuen Artikel: Land=" + artikel.getLand() + 
-                         ", Jahr=" + artikel.getJahr() + 
-                         ", CO2=" + artikel.getCo2Ausstoss());
-        
+    public List<String> getCountries() {
+        if (countries == null) {
+            initCountries();
+        }
+        return countries;
+    }
+    
+    private void initCountries() {
         try {
-            artikel.setUser(user.getUser());
-            artikel.setStatus("approved"); // Stelle sicher, dass der Status gesetzt ist
-            
-            // Starte eine neue Transaktion
-            var transaction = provider.getEntityManager().getTransaction();
-            transaction.begin();
-            
-            try {
-                artikelDAO.persist(artikel);
-                transaction.commit();
-                System.out.println("Artikel erfolgreich gespeichert");
-            } catch (Exception e) {
-                if (transaction.isActive()) {
-                    transaction.rollback();
-                }
-                System.err.println("Fehler beim Speichern des Artikels: " + e.getMessage());
-                e.printStackTrace();
-                throw e;
-            }
+            countries = artikelDAO.getAllCountries();
+            LOGGER.info("Länder erfolgreich geladen: " + countries.size());
         } catch (Exception e) {
-            System.err.println("Allgemeiner Fehler in handleArtikel: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
+            countries = new ArrayList<>();
+            LOGGER.log(Level.SEVERE, "Fehler beim Laden der Länder", e);
+        }
+    }
+
+    public void onCountryChange() {
+        if (selectedCountry != null && !selectedCountry.isEmpty()) {
+            try {
+                LOGGER.info("Lade Artikel für Land: " + selectedCountry);
+                currentArtikel = artikelDAO.getAktuellerArtikelByLand(selectedCountry);
+                if (currentArtikel != null) {
+                    LOGGER.info("Artikel gefunden: " + currentArtikel.getCo2Ausstoss() + " für " + selectedCountry);
+                } else {
+                    LOGGER.warning("Kein Artikel für Land gefunden: " + selectedCountry);
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Fehler beim Laden des Artikels für Land: " + selectedCountry, e);
+                currentArtikel = null;
+            }
+        } else {
+            currentArtikel = null;
+        }
+    }
+    
+    public String getSelectedCountry() {
+        return selectedCountry;
+    }
+
+    public void setSelectedCountry(String selectedCountry) {
+        this.selectedCountry = selectedCountry;
+    }
+
+    public Artikel getCurrentArtikel() {
+        return currentArtikel;
+    }
+
+    /**
+     * Handhabt das Speichern eines neuen Artikels von einem Benutzer.
+     */
+    public void handleArtikel(Artikel artikel, User user) {
+        try {
+            LOGGER.info("Speichere Artikel für " + artikel.getLand() + " mit CO2: " + artikel.getCo2Ausstoss());
+            artikelDAO.persistArtikel(artikel, user);
+            LOGGER.info("Artikel erfolgreich gespeichert");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler beim Speichern des Artikels", e);
         }
     }
 
     public List<Number> handleLatestValues(String country) {
         return artikelDAO.getLatestValues(country);
     }
-
-    // Getter & Setter
-    public List<String> getCountries() { return countries; }
-    public void setCountries(List<String> countries) { this.countries = countries; }
-    
-    public String getSelectedCountry() { return selectedCountry; }
-    public void setSelectedCountry(String selectedCountry) { this.selectedCountry = selectedCountry; }
-    
-    public Artikel getAktuellerArtikel() { return aktuellerArtikel; }
-    public void setAktuellerArtikel(Artikel aktuellerArtikel) { this.aktuellerArtikel = aktuellerArtikel; }
 }

@@ -16,28 +16,30 @@ import java.util.ArrayList;
 })
 public class Artikel implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int nr;
+    private Long id;
+
+    @Column(name = "beschreibung")
+    private String beschreibung;
 
     @Column(name = "land", nullable = false)
     private String land;
-    
-    @Column(name = "jahr", nullable = false)
-    private int jahr;
-    
-    @Column(name = "co2ausstoss", nullable = false)
-    private double co2Ausstoss;
-    
-    @Column(name = "einheit", nullable = false)
-    private String einheit;
-    
-    @Column(name = "beschreibung", length = 1000)
-    private String beschreibung;
-    
-    @Column(name = "status", nullable = false)
-    private String status = "pending"; // pending, approved, rejected
 
+    @Column(name = "status", nullable = false)
+    private String status;
+
+    @Column(name = "jahr", nullable = false)
+    private Integer jahr;
+
+    @Column(name = "co2ausstoss", nullable = false)
+    private Double co2Ausstoss;
+    
+    @Column(name = "einheit")
+    private String einheit = "Tonnen";
+    
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -49,35 +51,38 @@ public class Artikel implements Serializable {
     @OneToMany(mappedBy = "artikel", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Bewertung> bewertungen = new ArrayList<>();
 
-    public Artikel() {}
-
-    public Artikel(String land, int jahr, double co2Ausstoss, String einheit, String beschreibung) {
+    public Artikel() {
+        this.status = "pending";
+        this.erstelltAm = new Date();
+    }
+    
+    public Artikel(String land, Double co2Ausstoss, String beschreibung, Integer jahr) {
         this.land = land;
-        this.jahr = jahr;
         this.co2Ausstoss = co2Ausstoss;
-        this.einheit = einheit;
         this.beschreibung = beschreibung;
+        this.jahr = jahr;
+        this.status = "pending";
         this.erstelltAm = new Date();
     }
 
     // Getter & Setter
-    public int getNr() { return nr; }
-    public void setNr(int nr) { this.nr = nr; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public String getBeschreibung() { return beschreibung; }
+    public void setBeschreibung(String beschreibung) { this.beschreibung = beschreibung; }
     
     public String getLand() { return land; }
     public void setLand(String land) { this.land = land; }
     
-    public int getJahr() { return jahr; }
-    public void setJahr(int jahr) { this.jahr = jahr; }
+    public Integer getJahr() { return jahr; }
+    public void setJahr(Integer jahr) { this.jahr = jahr; }
     
-    public double getCo2Ausstoss() { return co2Ausstoss; }
-    public void setCo2Ausstoss(double co2Ausstoss) { this.co2Ausstoss = co2Ausstoss; }
+    public Double getCo2Ausstoss() { return co2Ausstoss; }
+    public void setCo2Ausstoss(Double co2Ausstoss) { this.co2Ausstoss = co2Ausstoss; }
     
     public String getEinheit() { return einheit; }
     public void setEinheit(String einheit) { this.einheit = einheit; }
-    
-    public String getBeschreibung() { return beschreibung; }
-    public void setBeschreibung(String beschreibung) { this.beschreibung = beschreibung; }
     
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
