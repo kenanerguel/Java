@@ -60,18 +60,6 @@ public class Artikel implements Serializable {
         this.erstelltAm = new Date();
     }
 
-    public Artikel getAktuellerArtikelByLand(String land) {
-        try {
-            return em.createQuery(
-                            "SELECT a FROM Artikel a WHERE a.land = :land ORDER BY a.verfuegbarAb DESC", Artikel.class)
-                    .setParameter("land", land)
-                    .setMaxResults(1)
-                    .getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
-
     // Getter & Setter
     public int getNr() { return nr; }
     public void setNr(int nr) { this.nr = nr; }
