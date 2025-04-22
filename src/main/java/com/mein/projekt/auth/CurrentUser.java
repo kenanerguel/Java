@@ -4,6 +4,7 @@ import com.mein.projekt.dao.UserDAO;
 import com.mein.projekt.model.User;
 import com.mein.projekt.util.EntityManagerProvider;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
@@ -14,13 +15,17 @@ import java.util.Base64;
 @SessionScoped
 public class CurrentUser implements Serializable {
 
-    private final UserDAO userDAO;
+    private UserDAO userDAO;
     private User user = null;
 
     private static final String salt = "vXsia8c04PhBtnG3isvjlemj7Bm6rAhBR8JRkf2z";
-
+    
     public CurrentUser() {
-        EntityManagerProvider entityManagerProvider = new EntityManagerProvider();
+        // Leerer Konstruktor für CDI
+    }
+    
+    @Inject
+    public void setUserDAO(EntityManagerProvider entityManagerProvider) {
         this.userDAO = new UserDAO(entityManagerProvider);
     }
 
