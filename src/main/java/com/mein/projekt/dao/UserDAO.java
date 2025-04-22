@@ -7,32 +7,59 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Named
 @ApplicationScoped
 public class UserDAO {
 
-    private final EntityManager entityManager;
+    private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
+    
+    private EntityManager entityManager;
+    private EntityManagerProvider entityManagerProvider;
 
+    // Standardkonstruktor für CDI
+    public UserDAO() {
+        LOGGER.info("UserDAO wurde mit Standard-Konstruktor erstellt");
+    }
+    
     @Inject
     public UserDAO(EntityManagerProvider entityManagerProvider) {
-        this.entityManager = entityManagerProvider.getEntityManager();
+        this.setEntityManagerProvider(entityManagerProvider);
+        LOGGER.info("UserDAO wurde mit EntityManagerProvider erstellt");
+    }
+    
+    public void setEntityManagerProvider(EntityManagerProvider provider) {
+        try {
+            this.entityManagerProvider = provider;
+            this.entityManager = provider.getEntityManager();
+            LOGGER.info("EntityManager erfolgreich gesetzt");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler beim Setzen des EntityManagers", e);
+        }
     }
 
     /**
      * Speichert einen neuen Benutzer in der Datenbank.
      */
     public void saveUser(User user) {
+        if (entityManager == null) {
+            LOGGER.severe("EntityManager ist null - konnte nicht initialisiert werden");
+            return;
+        }
+        
         EntityTransaction transaction = entityManager.getTransaction();
         try {
             transaction.begin();
             entityManager.persist(user);
             transaction.commit();
+            LOGGER.info("Benutzer " + user.getUsername() + " erfolgreich gespeichert");
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Fehler beim Speichern des Benutzers", e);
         }
     }
 
@@ -44,7 +71,13 @@ public class UserDAO {
      * Überprüft, ob ein Benutzer Admin oder Client ist.
      */
     public User isAdminOrClient(String username, String password) {
+        if (entityManager == null) {
+            LOGGER.severe("EntityManager ist null - konnte nicht initialisiert werden");
+            return null;
+        }
+        
         try {
+            LOGGER.info("Suche Benutzer mit Username: " + username);
             User user = entityManager.createQuery(
                             "SELECT u FROM User u WHERE u.username = :uname AND u.password = :pwd",
                             User.class)
@@ -53,9 +86,10 @@ public class UserDAO {
                     .getSingleResult();
 
             // Falls user != null, gib zurück, ob er Admin ist.
+            LOGGER.info("Benutzer gefunden: " + username + ", ist Admin: " + user.isAdmin());
             return user;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "Kein Benutzer gefunden oder Fehler bei der Suche", e);
             return null;  // Falls kein Nutzer gefunden oder Fehler
         }
     }

@@ -18,23 +18,25 @@ import java.util.logging.Level;
 public class CurrentUser implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger(CurrentUser.class.getName());
+    private static final String salt = "vXsia8c04PhBtnG3isvjlemj7Bm6rAhBR8JRkf2z";
     
     @Inject
     private EntityManagerProvider entityManagerProvider;
     
     private UserDAO userDAO;
     private User user = null;
-
-    private static final String salt = "vXsia8c04PhBtnG3isvjlemj7Bm6rAhBR8JRkf2z";
     
     public CurrentUser() {
         // Leerer Konstruktor für CDI
+        LOGGER.info("CurrentUser wurde erstellt");
     }
     
     @Inject
-    public void setUserDAO(EntityManagerProvider entityManagerProvider) {
+    public void init(EntityManagerProvider entityManagerProvider) {
         try {
-            this.userDAO = new UserDAO(entityManagerProvider);
+            LOGGER.info("Initialisiere UserDAO");
+            this.userDAO = new UserDAO();
+            this.userDAO.setEntityManagerProvider(entityManagerProvider);
             LOGGER.info("UserDAO erfolgreich initialisiert");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Initialisieren des UserDAO", e);
@@ -45,6 +47,12 @@ public class CurrentUser implements Serializable {
      * Handhabt die Authentifizierung eines Benutzers anhand von Benutzername und Passwort.
      */
     public void handleUser(String username, String password) {
+        if (userDAO == null) {
+            LOGGER.severe("UserDAO ist null. Initialisiere es jetzt...");
+            this.userDAO = new UserDAO();
+            this.userDAO.setEntityManagerProvider(entityManagerProvider);
+        }
+        
         String passHash = hashPassword(username, password, salt);
         user = userDAO.isAdminOrClient(username, passHash);
     }
@@ -59,6 +67,9 @@ public class CurrentUser implements Serializable {
     /**
      * Setzt den Benutzerstatus zurück (z. B. beim Logout).
      */
+    public void reset() {
+        this.user = null;
+    }
 
     private static String hashPassword(String name, String pass, String salt) {
         try {
@@ -68,11 +79,6 @@ public class CurrentUser implements Serializable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-
-    public void reset() {
-        this.user = null;
     }
 
     public User getUser() {
