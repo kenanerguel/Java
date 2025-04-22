@@ -16,12 +16,17 @@ import java.util.regex.Pattern;
 import com.mein.projekt.dao.ArtikelDAO;
 import com.mein.projekt.model.Artikel;
 
-@Named
+@Named("shop")
 @SessionScoped
 public class Shop implements Serializable {
 
     private EntityManagerProvider provider = new EntityManagerProvider();
-    private ArtikelDAO artikelDAO = new ArtikelDAO(provider);
+    @Inject
+    private ArtikelDAO artikelDAO;
+
+    private List<String> countries;
+    private String selectedCountry;
+    private Artikel aktuellerArtikel;
 
     public List<Artikel> getSortiment() {
         return baseSortiment;
@@ -36,8 +41,24 @@ public class Shop implements Serializable {
     public Shop() {
     }
 
-    public List<String> getCountries() {
-        return artikelDAO.getAllCountries();
+    public void init() {
+        countries = artikelDAO.getAllCountries();
+        System.out.println("Verfügbare Länder: " + countries);
+    }
+
+    public void onCountryChange() {
+        System.out.println("Land geändert zu: " + selectedCountry);
+        if (selectedCountry != null && !selectedCountry.isEmpty()) {
+            aktuellerArtikel = artikelDAO.getAktuellerArtikelByLand(selectedCountry);
+            if (aktuellerArtikel != null) {
+                System.out.println("Gefundene Daten: CO2=" + aktuellerArtikel.getCo2Ausstoss() + 
+                                 ", Jahr=" + aktuellerArtikel.getJahr());
+            } else {
+                System.out.println("Keine Daten gefunden für: " + selectedCountry);
+            }
+        } else {
+            aktuellerArtikel = null;
+        }
     }
 
     public void handleArtikel(Artikel artikel, CurrentUser user) {
@@ -75,4 +96,14 @@ public class Shop implements Serializable {
     public List<Number> handleLatestValues(String country) {
         return artikelDAO.getLatestValues(country);
     }
+
+    // Getter & Setter
+    public List<String> getCountries() { return countries; }
+    public void setCountries(List<String> countries) { this.countries = countries; }
+    
+    public String getSelectedCountry() { return selectedCountry; }
+    public void setSelectedCountry(String selectedCountry) { this.selectedCountry = selectedCountry; }
+    
+    public Artikel getAktuellerArtikel() { return aktuellerArtikel; }
+    public void setAktuellerArtikel(Artikel aktuellerArtikel) { this.aktuellerArtikel = aktuellerArtikel; }
 }

@@ -159,4 +159,18 @@ public class ArtikelDAO {
             return List.of(-1.0, -1);
         }
     }
+
+    public Artikel getAktuellerArtikelByLand(String land) {
+        System.out.println("Suche nach aktuellen Daten für Land: " + land);
+        try {
+            return entityManager.createQuery(
+                "SELECT a FROM Artikel a WHERE a.land = :land ORDER BY a.jahr DESC", Artikel.class)
+                .setParameter("land", land)
+                .setMaxResults(1)
+                .getSingleResult();
+        } catch (Exception e) {
+            System.out.println("Keine Daten gefunden für Land: " + land);
+            return null;
+        }
+    }
 }

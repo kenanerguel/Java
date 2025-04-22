@@ -37,18 +37,20 @@
                 <h:form id="co2Form">
                     <h:panelGrid columns="1" cellpadding="10">
                         <h:outputText value="Wähle dein Land aus:" style="font-weight:bold;" />
-                        <p:selectOneMenu value="#{mainController.selectedCountry}" style="width:300px; height: 50px" panelStyle="width:300px;" scrollHeight="200">
-                            <f:selectItems value="#{mainController.countries}" var="c"
+                        <p:selectOneMenu value="#{shop.selectedCountry}" style="width:300px; height: 50px" panelStyle="width:300px;" scrollHeight="200">
+                            <f:selectItem itemLabel="-- Land wählen --" itemValue="" />
+                            <f:selectItems value="#{shop.countries}" var="c"
                                            itemValue="#{c}" itemLabel="#{c}" />
-                            <p:ajax event="change" listener="#{mainController.onCountryChange}" update="co2Output" />
+                            <p:ajax listener="#{shop.onCountryChange}" update="co2output"/>
                         </p:selectOneMenu>
-                        <p:outputPanel id="co2Output" style="margin-top:10px;">
-                            <h:panelGrid columns="1" rendered="#{mainController.latestYear != -1}">
-                                <h:outputText value="Aktueller CO₂-Ausstoß: #{mainController.latestCO2} #{mainController.einheitInput}" style="font-weight: bold;"/>
-                                <h:outputText value="Jahr: #{mainController.latestYear}"/>
-                            </h:panelGrid>
-                            <h:outputText value="Keine Daten verfügbar" rendered="#{mainController.latestYear == -1}" style="color: red;"/>
-                        </p:outputPanel>
+                        <h:panelGroup id="co2output">
+                            <h:outputText rendered="#{not empty shop.aktuellerArtikel}"
+                                value="Aktueller CO₂-Ausstoß: #{shop.aktuellerArtikel.co2Ausstoss} #{shop.aktuellerArtikel.einheit} (Stand: #{shop.aktuellerArtikel.jahr})"
+                                style="font-weight: bold;"/>
+                            <h:outputText rendered="#{empty shop.aktuellerArtikel}"
+                                value="Keine Daten vorhanden."
+                                style="color: red;"/>
+                        </h:panelGroup>
                     </h:panelGrid>
                 </h:form>
             </p:panel>
