@@ -91,8 +91,21 @@ public class User {
         userDAO.saveUser(scientist2);
 
         // Artikel anlegen
-        Artikel artikel1 = new Artikel("Japan", 2023, 8.5, "t", "CO₂-Ausstoß pro Kopf");
-        Artikel artikel2 = new Artikel("Brasilien", 2023, 5.4, "t", "CO₂-Ausstoß pro Kopf");
+        Artikel artikel1 = new Artikel();
+        artikel1.setLand("Japan");
+        artikel1.setJahr(2023);
+        artikel1.setCo2Ausstoss(8.5);
+        artikel1.setEinheit("t");
+        artikel1.setBeschreibung("CO₂-Ausstoß pro Kopf");
+        artikel1.setStatus("approved");
+
+        Artikel artikel2 = new Artikel();
+        artikel2.setLand("Brasilien");
+        artikel2.setJahr(2023); 
+        artikel2.setCo2Ausstoss(5.4);
+        artikel2.setEinheit("t");
+        artikel2.setBeschreibung("CO₂-Ausstoß pro Kopf");
+        artikel2.setStatus("approved");
 
         artikel1.setUser(admin);
         artikel2.setUser(scientist1);
