@@ -44,10 +44,10 @@
                             <p:ajax listener="#{shop.onCountryChange}" update="co2output"/>
                         </p:selectOneMenu>
                         <h:panelGroup id="co2output">
-                            <h:outputText rendered="#{not empty shop.aktuellerArtikel}"
-                                value="Aktueller CO₂-Ausstoß: #{shop.aktuellerArtikel.co2Ausstoss} #{shop.aktuellerArtikel.einheit} (Stand: #{shop.aktuellerArtikel.jahr})"
+                            <h:outputText rendered="#{not empty shop.currentArtikel}"
+                                value="Aktueller CO₂-Ausstoß: #{shop.currentArtikel.co2Ausstoss} #{shop.currentArtikel.einheit} (Stand: #{shop.currentArtikel.jahr})"
                                 style="font-weight: bold;"/>
-                            <h:outputText rendered="#{empty shop.aktuellerArtikel}"
+                            <h:outputText rendered="#{empty shop.currentArtikel}"
                                 value="Keine Daten vorhanden."
                                 style="color: red;"/>
                         </h:panelGroup>
