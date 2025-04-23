@@ -120,11 +120,49 @@ public class Shop implements Serializable {
         try {
             LOGGER.info("Speichere Artikel für " + artikel.getLand() + " mit CO2: " + artikel.getCo2Ausstoss());
             artikel.setUser(user);
-            artikel.setStatus("approved");
             artikelDAO.saveArtikel(artikel);
             LOGGER.info("Artikel erfolgreich gespeichert");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Speichern des Artikels", e);
+        }
+    }
+
+    /**
+     * Aktualisiert einen bestehenden Artikel.
+     */
+    public void updateArtikel(Artikel artikel) {
+        try {
+            LOGGER.info("Aktualisiere Artikel für " + artikel.getLand() + " mit Status: " + artikel.getStatus());
+            artikelDAO.updateArtikel(artikel);
+            LOGGER.info("Artikel erfolgreich aktualisiert");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler beim Aktualisieren des Artikels", e);
+        }
+    }
+
+    /**
+     * Holt alle ausstehenden Artikel.
+     */
+    public List<Artikel> getPendingArtikel() {
+        try {
+            LOGGER.info("Hole ausstehende Artikel");
+            return artikelDAO.getPendingArtikel();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler beim Laden der ausstehenden Artikel", e);
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Holt alle Artikel eines bestimmten Benutzers.
+     */
+    public List<Artikel> getArtikelByUser(User user) {
+        try {
+            LOGGER.info("Hole Artikel für Benutzer: " + user.getUsername());
+            return artikelDAO.getArtikelByUser(user);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler beim Laden der Artikel für Benutzer: " + user.getUsername(), e);
+            return new ArrayList<>();
         }
     }
 

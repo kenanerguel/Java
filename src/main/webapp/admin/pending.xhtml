@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Ausstehende CO₂-Daten</title>
+</h:head>
+<h:body>
+    <h:form id="pendingForm">
+        <p:panel header="Ausstehende CO₂-Daten zur Genehmigung">
+            <p:dataTable id="pendingTable" value="#{mainController.pendingArtikel}" var="artikel"
+                        emptyMessage="Keine ausstehenden Daten vorhanden">
+                
+                <p:column headerText="Land">
+                    <h:outputText value="#{artikel.land}" />
+                </p:column>
+                
+                <p:column headerText="Jahr">
+                    <h:outputText value="#{artikel.jahr}" />
+                </p:column>
+                
+                <p:column headerText="CO₂-Ausstoß">
+                    <h:outputText value="#{artikel.co2Ausstoss}" />
+                </p:column>
+                
+                <p:column headerText="Einheit">
+                    <h:outputText value="#{artikel.einheit}" />
+                </p:column>
+                
+                <p:column headerText="Wissenschaftler">
+                    <h:outputText value="#{artikel.beschreibung}" />
+                </p:column>
+                
+                <p:column headerText="Eingereicht am">
+                    <h:outputText value="#{artikel.erstelltAm}">
+                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Aktionen">
+                    <p:commandButton value="Genehmigen" 
+                                   action="#{mainController.handleApproval(artikel, true)}"
+                                   update="pendingTable messages"
+                                   styleClass="ui-button-success"
+                                   style="margin-right: 5px;">
+                    </p:commandButton>
+                    
+                    <p:commandButton value="Ablehnen" 
+                                   onclick="PF('rejectDialog').show();"
+                                   styleClass="ui-button-danger">
+                        <f:setPropertyActionListener value="#{artikel}" 
+                                                   target="#{mainController.selectedArtikel}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+            
+            <p:messages id="messages" showDetail="true" closable="true" />
+        </p:panel>
+    </h:form>
+    
+    <!-- Dialog für Ablehnungsbegründung -->
+    <p:dialog header="Begründung der Ablehnung" widgetVar="rejectDialog" modal="true" width="500">
+        <h:form id="rejectForm">
+            <p:inputTextarea value="#{mainController.rejectionReason}" 
+                           rows="5" style="width: 100%" placeholder="Bitte geben Sie eine Begründung ein"/>
+            
+            <p:commandButton value="Ablehnen" 
+                           action="#{mainController.handleRejection}"
+                           oncomplete="if (!args.validationFailed) PF('rejectDialog').hide()"
+                           update=":pendingForm:pendingTable :pendingForm:messages"
+                           style="margin-top: 10px"/>
+        </h:form>
+    </p:dialog>
+</h:body>
+</html> 

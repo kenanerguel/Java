@@ -14,9 +14,11 @@ import jakarta.persistence.TypedQuery;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 
 import com.mein.projekt.model.Artikel;
 import com.mein.projekt.auth.Shop;
+import com.mein.projekt.model.User;
 
 @Named
 @ApplicationScoped
@@ -143,6 +145,44 @@ public class ArtikelDAO {
                 transaction.rollback();
             }
             e.printStackTrace();
+        }
+    }
+
+    public void updateArtikel(Artikel artikel) {
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager.merge(artikel);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    public List<Artikel> getPendingArtikel() {
+        try {
+            return entityManager.createQuery(
+                "SELECT a FROM Artikel a WHERE a.status = 'pending' ORDER BY a.erstelltAm DESC", 
+                Artikel.class).getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Artikel> getArtikelByUser(User user) {
+        try {
+            return entityManager.createQuery(
+                "SELECT a FROM Artikel a WHERE a.user = :user ORDER BY a.erstelltAm DESC", 
+                Artikel.class)
+                .setParameter("user", user)
+                .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 

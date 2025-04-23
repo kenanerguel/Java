@@ -40,6 +40,10 @@ public class MainController implements Serializable {
     private double latestCO2;
     private int latestYear;
     private List<String> countries;
+    
+    // Neue Felder für Artikel-Verwaltung
+    private Artikel selectedArtikel;
+    private String rejectionReason;
 
     @PostConstruct
     public void init() {
@@ -59,7 +63,11 @@ public class MainController implements Serializable {
         }
 
         failureMessage = "";
-        return "backoffice.xhtml?faces-redirect=true";
+        if (currentUser.getUser().isAdmin()) {
+            return "admin/pending.xhtml?faces-redirect=true";
+        } else {
+            return "backoffice.xhtml?faces-redirect=true";
+        }
     }
 
     // CO₂-Daten speichern
@@ -70,7 +78,14 @@ public class MainController implements Serializable {
         newArtikel.setCo2Ausstoss(co2AusstossInput);
         newArtikel.setEinheit(einheitInput);
         newArtikel.setBeschreibung(beschreibungInput);
-        newArtikel.setStatus("approved");
+        
+        // Status basierend auf Benutzerrolle setzen
+        if (currentUser.getUser().isAdmin()) {
+            newArtikel.setStatus("approved");
+        } else {
+            newArtikel.setStatus("pending");
+        }
+        
         shop.handleArtikel(newArtikel, currentUser.getUser());
         
         // Felder zurücksetzen
@@ -80,8 +95,52 @@ public class MainController implements Serializable {
         einheitInput = null;
         beschreibungInput = null;
         
+        String message = currentUser.getUser().isAdmin() ? 
+            "CO₂-Daten wurden erfolgreich gespeichert." :
+            "CO₂-Daten wurden erfolgreich zur Überprüfung eingereicht.";
+            
         FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Erfolg", "CO₂-Daten wurden erfolgreich gespeichert."));
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Erfolg", message));
+    }
+
+    // Neue Methode für Admin-Genehmigungen
+    public void handleApproval(Artikel artikel, boolean approved) {
+        artikel.setStatus(approved ? "approved" : "rejected");
+        shop.updateArtikel(artikel);
+        
+        String message = approved ? 
+            "Artikel wurde genehmigt." :
+            "Artikel wurde abgelehnt.";
+            
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Erfolg", message));
+    }
+    
+    // Neue Methode für Ablehnungen mit Begründung
+    public void handleRejection() {
+        if (selectedArtikel != null) {
+            selectedArtikel.setStatus("rejected");
+            selectedArtikel.setBeschreibung(selectedArtikel.getBeschreibung() + 
+                "\n\nAbgelehnt mit Begründung: " + rejectionReason);
+            shop.updateArtikel(selectedArtikel);
+            
+            // Felder zurücksetzen
+            selectedArtikel = null;
+            rejectionReason = null;
+            
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Erfolg", "Artikel wurde abgelehnt."));
+        }
+    }
+    
+    // Methode um ausstehende Artikel zu laden
+    public List<Artikel> getPendingArtikel() {
+        return shop.getPendingArtikel();
+    }
+    
+    // Methode um Artikel eines Wissenschaftlers zu laden
+    public List<Artikel> getMyArtikel() {
+        return shop.getArtikelByUser(currentUser.getUser());
     }
 
     public void onCountryChange() {
@@ -132,4 +191,11 @@ public class MainController implements Serializable {
     
     public List<String> getCountries() { return countries; }
     public List<String> getAvailableCountries() { return Arrays.asList("Deutschland", "Frankreich", "USA", "China", "Japan", "Indien", "Brasilien", "Russland"); }
+    
+    // Neue Getter & Setter
+    public Artikel getSelectedArtikel() { return selectedArtikel; }
+    public void setSelectedArtikel(Artikel selectedArtikel) { this.selectedArtikel = selectedArtikel; }
+    
+    public String getRejectionReason() { return rejectionReason; }
+    public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
 }
