@@ -29,7 +29,7 @@
                 </p:column>
                 
                 <p:column headerText="Wissenschaftler">
-                    <h:outputText value="#{artikel.beschreibung}" />
+                    <h:outputText value="#{artikel.user.username}" />
                 </p:column>
                 
                 <p:column headerText="Eingereicht am">
@@ -41,10 +41,9 @@
                 <p:column headerText="Aktionen">
                     <p:commandButton value="Genehmigen" 
                                    action="#{mainController.handleApproval(artikel, true)}"
-                                   update="pendingTable messages"
+                                   update=":pendingForm:pendingTable :pendingForm:meldungen"
                                    styleClass="ui-button-success"
-                                   style="margin-right: 5px;">
-                    </p:commandButton>
+                                   style="margin-right: 5px;" />
                     
                     <p:commandButton value="Ablehnen" 
                                    onclick="PF('rejectDialog').show();"
@@ -55,7 +54,7 @@
                 </p:column>
             </p:dataTable>
             
-            <p:messages id="messages" showDetail="true" closable="true" />
+            <p:messages id="meldungen" showDetail="true" closable="true" />
         </p:panel>
     </h:form>
     
@@ -68,7 +67,7 @@
             <p:commandButton value="Ablehnen" 
                            action="#{mainController.handleRejection}"
                            oncomplete="if (!args.validationFailed) PF('rejectDialog').hide()"
-                           update=":pendingForm:pendingTable :pendingForm:messages"
+                           update=":pendingForm:pendingTable :pendingForm:meldungen"
                            style="margin-top: 10px"/>
         </h:form>
     </p:dialog>
