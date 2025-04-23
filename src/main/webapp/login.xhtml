@@ -4,59 +4,87 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 <h:head>
-    <h:outputStylesheet name="/css/style.css" />
+    <title>CO₂-Daten Portal</title>
+    <style type="text/css">
+        .data-panel {
+            margin: 20px;
+            padding: 20px;
+        }
+        .latest-data {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .data-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2196F3;
+        }
+        .data-date {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .login-panel {
+            margin: 20px;
+            width: 400px;
+            float: right;
+        }
+    </style>
 </h:head>
 <h:body>
+    <div class="login-panel">
+        <h:form id="loginForm">
+            <p:panel header="Login">
+                <h:panelGrid columns="2" cellpadding="5">
+                    <p:outputLabel for="username" value="Benutzer:" />
+                    <p:inputText id="username" value="#{mainController.userInput}" required="true" />
 
-    <!-- Gesamter Container mit relativer Positionierung -->
-    <h:panelGroup layout="block" style="position: relative; width: 100%; min-height: 600px;">
-
-        <!-- Login-Panel oben rechts -->
-        <h:panelGroup layout="block" style="position: absolute; top: 20px; right: 60px; width: 520px;">
-            <h:form id="loginForm">
-                <p:panel header="Login" style="width: 100%;">
-                    <h:panelGrid columns="2" cellpadding="10">
-                        <h:outputLabel for="username" value="User:" />
-                        <p:inputText id="username" value="#{mainController.userInput}" required="true" />
-
-                        <h:outputLabel for="password" value="Passwort:" />
-                        <p:password id="password" value="#{mainController.passwordInput}" required="true" />
-                    </h:panelGrid>
-                    <p:commandButton value="Einloggen"
-                                     action="#{mainController.login}"
-                                     update="loginForm messages"
-                                     style="margin-top:10px;" />
-                    <p:messages id="messages" autoUpdate="true" />
-                </p:panel>
-            </h:form>
-        </h:panelGroup>
-
-        <!-- Hauptbereich für CO₂-Daten -->
-        <h:panelGroup layout="block" style="margin: 0 auto; padding: 20px; max-width: 800px;">
-            <p:panel header="Öffentlicher CO₂-Bereich" style="width: 100%;">
-                <h:form id="co2Form">
-                    <h:panelGrid columns="1" cellpadding="10">
-                        <h:outputText value="Wähle dein Land aus:" style="font-weight:bold;" />
-                        <p:selectOneMenu value="#{shop.selectedCountry}" style="width:300px; height: 50px" panelStyle="width:300px;" scrollHeight="200">
-                            <f:selectItem itemLabel="-- Land wählen --" itemValue="" />
-                            <f:selectItems value="#{shop.countries}" var="c"
-                                           itemValue="#{c}" itemLabel="#{c}" />
-                            <p:ajax listener="#{shop.onCountryChange}" update="co2output"/>
-                        </p:selectOneMenu>
-                        <h:panelGroup id="co2output">
-                            <h:outputText rendered="#{not empty shop.currentArtikel}"
-                                value="Aktueller CO₂-Ausstoß: #{shop.currentArtikel.co2Ausstoss} #{shop.currentArtikel.einheit} (Stand: #{shop.currentArtikel.jahr})"
-                                style="font-weight: bold;"/>
-                            <h:outputText rendered="#{empty shop.currentArtikel}"
-                                value="Keine Daten vorhanden."
-                                style="color: red;"/>
-                        </h:panelGroup>
-                    </h:panelGrid>
-                </h:form>
+                    <p:outputLabel for="password" value="Passwort:" />
+                    <p:password id="password" value="#{mainController.passwordInput}" required="true" />
+                </h:panelGrid>
+                <p:commandButton value="Einloggen"
+                               action="#{mainController.login}"
+                               update="loginForm messages"
+                               style="margin-top:10px;" />
+                <p:messages id="messages" showDetail="true" closable="true" />
             </p:panel>
-        </h:panelGroup>
+        </h:form>
+    </div>
 
+    <div class="data-panel">
+        <p:panel header="Aktuelle CO₂-Daten">
+            <h:form id="co2Form">
+                <p:selectOneMenu value="#{shop.selectedCountry}" style="width:300px">
+                    <f:selectItem itemLabel="-- Land auswählen --" itemValue="" />
+                    <f:selectItems value="#{shop.countries}" />
+                    <p:ajax listener="#{shop.onCountryChange}" update="co2output" />
+                </p:selectOneMenu>
 
-    </h:panelGroup>
+                <h:panelGroup id="co2output" styleClass="latest-data">
+                    <h:panelGroup rendered="#{not empty shop.currentArtikel}">
+                        <div>
+                            <h3>#{shop.currentArtikel.land}</h3>
+                            <p class="data-value">
+                                CO₂-Ausstoß: #{shop.currentArtikel.co2Ausstoss} #{shop.currentArtikel.einheit}
+                            </p>
+                            <p class="data-date">
+                                Stand: #{shop.currentArtikel.jahr}
+                                <h:outputText value=" (Aktualisiert am: #{shop.currentArtikel.erstelltAm})">
+                                    <f:convertDateTime pattern="dd.MM.yyyy" />
+                                </h:outputText>
+                            </p>
+                            <p>
+                                <em>Quelle: #{shop.currentArtikel.beschreibung}</em>
+                            </p>
+                        </div>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{empty shop.currentArtikel}">
+                        <p>Bitte wählen Sie ein Land aus, um die aktuellen CO₂-Daten anzuzeigen.</p>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:form>
+        </p:panel>
+    </div>
 </h:body>
 </html>

@@ -217,7 +217,8 @@ public class ArtikelDAO {
         System.out.println("Suche nach aktuellen Daten für Land: " + land);
         try {
             TypedQuery<Artikel> query = entityManager.createQuery(
-                "SELECT a FROM Artikel a WHERE a.land = :land AND a.status = 'approved' ORDER BY a.jahr DESC", 
+                "SELECT a FROM Artikel a WHERE a.land = :land AND a.status = 'approved' " +
+                "ORDER BY a.jahr DESC, a.erstelltAm DESC", 
                 Artikel.class);
             query.setParameter("land", land);
             query.setMaxResults(1);
@@ -230,7 +231,8 @@ public class ArtikelDAO {
                 System.out.println("Gefundene Daten: Land=" + artikel.getLand() + 
                                  ", Jahr=" + artikel.getJahr() + 
                                  ", CO2=" + artikel.getCo2Ausstoss() + 
-                                 ", Status=" + artikel.getStatus());
+                                 ", Status=" + artikel.getStatus() +
+                                 ", Erstellt am=" + artikel.getErstelltAm());
                 return artikel;
             }
             System.out.println("Keine Daten gefunden für Land: " + land);
