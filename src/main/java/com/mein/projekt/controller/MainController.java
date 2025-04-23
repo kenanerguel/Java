@@ -66,18 +66,20 @@ public class MainController implements Serializable {
         if (currentUser.getUser().isAdmin()) {
             return "admin/pending.xhtml?faces-redirect=true";
         } else {
-            return "backoffice.xhtml?faces-redirect=true";
+            return "myarticles.xhtml?faces-redirect=true";
         }
     }
 
     // CO₂-Daten speichern
-    public void saveCO2Data() {
+    public String saveCO2Data() {
         Artikel newArtikel = new Artikel();
         newArtikel.setLand(landInput);
         newArtikel.setJahr(jahrInput);
         newArtikel.setCo2Ausstoss(co2AusstossInput);
         newArtikel.setEinheit(einheitInput);
         newArtikel.setBeschreibung(beschreibungInput);
+        newArtikel.setErstelltAm(new Date());
+        newArtikel.setUser(currentUser.getUser());
         
         // Status basierend auf Benutzerrolle setzen
         if (currentUser.getUser().isAdmin()) {
@@ -101,6 +103,11 @@ public class MainController implements Serializable {
             
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Erfolg", message));
+                
+        // Weiterleitung zur entsprechenden Seite
+        return currentUser.getUser().isAdmin() ? 
+            "admin/pending.xhtml?faces-redirect=true" : 
+            "myarticles.xhtml?faces-redirect=true";
     }
 
     // Neue Methode für Admin-Genehmigungen

@@ -42,6 +42,13 @@
                                update="backofficeForm messages" />
             </h:panelGrid>
             <p:messages id="messages" autoUpdate="true" />
+            
+            <div style="margin-top: 20px;">
+                <p:commandButton value="Zurück zur Übersicht" 
+                               action="myarticles.xhtml?faces-redirect=true"
+                               styleClass="ui-button-secondary" 
+                               immediate="true" />
+            </div>
         </p:panel>
     </h:form>
 </h:body>
