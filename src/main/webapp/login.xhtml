@@ -8,7 +8,7 @@
     <h:outputStylesheet library="css" name="styles.css" />
 </h:head>
 <h:body>
-    <div class="login-panel">
+    <h:panelGroup layout="block" styleClass="login-panel">
         <h:form id="loginForm">
             <p:panel header="Login">
                 <h:panelGrid columns="2" cellpadding="5">
@@ -25,9 +25,9 @@
                 <p:messages id="messages" showDetail="true" closable="true" />
             </p:panel>
         </h:form>
-    </div>
+    </h:panelGroup>
 
-    <div class="data-panel">
+    <h:panelGroup layout="block" styleClass="data-panel">
         <p:panel header="Aktuelle CO₂-Daten">
             <h:form id="co2Form">
                 <p:selectOneMenu value="#{shop.selectedCountry}" style="width:300px">
@@ -38,28 +38,28 @@
 
                 <h:panelGroup id="co2output" styleClass="latest-data">
                     <h:panelGroup rendered="#{not empty shop.currentArtikel}">
-                        <div>
+                        <h:panelGroup layout="block">
                             <h3>#{shop.currentArtikel.land}</h3>
-                            <p class="data-value">
+                            <h:panelGroup layout="block" styleClass="data-value">
                                 CO₂-Ausstoß: #{shop.currentArtikel.co2Ausstoss} #{shop.currentArtikel.einheit}
-                            </p>
-                            <p class="data-date">
+                            </h:panelGroup>
+                            <h:panelGroup layout="block" styleClass="data-date">
                                 Stand: #{shop.currentArtikel.jahr}
                                 <h:outputText value=" (Aktualisiert am: #{shop.currentArtikel.erstelltAm})">
                                     <f:convertDateTime pattern="dd.MM.yyyy" />
                                 </h:outputText>
-                            </p>
-                            <p>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
                                 <em>Quelle: #{shop.currentArtikel.beschreibung}</em>
-                            </p>
-                        </div>
+                            </h:panelGroup>
+                        </h:panelGroup>
                     </h:panelGroup>
                     <h:panelGroup rendered="#{empty shop.currentArtikel}">
-                        <p>Bitte wählen Sie ein Land aus, um die aktuellen CO₂-Daten anzuzeigen.</p>
+                        <h:outputText value="Bitte wählen Sie ein Land aus, um die aktuellen CO₂-Daten anzuzeigen." />
                     </h:panelGroup>
                 </h:panelGroup>
             </h:form>
         </p:panel>
-    </div>
+    </h:panelGroup>
 </h:body>
 </html>
