@@ -26,42 +26,25 @@ public class DescriptionValidator implements Validator<String> {
 
     @Override
     public void validate(FacesContext ctx, UIComponent cmp, String text) throws ValidatorException {
-        // Prüfe ob die Beschreibung nicht leer ist
+        // Prüfe ob der Wissenschaftlername nicht leer ist
         if (text == null || text.trim().isEmpty()) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Beschreibung erforderlich",
-                    "Bitte geben Sie eine Beschreibung oder Quelle an."));
+                    "Wissenschaftler erforderlich",
+                    "Bitte geben Sie den Namen des Wissenschaftlers an."));
         }
 
         // Prüfe die maximale Länge
-        if (text.length() > 500) {
+        if (text.length() > 100) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Text zu lang",
-                    "Die Beschreibung darf maximal 500 Zeichen lang sein!"));
+                    "Name zu lang",
+                    "Der Name darf maximal 100 Zeichen lang sein."));
         }
 
-        // Optional: Grammatikprüfung
-        try {
-            List<RuleMatch> matches = myLangTool.checkText(text);
-            if (matches != null && !matches.isEmpty()) {
-                StringBuilder str = new StringBuilder("Grammatikfehler: ");
-                for (RuleMatch match : matches) {
-                    str.append(match.getFromPos())
-                            .append("-")
-                            .append(match.getToPos())
-                            .append(": ")
-                            .append(match.getMessage())
-                            .append("\n")
-                            .append("Vorgeschlagene Korrektur(en): ")
-                            .append(match.getSuggestedReplacements())
-                            .append("\n");
-                }
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        "Grammatikfehler", str.toString()));
-            }
-        } catch (IOException e) {
+        // Prüfe auf ungültige Zeichen
+        if (!text.matches("^[\\p{L}\\s.-]+$")) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Fehler bei der Grammatikprüfung", e.getMessage()));
+                    "Ungültige Zeichen",
+                    "Der Name darf nur Buchstaben, Leerzeichen, Punkte und Bindestriche enthalten."));
         }
     }
 }
