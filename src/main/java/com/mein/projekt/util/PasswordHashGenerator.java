@@ -22,8 +22,8 @@ public class PasswordHashGenerator {
         String adminHash = hashPassword("admin", "admin123", salt);
         System.out.println("Admin Hash: " + adminHash);
 
-        // Generate hash for scientist user
-        String scientistHash = hashPassword("scientist", "scientist123", salt);
-        System.out.println("Scientist Hash: " + scientistHash);
+        // Generate hash for science1 user
+        String scientistHash = hashPassword("science1", "pass123", salt);
+        System.out.println("Science1 Hash: " + scientistHash);
     }
 } 

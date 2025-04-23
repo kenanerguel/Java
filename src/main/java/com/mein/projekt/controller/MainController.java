@@ -59,7 +59,7 @@ public class MainController implements Serializable {
         }
 
         failureMessage = "";
-        return currentUser.getUser().isAdmin() ? "backoffice.xhtml?faces-redirect=true" : "shopclient.xhtml?faces-redirect=true";
+        return "backoffice.xhtml?faces-redirect=true";
     }
 
     // CO₂-Daten speichern

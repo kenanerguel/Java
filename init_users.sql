@@ -5,4 +5,4 @@ DELETE FROM users;
 INSERT INTO users (username, password, is_admin) VALUES ('admin', 'pRnf+TXORKJefRH6x9HcfOyIxKEetJvxAqZc10GgB/bxuzFtjHMtSLqaPMYAU9zelkfUwAaP8S0QnclBkbgVJQ==', b'1');
 
 -- Füge Wissenschaftler hinzu
-INSERT INTO users (username, password, is_admin) VALUES ('scientist', 'Rp8KPc67CVZdkW/GdjvnQuFNfaBxRBSnYd8wPw4cQyWE/+Ef60ujGAjp1EoO3M5YdUjvp0YPw2dpurT++YRCsg==', b'0'); 
+INSERT INTO users (username, password, is_admin) VALUES ('science1', 'KW/Q+quBB936f+vEzM79JDs+4TYDraef7VS8i/vAS8fj6Zr+fvwOIk28l1G7IP0p1JmEeNvJj+BBdFia6EXKUw==', b'0'); 
