@@ -2,8 +2,7 @@
 DELETE FROM users;
 
 -- Füge Admin-Benutzer hinzu
-INSERT INTO users (username, password, is_admin) VALUES ('admin', 'admin123', true);
+INSERT INTO users (username, password, is_admin) VALUES ('admin', 'admin123', b'1');
 
 -- Füge Wissenschaftler hinzu
-INSERT INTO users (username, password, is_admin) VALUES ('science1', 'pass123', false);
-INSERT INTO users (username, password, is_admin) VALUES ('science2', 'pass456', false); 
+INSERT INTO users (username, password, is_admin) VALUES ('scientist', 'scientist123', b'0'); 
