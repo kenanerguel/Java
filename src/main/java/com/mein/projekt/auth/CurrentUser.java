@@ -18,7 +18,6 @@ import java.util.logging.Level;
 public class CurrentUser implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger(CurrentUser.class.getName());
-    private static final String salt = "vXsia8c04PhBtnG3isvjlemj7Bm6rAhBR8JRkf2z";
     
     @Inject
     private EntityManagerProvider entityManagerProvider;
@@ -27,7 +26,6 @@ public class CurrentUser implements Serializable {
     private User user = null;
     
     public CurrentUser() {
-        // Leerer Konstruktor für CDI
         LOGGER.info("CurrentUser wurde erstellt");
     }
     
@@ -43,40 +41,46 @@ public class CurrentUser implements Serializable {
         }
     }
 
-    /**
-     * Handhabt die Authentifizierung eines Benutzers anhand von Benutzername und Passwort.
-     */
     public void handleUser(String username, String password) {
-        if (userDAO == null) {
-            LOGGER.severe("UserDAO ist null. Initialisiere es jetzt...");
-            this.userDAO = new UserDAO();
-            this.userDAO.setEntityManagerProvider(entityManagerProvider);
+        try {
+            if (userDAO == null) {
+                LOGGER.severe("UserDAO ist null. Initialisiere es jetzt...");
+                this.userDAO = new UserDAO();
+                this.userDAO.setEntityManagerProvider(entityManagerProvider);
+            }
+            
+            String passHash = hashPassword(password);
+            LOGGER.info("Versuche Login für Benutzer: " + username);
+            LOGGER.info("Generierter Hash: " + passHash);
+            
+            user = userDAO.isAdminOrClient(username, passHash);
+            
+            if (user != null) {
+                LOGGER.info("Login erfolgreich für: " + username);
+            } else {
+                LOGGER.warning("Login fehlgeschlagen für: " + username);
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler beim Login", e);
+            user = null;
         }
-        
-        String passHash = hashPassword(username, password, salt);
-        user = userDAO.isAdminOrClient(username, passHash);
     }
 
-    /**
-     * Überprüft, ob der Benutzer gültig ist (Admin oder Client).
-     */
     public boolean isValid() {
         return user != null;
     }
 
-    /**
-     * Setzt den Benutzerstatus zurück (z. B. beim Logout).
-     */
     public void reset() {
         this.user = null;
     }
 
-    private static String hashPassword(String name, String pass, String salt) {
+    private static String hashPassword(String password) {
         try {
-            MessageDigest digester = MessageDigest.getInstance("SHA-512");
-            byte[] hashBytes = digester.digest((name + pass + salt).getBytes(StandardCharsets.UTF_8));
-            return new String(Base64.getEncoder().encode(hashBytes));
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(hash);
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler beim Hashen des Passworts", e);
             throw new RuntimeException(e);
         }
     }
