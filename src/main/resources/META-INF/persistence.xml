@@ -17,9 +17,9 @@
             <property name="jakarta.persistence.jdbc.driver"
                       value="com.mysql.cj.jdbc.Driver"/>
             <property name="jakarta.persistence.jdbc.url"
-                      value="jdbc:mysql://localhost:3306/co2db"/>
-            <property name="jakarta.persistence.jdbc.user" value="co2user"/>
-            <property name="jakarta.persistence.jdbc.password" value="co2password"/>
+                      value="jdbc:mysql://localhost:3306/co2db?createDatabaseIfNotExist=true"/>
+            <property name="jakarta.persistence.jdbc.user" value="root"/>
+            <property name="jakarta.persistence.jdbc.password" value="root"/>
 
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
 
@@ -29,6 +29,19 @@
             <!-- SQL-Ausgaben (optional) -->
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
+
+            <!-- Logging Konfiguration -->
+            <property name="hibernate.use_sql_comments" value="true"/>
+            <property name="hibernate.generate_statistics" value="true"/>
+            
+            <!-- Connection Pool -->
+            <property name="hibernate.connection.pool_size" value="10"/>
+            
+            <!-- Cache -->
+            <property name="hibernate.cache.use_second_level_cache" value="false"/>
+            
+            <!-- Debug -->
+            <property name="hibernate.logger.level" value="DEBUG"/>
         </properties>
     </persistence-unit>
 </persistence>

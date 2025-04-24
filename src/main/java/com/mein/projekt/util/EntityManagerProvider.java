@@ -15,29 +15,26 @@ public class EntityManagerProvider implements Serializable {
     
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(EntityManagerProvider.class.getName());
-    private static final String PERSISTENCE_UNIT_NAME = "likeHeroPU";
+    private static final String PERSISTENCE_UNIT_NAME = "co2PU";
     
-    private EntityManagerFactory emf;
-    private EntityManager em;
+    private EntityManagerFactory entityManagerFactory;
+    private EntityManager entityManager;
     private boolean initialized = false;
     
     public EntityManagerProvider() {
-        LOGGER.log(Level.INFO, "EntityManagerProvider wurde instanziiert");
+        LOGGER.info("EntityManagerProvider wurde instanziiert");
     }
     
     public void init() {
         if (!initialized) {
             try {
-                LOGGER.log(Level.INFO, "Initialisiere EntityManagerFactory mit {0}", PERSISTENCE_UNIT_NAME);
-                emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-                LOGGER.log(Level.INFO, "EntityManagerFactory wurde erfolgreich initialisiert");
-                
-                LOGGER.log(Level.INFO, "Erstelle EntityManager");
-                em = emf.createEntityManager();
-                LOGGER.log(Level.INFO, "EntityManager wurde erfolgreich erstellt");
+                LOGGER.info("Initialisiere EntityManagerFactory mit " + PERSISTENCE_UNIT_NAME);
+                entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+                entityManager = entityManagerFactory.createEntityManager();
+                LOGGER.info("EntityManagerFactory erfolgreich initialisiert");
                 
                 initialized = true;
-                LOGGER.log(Level.INFO, "EntityManagerProvider wurde erfolgreich initialisiert");
+                LOGGER.info("EntityManagerProvider wurde erfolgreich initialisiert");
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Fehler bei der Initialisierung von EntityManagerProvider", e);
                 cleanup();
@@ -50,41 +47,41 @@ public class EntityManagerProvider implements Serializable {
         if (!initialized) {
             init();
         }
-        if (em == null || !em.isOpen()) {
-            LOGGER.log(Level.INFO, "EntityManager ist geschlossen oder null, erstelle einen neuen");
-            em = emf.createEntityManager();
+        if (entityManager == null || !entityManager.isOpen()) {
+            LOGGER.info("EntityManager ist geschlossen oder null, erstelle einen neuen");
+            entityManager = entityManagerFactory.createEntityManager();
         }
-        return em;
+        return entityManager;
     }
     
-    public void close() {
+    public void closeEntityManager() {
         cleanup();
     }
     
     private void cleanup() {
         initialized = false;
         
-        if (em != null && em.isOpen()) {
+        if (entityManager != null && entityManager.isOpen()) {
             try {
-                LOGGER.log(Level.INFO, "Schließe EntityManager");
-                em.close();
-                LOGGER.log(Level.INFO, "EntityManager wurde geschlossen");
+                LOGGER.info("Schließe EntityManager");
+                entityManager.close();
+                LOGGER.info("EntityManager wurde geschlossen");
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Fehler beim Schließen des EntityManagers", e);
             } finally {
-                em = null;
+                entityManager = null;
             }
         }
         
-        if (emf != null && emf.isOpen()) {
+        if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
             try {
-                LOGGER.log(Level.INFO, "Schließe EntityManagerFactory");
-                emf.close();
-                LOGGER.log(Level.INFO, "EntityManagerFactory wurde geschlossen");
+                LOGGER.info("Schließe EntityManagerFactory");
+                entityManagerFactory.close();
+                LOGGER.info("EntityManagerFactory wurde geschlossen");
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Fehler beim Schließen der EntityManagerFactory", e);
             } finally {
-                emf = null;
+                entityManagerFactory = null;
             }
         }
     }
