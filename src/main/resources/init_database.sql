@@ -6,7 +6,8 @@ DROP TABLE IF EXISTS artikel;
 -- Tabellen erstellen
 CREATE TABLE users (
     username VARCHAR(50) NOT NULL PRIMARY KEY,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE user_roles (
@@ -28,10 +29,10 @@ CREATE TABLE artikel (
 );
 
 -- Admin und Wissenschaftler anlegen
-INSERT INTO users (username, password) VALUES 
-('admin', 'XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg='),
-('Doktor Niklas', 'XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg='),
-('Nina Maler', 'XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=');
+INSERT INTO users (username, password, is_admin) VALUES 
+('admin', 'jZae727K08KaOmKSgOaGzww/XVqGr/PKEgIMkjrcbJI=', TRUE),
+('Doktor Niklas', 'jZae727K08KaOmKSgOaGzww/XVqGr/PKEgIMkjrcbJI=', FALSE),
+('Nina Maler', 'jZae727K08KaOmKSgOaGzww/XVqGr/PKEgIMkjrcbJI=', FALSE);
 
 INSERT INTO user_roles (username, role) VALUES ('admin', 'ADMIN');
 INSERT INTO user_roles (username, role) VALUES ('Doktor Niklas', 'SCIENTIST');

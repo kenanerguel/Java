@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.NoResultException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,19 +79,31 @@ public class UserDAO {
         
         try {
             LOGGER.info("Suche Benutzer mit Username: " + username);
-            User user = entityManager.createQuery(
-                            "SELECT u FROM User u WHERE u.username = :uname AND u.password = :pwd",
-                            User.class)
-                    .setParameter("uname", username)
-                    .setParameter("pwd", password)
-                    .getSingleResult();
-
-            // Falls user != null, gib zurück, ob er Admin ist.
-            LOGGER.info("Benutzer gefunden: " + username + ", ist Admin: " + user.isAdmin());
-            return user;
+            LOGGER.info("Verwendeter Passwort-Hash: " + password);
+            
+            // Zuerst nur nach dem Benutzernamen suchen
+            User foundUser = entityManager.createQuery(
+                "SELECT u FROM User u WHERE u.username = :uname", User.class)
+                .setParameter("uname", username)
+                .getSingleResult();
+                
+            LOGGER.info("Gefundener Benutzer: " + foundUser.getUsername());
+            LOGGER.info("Gespeicherter Hash: " + foundUser.getPassword());
+            
+            // Überprüfen, ob das Passwort übereinstimmt
+            if (foundUser.getPassword().equals(password)) {
+                LOGGER.info("Passwort korrekt für Benutzer: " + username);
+                return foundUser;
+            } else {
+                LOGGER.warning("Passwort falsch für Benutzer: " + username);
+                return null;
+            }
+        } catch (NoResultException e) {
+            LOGGER.warning("Kein Benutzer gefunden mit Username: " + username);
+            return null;
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Kein Benutzer gefunden oder Fehler bei der Suche", e);
-            return null;  // Falls kein Nutzer gefunden oder Fehler
+            LOGGER.log(Level.SEVERE, "Fehler bei der Benutzersuche", e);
+            return null;
         }
     }
 
