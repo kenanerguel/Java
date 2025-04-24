@@ -22,8 +22,6 @@
             <property name="jakarta.persistence.jdbc.user" value="like_hero"/>
             <property name="jakarta.persistence.jdbc.password" value="like_hero"/>
 
-            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
-
             <!-- Schema-Aktualisierung: update, create, create-drop, validate -->
             <property name="hibernate.hbm2ddl.auto" value="update"/>
 
