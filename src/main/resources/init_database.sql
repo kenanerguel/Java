@@ -26,7 +26,7 @@ CREATE TABLE artikel (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     land VARCHAR(255) NOT NULL,
     jahr INTEGER NOT NULL,
-    co2ausstoss DOUBLE NOT NULL,
+    co2ausstoss DOUBLE DEFAULT 0.0,
     einheit VARCHAR(255) NOT NULL,
     beschreibung TEXT,
     status VARCHAR(255) NOT NULL,
