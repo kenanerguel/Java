@@ -22,7 +22,7 @@ public class Artikel implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "beschreibung")
+    @Column(name = "beschreibung", length = 1000)
     private String beschreibung;
 
     @Column(name = "land", nullable = false)
@@ -34,26 +34,30 @@ public class Artikel implements Serializable {
     @Column(name = "jahr", nullable = false)
     private Integer jahr;
 
-    @Column(name = "co2ausstoss", nullable = false)
+    @Column(name = "co2_ausstoss", nullable = false)
     private Double co2Ausstoss;
     
-    @Column(name = "einheit")
-    private String einheit = "Tonnen";
+    @Column(name = "einheit", nullable = false)
+    private String einheit;
     
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "username")
     private User user;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "erstellt_am", nullable = false)
+    @Column(name = "erstellt_am")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date erstelltAm;
 
     @OneToMany(mappedBy = "artikel", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Bewertung> bewertungen = new ArrayList<>();
 
+    @PrePersist
+    protected void onCreate() {
+        erstelltAm = new Date();
+    }
+
     public Artikel() {
         this.status = "pending";
-        this.erstelltAm = new Date();
     }
     
     public Artikel(String land, Double co2Ausstoss, String beschreibung, Integer jahr) {
@@ -62,7 +66,6 @@ public class Artikel implements Serializable {
         this.beschreibung = beschreibung;
         this.jahr = jahr;
         this.status = "pending";
-        this.erstelltAm = new Date();
     }
 
     // Getter & Setter
@@ -93,6 +96,6 @@ public class Artikel implements Serializable {
     public List<Bewertung> getBewertungen() { return bewertungen; }
     public void addBewertung(Bewertung bewertung) { bewertungen.add(bewertung); }
     
+    public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
-    public User getUser() { return this.user; }
 }

@@ -7,14 +7,14 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "users") // "user" kann ein reserviertes Schlüsselwort sein – daher besser "users"
-public class User {
+public class User implements Serializable {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Artikel> artikelListe = new ArrayList<>();
-
 
     @Id
     @Column(name = "username", nullable = false, unique = true)
@@ -23,18 +23,18 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "is_admin", nullable = false)
-    private boolean isAdmin;
+    @Column(name = "role", nullable = false)
+    private String role;
 
     // JPA erfordert einen Standard-Konstruktor
     public User() {
     }
 
     // Konstruktor zur Initialisierung
-    public User(String username, String password, boolean isAdmin) {
+    public User(String username, String password, String role) {
         this.username = username;
         this.password = password;
-        this.isAdmin = isAdmin;
+        this.role = role;
     }
 
     // Getter & Setter
@@ -54,12 +54,12 @@ public class User {
         this.password = password;
     }
 
-    public boolean isAdmin() {
-        return isAdmin;
+    public String getRole() {
+        return role;
     }
 
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public List<Artikel> getArtikelListe() {
@@ -70,6 +70,19 @@ public class User {
         this.artikelListe = artikelListe;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return username.equals(user.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return username.hashCode();
+    }
+
     public static void main(String[] args) {
         // DAOs erstellen
         UserDAO userDAO = new UserDAO();
@@ -77,9 +90,9 @@ public class User {
         artikelDAO.init();
 
         // Benutzer anlegen
-        User admin = new User("admin", "admin123", true);
-        User scientist1 = new User("science1", "pass123", false);
-        User scientist2 = new User("science2", "pass456", false);
+        User admin = new User("admin", "admin123", "admin");
+        User scientist1 = new User("science1", "pass123", "scientist");
+        User scientist2 = new User("science2", "pass456", "scientist");
         
         userDAO.saveUser(admin);
         userDAO.saveUser(scientist1);
