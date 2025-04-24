@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </h:head>
 <h:body>
+    <h:graphicImage library="images" name="logo.png" styleClass="logo" />
     <h1 class="page-title">CO₂-Daten Portal</h1>
     
     <div class="clearfix">
@@ -62,8 +63,7 @@
                             </h:panelGroup>
                         </h:panelGroup>
                         <h:panelGroup rendered="#{empty shop.currentArtikel}">
-                            <h:outputText value="Bitte wählen Sie ein Land aus, um die aktuellen CO₂-Daten anzuzeigen." 
-                                        style="color: #666; display: block; text-align: center; padding: 20px;"/>
+                            <p class="empty-message">Bitte wählen Sie ein Land aus, um die aktuellen CO₂-Daten anzuzeigen.</p>
                         </h:panelGroup>
                     </h:panelGroup>
                 </h:form>

@@ -5,11 +5,20 @@ body {
     font-family: Arial, sans-serif;
 }
 
+.logo {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 100px;
+    height: 100px;
+}
+
 .page-title {
     color: #2c3e50;
     font-size: 24px;
-    margin-bottom: 30px;
+    margin: 20px;
     padding-left: 20px;
+    display: inline-block;
 }
 
 .data-panel {
@@ -20,6 +29,7 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     width: calc(65% - 40px);
     float: left;
+    min-height: 200px;
 }
 
 .latest-data {
@@ -87,6 +97,13 @@ body {
     content: "";
     clear: both;
     display: table;
+}
+
+.empty-message {
+    text-align: center;
+    color: #666;
+    padding: 20px;
+    margin: 0;
 }
 
 @media (max-width: 768px) {
