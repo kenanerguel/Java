@@ -62,6 +62,10 @@ public class User implements Serializable {
         this.role = role;
     }
 
+    public boolean isAdmin() {
+        return "ADMIN".equalsIgnoreCase(this.role);
+    }
+
     public List<Artikel> getArtikelListe() {
         return artikelListe;
     }
