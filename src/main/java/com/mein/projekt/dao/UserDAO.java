@@ -7,6 +7,8 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,23 +18,16 @@ public class UserDAO {
 
     private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
     
+    @Inject
     private EntityManager entityManager;
-    private EntityManagerProvider entityManagerProvider;
 
     // Standardkonstruktor für CDI
     public UserDAO() {
         LOGGER.info("UserDAO wurde mit Standard-Konstruktor erstellt");
     }
     
-    @Inject
-    public UserDAO(EntityManagerProvider entityManagerProvider) {
-        this.setEntityManagerProvider(entityManagerProvider);
-        LOGGER.info("UserDAO wurde mit EntityManagerProvider erstellt");
-    }
-    
     public void setEntityManagerProvider(EntityManagerProvider provider) {
         try {
-            this.entityManagerProvider = provider;
             this.entityManager = provider.getEntityManager();
             LOGGER.info("EntityManager erfolgreich gesetzt");
         } catch (Exception e) {
@@ -71,26 +66,22 @@ public class UserDAO {
      * Überprüft, ob ein Benutzer Admin oder Client ist.
      */
     public User isAdminOrClient(String username, String password) {
-        if (entityManager == null) {
-            LOGGER.severe("EntityManager ist null - konnte nicht initialisiert werden");
-            return null;
-        }
-        
         try {
-            LOGGER.info("Suche Benutzer mit Username: " + username);
-            User user = entityManager.createQuery(
-                            "SELECT u FROM User u WHERE u.username = :uname AND u.password = :pwd",
-                            User.class)
-                    .setParameter("uname", username)
-                    .setParameter("pwd", password)
-                    .getSingleResult();
-
-            // Falls user != null, gib zurück, ob er Admin ist.
-            LOGGER.info("Benutzer gefunden: " + username + ", ist Admin: " + user.isAdmin());
+            TypedQuery<User> query = entityManager.createQuery(
+                "SELECT u FROM User u WHERE u.username = :username AND u.password = :password",
+                User.class);
+            query.setParameter("username", username);
+            query.setParameter("password", password);
+            
+            User user = query.getSingleResult();
+            LOGGER.info("Benutzer gefunden: " + username);
             return user;
+        } catch (NoResultException e) {
+            LOGGER.info("Kein Benutzer gefunden für: " + username);
+            return null;
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Kein Benutzer gefunden oder Fehler bei der Suche", e);
-            return null;  // Falls kein Nutzer gefunden oder Fehler
+            LOGGER.log(Level.SEVERE, "Fehler beim Suchen des Benutzers: " + username, e);
+            return null;
         }
     }
 
