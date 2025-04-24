@@ -17,25 +17,29 @@ public class UserDAO {
 
     private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
     
+    static {
+        LOGGER.setLevel(Level.FINEST);
+    }
+    
     private EntityManager entityManager;
     private EntityManagerProvider entityManagerProvider;
 
     // Standardkonstruktor für CDI
     public UserDAO() {
-        LOGGER.info("UserDAO wurde mit Standard-Konstruktor erstellt");
+        LOGGER.finest("UserDAO wurde mit Standard-Konstruktor erstellt");
     }
     
     @Inject
     public UserDAO(EntityManagerProvider entityManagerProvider) {
         this.setEntityManagerProvider(entityManagerProvider);
-        LOGGER.info("UserDAO wurde mit EntityManagerProvider erstellt");
+        LOGGER.finest("UserDAO wurde mit EntityManagerProvider erstellt");
     }
     
     public void setEntityManagerProvider(EntityManagerProvider provider) {
         try {
             this.entityManagerProvider = provider;
             this.entityManager = provider.getEntityManager();
-            LOGGER.info("EntityManager erfolgreich gesetzt");
+            LOGGER.finest("EntityManager erfolgreich gesetzt");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Setzen des EntityManagers", e);
         }
@@ -55,7 +59,7 @@ public class UserDAO {
             transaction.begin();
             entityManager.persist(user);
             transaction.commit();
-            LOGGER.info("Benutzer " + user.getUsername() + " erfolgreich gespeichert");
+            LOGGER.finest("Benutzer " + user.getUsername() + " erfolgreich gespeichert");
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
@@ -74,10 +78,10 @@ public class UserDAO {
         }
         
         try {
-            LOGGER.info("=== Login-Versuch Details in UserDAO ===");
-            LOGGER.info("Eingegebener Benutzername: " + username);
-            LOGGER.info("Eingegebener Passwort-Hash: " + password);
-            LOGGER.info("Hash-Länge (eingegeben): " + password.length());
+            System.out.println("=== Login-Versuch Details in UserDAO ===");
+            System.out.println("Eingegebener Benutzername: " + username);
+            System.out.println("Eingegebener Passwort-Hash: " + password);
+            System.out.println("Hash-Länge (eingegeben): " + password.length());
             
             // Zuerst nur nach dem Benutzernamen suchen
             User foundUser = entityManager.createQuery(
@@ -85,24 +89,24 @@ public class UserDAO {
                 .setParameter("uname", username)
                 .getSingleResult();
                 
-            LOGGER.info("Gefundener Benutzer: " + foundUser.getUsername());
-            LOGGER.info("Gespeicherter Hash in DB: " + foundUser.getPassword());
-            LOGGER.info("Hash-Länge (DB): " + foundUser.getPassword().length());
-            LOGGER.info("Hashes identisch? " + password.equals(foundUser.getPassword()));
-            LOGGER.info("Hash-Vergleich Details:");
-            LOGGER.info("Eingegeben [" + password + "]");
-            LOGGER.info("Gespeichert [" + foundUser.getPassword() + "]");
+            System.out.println("Gefundener Benutzer: " + foundUser.getUsername());
+            System.out.println("Gespeicherter Hash in DB: " + foundUser.getPassword());
+            System.out.println("Hash-Länge (DB): " + foundUser.getPassword().length());
+            System.out.println("Hashes identisch? " + password.equals(foundUser.getPassword()));
+            System.out.println("Hash-Vergleich Details:");
+            System.out.println("Eingegeben [" + password + "]");
+            System.out.println("Gespeichert [" + foundUser.getPassword() + "]");
             
             // Überprüfen, ob das Passwort übereinstimmt
             if (foundUser.getPassword().equals(password)) {
-                LOGGER.info("Login erfolgreich - Passwort korrekt für: " + username);
+                System.out.println("Login erfolgreich - Passwort korrekt für: " + username);
                 return foundUser;
             } else {
-                LOGGER.warning("Login fehlgeschlagen - Falsches Passwort für: " + username);
+                System.out.println("Login fehlgeschlagen - Falsches Passwort für: " + username);
                 return null;
             }
         } catch (NoResultException e) {
-            LOGGER.warning("Login fehlgeschlagen - Kein Benutzer gefunden mit Username: " + username);
+            System.out.println("Login fehlgeschlagen - Kein Benutzer gefunden mit Username: " + username);
             return null;
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Login fehlgeschlagen - Unerwarteter Fehler", e);

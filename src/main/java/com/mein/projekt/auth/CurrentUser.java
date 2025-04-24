@@ -19,6 +19,10 @@ public class CurrentUser implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger(CurrentUser.class.getName());
     
+    static {
+        LOGGER.setLevel(Level.FINEST);
+    }
+    
     @Inject
     private EntityManagerProvider entityManagerProvider;
     
@@ -26,16 +30,16 @@ public class CurrentUser implements Serializable {
     private User user = null;
     
     public CurrentUser() {
-        LOGGER.info("CurrentUser wurde erstellt");
+        LOGGER.finest("CurrentUser wurde erstellt");
     }
     
     @Inject
     public void init(EntityManagerProvider entityManagerProvider) {
         try {
-            LOGGER.info("Initialisiere UserDAO");
+            LOGGER.finest("Initialisiere UserDAO");
             this.userDAO = new UserDAO();
             this.userDAO.setEntityManagerProvider(entityManagerProvider);
-            LOGGER.info("UserDAO erfolgreich initialisiert");
+            LOGGER.finest("UserDAO erfolgreich initialisiert");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Initialisieren des UserDAO", e);
         }
@@ -49,20 +53,20 @@ public class CurrentUser implements Serializable {
                 this.userDAO.setEntityManagerProvider(entityManagerProvider);
             }
             
-            LOGGER.info("=== Login-Versuch in CurrentUser ===");
-            LOGGER.info("Benutzername: " + username);
-            LOGGER.info("Rohes Passwort (Länge): " + password.length());
+            System.out.println("=== Login-Versuch in CurrentUser ===");
+            System.out.println("Benutzername: " + username);
+            System.out.println("Rohes Passwort (Länge): " + password.length());
             
             String passHash = hashPassword(password);
-            LOGGER.info("Generierter Hash: " + passHash);
-            LOGGER.info("Hash-Länge: " + passHash.length());
+            System.out.println("Generierter Hash: " + passHash);
+            System.out.println("Hash-Länge: " + passHash.length());
             
             user = userDAO.isAdminOrClient(username, passHash);
             
             if (user != null) {
-                LOGGER.info("Login erfolgreich für: " + username);
+                System.out.println("Login erfolgreich für: " + username);
             } else {
-                LOGGER.warning("Login fehlgeschlagen für: " + username);
+                System.out.println("Login fehlgeschlagen für: " + username);
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Login", e);
@@ -86,10 +90,10 @@ public class CurrentUser implements Serializable {
             byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
             // Convert the byte array to a Base64 string
             String result = Base64.getEncoder().encodeToString(hash);
-            LOGGER.info("Password hashing details:");
-            LOGGER.info("Input password length: " + password.length());
-            LOGGER.info("Generated hash: " + result);
-            LOGGER.info("Hash length: " + result.length());
+            System.out.println("Password hashing details:");
+            System.out.println("Input password length: " + password.length());
+            System.out.println("Generated hash: " + result);
+            System.out.println("Hash length: " + result.length());
             return result;
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Hashen des Passworts", e);
