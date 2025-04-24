@@ -26,6 +26,12 @@ public class UserDAO {
         LOGGER.info("UserDAO wurde mit Standard-Konstruktor erstellt");
     }
     
+    // Konstruktor für manuelle Instanziierung (z.B. in main Methode)
+    public UserDAO(EntityManagerProvider provider) {
+        LOGGER.info("UserDAO wurde mit EntityManagerProvider erstellt");
+        setEntityManagerProvider(provider);
+    }
+    
     public void setEntityManagerProvider(EntityManagerProvider provider) {
         try {
             this.entityManager = provider.getEntityManager();
@@ -59,10 +65,6 @@ public class UserDAO {
     }
 
     /**
-     * Überprüft, ob ein Benutzer Client (nicht Admin) ist.
-     * Beispielhafte Abfrage: SELECT u FROM User u WHERE ...
-     * Hier wird angenommen, dass User ein Feld "admin" hat,
-     * das angibt, ob er Admin ist oder nicht.
      * Überprüft, ob ein Benutzer Admin oder Client ist.
      */
     public User isAdminOrClient(String username, String password) {
@@ -91,18 +93,6 @@ public class UserDAO {
     public static void main(String[] args) {
         EntityManagerProvider entityManagerProvider = new EntityManagerProvider();
         UserDAO userDAO = new UserDAO(entityManagerProvider);
-
-        // Beispiel-User speichern
-        /*
-        User adminUser = new User("root", "root", true);
-        User clientUser1 = new User("Wissenschaftler_1", "Hallo", false);
-        User clientUser2 = new User("Wissenschaftler_2", "Servus", false);
-
-
-        userDAO.saveUser(adminUser);
-        userDAO.saveUser(clientUser1);
-        userDAO.saveUser(clientUser2);
-        */
 
         // Test-Logik: Admin/Client prüfen
         System.out.println("root isAdmin? " + userDAO.isAdminOrClient("root", "dXRcRLCMz+kUxl9QORmRxyPfliMK/6hF1zild9sVmuu4BHCemIAfqAH8GXjbomZAFmjdAJ0F6nESJhDjCraIRQ==")); // sollte true sein
