@@ -2,7 +2,6 @@ package com.mein.projekt.model;
 
 import com.mein.projekt.dao.ArtikelDAO;
 import com.mein.projekt.dao.UserDAO;
-import com.mein.projekt.util.EntityManagerProvider;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -72,14 +71,10 @@ public class User {
     }
 
     public static void main(String[] args) {
-        // EntityManager holen
-        EntityManagerProvider provider = new EntityManagerProvider();
-        
         // DAOs erstellen
-        UserDAO userDAO = new UserDAO(provider);
+        UserDAO userDAO = new UserDAO();
         ArtikelDAO artikelDAO = new ArtikelDAO();
         artikelDAO.init();
-        artikelDAO.setEntityManagerProvider(provider);
 
         // Benutzer anlegen
         User admin = new User("admin", "admin123", true);
