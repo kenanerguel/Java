@@ -1,7 +1,6 @@
 package com.mein.projekt.dao;
 
 import com.mein.projekt.model.User;
-import com.mein.projekt.util.EntityManagerProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -17,32 +16,11 @@ public class UserDAO {
 
     private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
     
-    static {
-        LOGGER.setLevel(Level.FINEST);
-    }
-    
-    private EntityManager entityManager;
-    private EntityManagerProvider entityManagerProvider;
-
-    // Standardkonstruktor für CDI
-    public UserDAO() {
-        LOGGER.finest("UserDAO wurde mit Standard-Konstruktor erstellt");
-    }
-    
     @Inject
-    public UserDAO(EntityManagerProvider entityManagerProvider) {
-        this.setEntityManagerProvider(entityManagerProvider);
-        LOGGER.finest("UserDAO wurde mit EntityManagerProvider erstellt");
-    }
-    
-    public void setEntityManagerProvider(EntityManagerProvider provider) {
-        try {
-            this.entityManagerProvider = provider;
-            this.entityManager = provider.getEntityManager();
-            LOGGER.finest("EntityManager erfolgreich gesetzt");
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Fehler beim Setzen des EntityManagers", e);
-        }
+    private EntityManager entityManager;
+
+    public UserDAO() {
+        LOGGER.info("UserDAO wurde mit Standard-Konstruktor erstellt");
     }
 
     /**
@@ -59,7 +37,7 @@ public class UserDAO {
             transaction.begin();
             entityManager.persist(user);
             transaction.commit();
-            LOGGER.finest("Benutzer " + user.getUsername() + " erfolgreich gespeichert");
+            LOGGER.info("Benutzer " + user.getUsername() + " erfolgreich gespeichert");
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
@@ -118,8 +96,7 @@ public class UserDAO {
      * Main-Methode für Tests
      */
     public static void main(String[] args) {
-        EntityManagerProvider entityManagerProvider = new EntityManagerProvider();
-        UserDAO userDAO = new UserDAO(entityManagerProvider);
+        UserDAO userDAO = new UserDAO();
 
         // Beispiel-User speichern
         /*

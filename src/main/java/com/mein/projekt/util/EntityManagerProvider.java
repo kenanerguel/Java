@@ -1,6 +1,7 @@
 package com.mein.projekt.util;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -24,6 +25,8 @@ public class EntityManagerProvider implements Serializable {
         }
     }
 
+    @Produces
+    @ApplicationScoped
     public EntityManager getEntityManager() {
         if (em == null || !em.isOpen()) {
             em = emf.createEntityManager();

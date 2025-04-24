@@ -2,10 +2,10 @@ package com.mein.projekt.auth;
 
 import com.mein.projekt.dao.UserDAO;
 import com.mein.projekt.model.User;
-import com.mein.projekt.util.EntityManagerProvider;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.persistence.EntityManager;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -19,40 +19,20 @@ public class CurrentUser implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger(CurrentUser.class.getName());
     
-    static {
-        LOGGER.setLevel(Level.FINEST);
-    }
+    @Inject
+    private EntityManager entityManager;
     
     @Inject
-    private EntityManagerProvider entityManagerProvider;
-    
     private UserDAO userDAO;
+    
     private User user = null;
     
     public CurrentUser() {
         LOGGER.finest("CurrentUser wurde erstellt");
     }
-    
-    @Inject
-    public void init(EntityManagerProvider entityManagerProvider) {
-        try {
-            LOGGER.finest("Initialisiere UserDAO");
-            this.userDAO = new UserDAO();
-            this.userDAO.setEntityManagerProvider(entityManagerProvider);
-            LOGGER.finest("UserDAO erfolgreich initialisiert");
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Fehler beim Initialisieren des UserDAO", e);
-        }
-    }
 
     public void handleUser(String username, String password) {
         try {
-            if (userDAO == null) {
-                LOGGER.severe("UserDAO ist null. Initialisiere es jetzt...");
-                this.userDAO = new UserDAO();
-                this.userDAO.setEntityManagerProvider(entityManagerProvider);
-            }
-            
             System.out.println("=== Login-Versuch in CurrentUser ===");
             System.out.println("Benutzername: " + username);
             System.out.println("Rohes Passwort (Länge): " + password.length());
