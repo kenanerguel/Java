@@ -38,31 +38,25 @@
         <h:panelGroup layout="block" styleClass="data-panel">
             <p:panel header="Aktuelle CO₂-Daten">
                 <h:form id="co2Form">
-                    <p:selectOneMenu value="#{shop.selectedCountry}">
+                    <p:selectOneMenu value="#{mainController.selectedCountry}">
                         <f:selectItem itemLabel="-- Land auswählen --" itemValue="" />
-                        <f:selectItems value="#{shop.countries}" />
-                        <p:ajax listener="#{shop.onCountryChange}" update="co2output" />
+                        <f:selectItems value="#{mainController.countries}" />
+                        <p:ajax listener="#{mainController.onCountryChange}" update="co2output" />
                     </p:selectOneMenu>
 
                     <h:panelGroup id="co2output" styleClass="latest-data">
-                        <h:panelGroup rendered="#{not empty shop.currentArtikel}">
+                        <h:panelGroup rendered="#{mainController.latestCO2 != -1}">
                             <h:panelGroup layout="block">
-                                <h:outputText value="#{shop.currentArtikel.land}" styleClass="heading-text" />
+                                <h:outputText value="#{mainController.selectedCountry}" styleClass="heading-text" />
                                 <h:panelGroup layout="block" styleClass="data-value">
-                                    <h:outputText value="CO₂-Ausstoß: #{shop.currentArtikel.co2Ausstoss} #{shop.currentArtikel.einheit}" />
+                                    <h:outputText value="CO₂-Ausstoß: #{mainController.latestCO2} t" />
                                 </h:panelGroup>
                                 <h:panelGroup layout="block" styleClass="data-date">
-                                    <h:outputText value="Stand: #{shop.currentArtikel.jahr}" />
-                                    <h:outputText value=" (Aktualisiert am: #{shop.currentArtikel.erstelltAm})">
-                                        <f:convertDateTime pattern="dd.MM.yyyy" />
-                                    </h:outputText>
-                                </h:panelGroup>
-                                <h:panelGroup layout="block" styleClass="source-text">
-                                    <h:outputText value="Quelle: #{shop.currentArtikel.beschreibung}" />
+                                    <h:outputText value="Stand: #{mainController.latestYear}" />
                                 </h:panelGroup>
                             </h:panelGroup>
                         </h:panelGroup>
-                        <h:panelGroup rendered="#{empty shop.currentArtikel}">
+                        <h:panelGroup rendered="#{mainController.latestCO2 == -1}">
                             <p class="empty-message">Bitte wählen Sie ein Land aus, um die aktuellen CO₂-Daten anzuzeigen.</p>
                         </h:panelGroup>
                     </h:panelGroup>
