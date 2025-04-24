@@ -17,11 +17,10 @@
             <!-- JDBC-Verbindungsdaten -->
             <property name="jakarta.persistence.jdbc.driver"
                       value="com.mysql.cj.jdbc.Driver"/>
-            <!-- Hier wurde der Port auf 3306 angepasst, da der Docker-Container diesen Port nutzt -->
             <property name="jakarta.persistence.jdbc.url"
-                      value="jdbc:mysql://localhost:3306/like_hero_zero"/>
-            <property name="jakarta.persistence.jdbc.user" value="root"/>
-            <property name="jakarta.persistence.jdbc.password" value=""/>
+                      value="jdbc:mysql://localhost:3306/like_hero"/>
+            <property name="jakarta.persistence.jdbc.user" value="like_hero"/>
+            <property name="jakarta.persistence.jdbc.password" value="like_hero"/>
 
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
 
