@@ -15,6 +15,8 @@ import jakarta.persistence.TypedQuery;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.mein.projekt.model.Artikel;
 import com.mein.projekt.auth.Shop;
@@ -23,6 +25,8 @@ import com.mein.projekt.model.User;
 @Named
 @ApplicationScoped
 public class ArtikelDAO {
+
+    private static final Logger LOGGER = Logger.getLogger(ArtikelDAO.class.getName());
 
     @Inject
     private EntityManagerProvider entityManagerProvider;
@@ -62,6 +66,7 @@ public class ArtikelDAO {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+        LOGGER.info("ArtikelDAO wurde initialisiert");
     }
 
     public List<String> getAllCountries() {
@@ -135,53 +140,78 @@ public class ArtikelDAO {
     }
 
     public void saveArtikel(Artikel artikel) {
+        if (entityManager == null) {
+            LOGGER.severe("EntityManager ist null - konnte nicht initialisiert werden");
+            return;
+        }
+
         EntityTransaction transaction = entityManager.getTransaction();
         try {
             transaction.begin();
             entityManager.persist(artikel);
             transaction.commit();
+            LOGGER.info("Artikel für " + artikel.getLand() + " erfolgreich gespeichert");
         } catch (Exception e) {
-            if (transaction.isActive()) {
+            if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Fehler beim Speichern des Artikels", e);
         }
     }
 
     public void updateArtikel(Artikel artikel) {
+        if (entityManager == null) {
+            LOGGER.severe("EntityManager ist null - konnte nicht initialisiert werden");
+            return;
+        }
+
         EntityTransaction transaction = entityManager.getTransaction();
         try {
             transaction.begin();
             entityManager.merge(artikel);
             transaction.commit();
+            LOGGER.info("Artikel für " + artikel.getLand() + " erfolgreich aktualisiert");
         } catch (Exception e) {
-            if (transaction.isActive()) {
+            if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Fehler beim Aktualisieren des Artikels", e);
         }
     }
 
     public List<Artikel> getPendingArtikel() {
+        if (entityManager == null) {
+            LOGGER.severe("EntityManager ist null - konnte nicht initialisiert werden");
+            return new ArrayList<>();
+        }
+
         try {
-            return entityManager.createQuery(
-                "SELECT a FROM Artikel a WHERE a.status = 'pending' ORDER BY a.erstelltAm DESC", 
-                Artikel.class).getResultList();
+            TypedQuery<Artikel> query = entityManager.createQuery(
+                "SELECT a FROM Artikel a WHERE a.status = 'pending' ORDER BY a.erstellungsdatum DESC",
+                Artikel.class
+            );
+            return query.getResultList();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Fehler beim Abrufen der ausstehenden Artikel", e);
             return new ArrayList<>();
         }
     }
 
     public List<Artikel> getArtikelByUser(User user) {
+        if (entityManager == null) {
+            LOGGER.severe("EntityManager ist null - konnte nicht initialisiert werden");
+            return new ArrayList<>();
+        }
+
         try {
-            return entityManager.createQuery(
-                "SELECT a FROM Artikel a WHERE a.user = :user ORDER BY a.erstelltAm DESC", 
-                Artikel.class)
-                .setParameter("user", user)
-                .getResultList();
+            TypedQuery<Artikel> query = entityManager.createQuery(
+                "SELECT a FROM Artikel a WHERE a.user = :user ORDER BY a.erstellungsdatum DESC",
+                Artikel.class
+            );
+            query.setParameter("user", user);
+            return query.getResultList();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Fehler beim Abrufen der Artikel für Benutzer: " + user.getUsername(), e);
             return new ArrayList<>();
         }
     }

@@ -39,7 +39,7 @@ public class UserDAO {
             transaction.commit();
             LOGGER.info("Benutzer " + user.getUsername() + " erfolgreich gespeichert");
         } catch (Exception e) {
-            if (transaction.isActive()) {
+            if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
             LOGGER.log(Level.SEVERE, "Fehler beim Speichern des Benutzers", e);
@@ -47,7 +47,7 @@ public class UserDAO {
     }
 
     /**
-     * Überprüft, ob ein Benutzer Client (nicht Admin) ist.
+     * Überprüft die Anmeldedaten eines Benutzers.
      */
     public User isAdminOrClient(String username, String password) {
         if (entityManager == null) {
@@ -56,35 +56,23 @@ public class UserDAO {
         }
         
         try {
-            System.out.println("=== Login-Versuch Details in UserDAO ===");
-            System.out.println("Eingegebener Benutzername: " + username);
-            System.out.println("Eingegebener Passwort-Hash: " + password);
-            System.out.println("Hash-Länge (eingegeben): " + password.length());
+            LOGGER.info("Login-Versuch für Benutzer: " + username);
             
-            // Zuerst nur nach dem Benutzernamen suchen
             User foundUser = entityManager.createQuery(
                 "SELECT u FROM User u WHERE u.username = :uname", User.class)
                 .setParameter("uname", username)
                 .getSingleResult();
-                
-            System.out.println("Gefundener Benutzer: " + foundUser.getUsername());
-            System.out.println("Gespeicherter Hash in DB: " + foundUser.getPassword());
-            System.out.println("Hash-Länge (DB): " + foundUser.getPassword().length());
-            System.out.println("Hashes identisch? " + password.equals(foundUser.getPassword()));
-            System.out.println("Hash-Vergleich Details:");
-            System.out.println("Eingegeben [" + password + "]");
-            System.out.println("Gespeichert [" + foundUser.getPassword() + "]");
             
-            // Überprüfen, ob das Passwort übereinstimmt
-            if (foundUser.getPassword().equals(password)) {
-                System.out.println("Login erfolgreich - Passwort korrekt für: " + username);
+            if (foundUser != null && foundUser.getPassword().equals(password)) {
+                LOGGER.info("Login erfolgreich für Benutzer: " + username);
                 return foundUser;
-            } else {
-                System.out.println("Login fehlgeschlagen - Falsches Passwort für: " + username);
-                return null;
             }
+            
+            LOGGER.info("Login fehlgeschlagen - Falsches Passwort für: " + username);
+            return null;
+            
         } catch (NoResultException e) {
-            System.out.println("Login fehlgeschlagen - Kein Benutzer gefunden mit Username: " + username);
+            LOGGER.info("Login fehlgeschlagen - Kein Benutzer gefunden mit Username: " + username);
             return null;
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Login fehlgeschlagen - Unerwarteter Fehler", e);
