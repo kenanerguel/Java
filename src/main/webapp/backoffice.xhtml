@@ -25,21 +25,16 @@
                              required="true" decimalPlaces="2" />
 
                 <h:outputLabel for="einheit" value="Einheit:" />
-                <p:selectOneMenu id="einheit" value="#{mainController.einheitInput}" required="true">
-                    <f:selectItem itemLabel="Tonnen" itemValue="t" />
-                    <f:selectItem itemLabel="Kilotonnen" itemValue="kt" />
-                    <f:selectItem itemLabel="Megatonnen" itemValue="Mt" />
-                </p:selectOneMenu>
+                <h:selectOneMenu id="einheit" value="#{mainController.einheitInput}">
+                    <f:selectItem itemValue="Tonnen" itemLabel="Tonnen" />
+                </h:selectOneMenu>
 
-                <h:outputLabel for="beschreibung" value="Wissenschaftler:" />
-                <p:inputTextarea id="beschreibung" value="#{mainController.beschreibungInput}" 
-                               rows="1" cols="50">
-                    <f:validator validatorId="descriptionValidator" />
-                </p:inputTextarea>
+                <h:outputLabel value="Wissenschaftler:" />
+                <h:outputText value="#{mainController.userInput}" styleClass="scientist-name" />
 
                 <h:outputText />
                 <p:commandButton value="Daten speichern" action="#{mainController.saveCO2Data}" 
-                               update="backofficeForm messages" />
+                               update="backofficeForm messages" styleClass="save-button" />
             </h:panelGrid>
             <p:messages id="messages" autoUpdate="true" />
             
