@@ -1,33 +1,36 @@
 -- Tabellen löschen, falls sie existieren
-DROP TABLE IF EXISTS user_roles;
 DROP TABLE IF EXISTS artikel;
+DROP TABLE IF EXISTS user_roles;
 DROP TABLE IF EXISTS users;
 
 -- Benutzer-Tabelle erstellen
 CREATE TABLE users (
-    username VARCHAR(50) NOT NULL PRIMARY KEY,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    is_admin BOOLEAN NOT NULL DEFAULT FALSE
+    email VARCHAR(255),
+    first_name VARCHAR(255),
+    last_name VARCHAR(255)
 );
 
 -- Rollen-Tabelle erstellen
 CREATE TABLE user_roles (
-    username VARCHAR(50) NOT NULL,
-    role VARCHAR(50) NOT NULL,
-    PRIMARY KEY (username, role),
-    FOREIGN KEY (username) REFERENCES users(username)
+    user_id BIGINT,
+    role VARCHAR(255),
+    PRIMARY KEY (user_id, role),
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 -- Artikel-Tabelle erstellen
 CREATE TABLE artikel (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    land VARCHAR(100) NOT NULL,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    land VARCHAR(255) NOT NULL,
     jahr INTEGER NOT NULL,
-    co2ausstoss DOUBLE NOT NULL,
-    einheit VARCHAR(10) DEFAULT 'Tonnen',
+    co2 DOUBLE NOT NULL,
+    einheit VARCHAR(255) NOT NULL,
     beschreibung TEXT,
-    status VARCHAR(20) NOT NULL DEFAULT 'pending',
-    user_id VARCHAR(50),
-    erstellt_am TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(username)
+    status VARCHAR(255) NOT NULL,
+    erstellungsdatum TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id BIGINT,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 ); 
