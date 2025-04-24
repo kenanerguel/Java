@@ -2,13 +2,13 @@
 DELETE FROM user_roles;
 DELETE FROM users;
 
--- Admin-Benutzer anlegen
-INSERT INTO users (username, password) VALUES ('admin', '$2a$10$PrI5Gk9L.tTZNXT9TK7Qo.V2V/SZ7G7tV3hSHOKh.D9VIUff3YHJm');
+-- Admin-Benutzer anlegen (Passwort: 'admin')
+INSERT INTO users (username, password) VALUES ('admin', 'jGl25bVBBBW96Qi9Te4V37Fnqchz/Eu4qB9vKrRIqRg=');
 INSERT INTO user_roles (username, role) VALUES ('admin', 'ADMIN');
 
--- Wissenschaftler anlegen
-INSERT INTO users (username, password) VALUES ('Doktor Niklas', '$2a$10$PrI5Gk9L.tTZNXT9TK7Qo.V2V/SZ7G7tV3hSHOKh.D9VIUff3YHJm');
+-- Wissenschaftler anlegen (Passwort: 'scientist')
+INSERT INTO users (username, password) VALUES ('Doktor Niklas', 'Fe26+nqJqKRhxG7G7FBlzKb8H14dR5X6B6Vz3zcvGhI=');
 INSERT INTO user_roles (username, role) VALUES ('Doktor Niklas', 'SCIENTIST');
 
-INSERT INTO users (username, password) VALUES ('Nina Maler', '$2a$10$PrI5Gk9L.tTZNXT9TK7Qo.V2V/SZ7G7tV3hSHOKh.D9VIUff3YHJm');
+INSERT INTO users (username, password) VALUES ('Nina Maler', 'Fe26+nqJqKRhxG7G7FBlzKb8H14dR5X6B6Vz3zcvGhI=');
 INSERT INTO user_roles (username, role) VALUES ('Nina Maler', 'SCIENTIST'); 

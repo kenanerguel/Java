@@ -2,171 +2,108 @@ package com.mein.projekt.auth;
 
 import com.mein.projekt.model.Artikel;
 import com.mein.projekt.model.User;
-import com.mein.projekt.util.EntityManagerProvider;
-import com.mein.projekt.dao.ArtikelDAO;
-import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 
-@Named("shop")
-@SessionScoped
-public class Shop implements Serializable {
+@Named
+@ApplicationScoped
+public class Shop {
 
     private static final Logger LOGGER = Logger.getLogger(Shop.class.getName());
-    
+
     @Inject
-    private EntityManagerProvider entityManagerProvider;
-    
-    private ArtikelDAO artikelDAO;
-    
-    private List<String> countries;
-    private String selectedCountry;
-    private Artikel currentArtikel;
+    private EntityManager entityManager;
+
+    public static final List<Artikel> baseSortiment = new ArrayList<>();
+
+    static {
+        // Beispiel-Artikel für die Initialisierung
+        Artikel artikel1 = new Artikel();
+        artikel1.setLand("Deutschland");
+        artikel1.setJahr(2023);
+        artikel1.setCo2Ausstoss(7.7);
+        artikel1.setEinheit("t");
+        artikel1.setBeschreibung("CO₂-Ausstoß pro Kopf");
+        artikel1.setStatus("approved");
+        baseSortiment.add(artikel1);
+
+        Artikel artikel2 = new Artikel();
+        artikel2.setLand("Frankreich");
+        artikel2.setJahr(2023);
+        artikel2.setCo2Ausstoss(4.5);
+        artikel2.setEinheit("t");
+        artikel2.setBeschreibung("CO₂-Ausstoß pro Kopf");
+        artikel2.setStatus("approved");
+        baseSortiment.add(artikel2);
+    }
 
     public List<Artikel> getSortiment() {
         return baseSortiment;
     }
 
-    public static final List<Artikel> baseSortiment = new ArrayList<>(Arrays.asList(
-            createArtikel("Deutschland", 8.5, 2023),
-            createArtikel("USA", 15.2, 2023),
-            createArtikel("Frankreich", 5.4, 2023)
-    ));
-    
-    private static Artikel createArtikel(String land, double co2, int jahr) {
-        Artikel a = new Artikel();
-        a.setLand(land);
-        a.setCo2Ausstoss(co2);
-        a.setJahr(jahr);
-        a.setBeschreibung("Wissenschaftler");
-        a.setStatus("approved");
-        return a;
-    }
-
-    public Shop() {
-        // Leerer Konstruktor für CDI
-    }
-    
-    @Inject
-    public void setArtikelDAO(EntityManagerProvider entityManagerProvider) {
-        try {
-            this.artikelDAO = new ArtikelDAO();
-            this.artikelDAO.setEntityManagerProvider(entityManagerProvider);
-            this.artikelDAO.init();
-            LOGGER.info("ArtikelDAO erfolgreich initialisiert");
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Fehler beim Initialisieren des ArtikelDAO", e);
-        }
-    }
-
-    public List<String> getCountries() {
-        if (countries == null) {
-            initCountries();
-        }
-        return countries;
-    }
-    
-    private void initCountries() {
-        try {
-            countries = artikelDAO.getAllCountries();
-            LOGGER.info("Länder erfolgreich geladen: " + countries.size());
-        } catch (Exception e) {
-            countries = new ArrayList<>();
-            LOGGER.log(Level.SEVERE, "Fehler beim Laden der Länder", e);
-        }
-    }
-
-    public void onCountryChange() {
-        if (selectedCountry != null && !selectedCountry.isEmpty()) {
-            try {
-                LOGGER.info("Lade Artikel für Land: " + selectedCountry);
-                currentArtikel = artikelDAO.getAktuellerArtikelByLand(selectedCountry);
-                if (currentArtikel != null) {
-                    LOGGER.info("Artikel gefunden: " + currentArtikel.getCo2Ausstoss() + " für " + selectedCountry);
-                } else {
-                    LOGGER.warning("Kein Artikel für Land gefunden: " + selectedCountry);
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Fehler beim Laden des Artikels für Land: " + selectedCountry, e);
-                currentArtikel = null;
-            }
-        } else {
-            currentArtikel = null;
-        }
-    }
-    
-    public String getSelectedCountry() {
-        return selectedCountry;
-    }
-
-    public void setSelectedCountry(String selectedCountry) {
-        this.selectedCountry = selectedCountry;
-    }
-
-    public Artikel getCurrentArtikel() {
-        return currentArtikel;
-    }
-
-    /**
-     * Handhabt das Speichern eines neuen Artikels von einem Benutzer.
-     */
-    public void handleArtikel(Artikel artikel, User user) {
-        try {
-            LOGGER.info("Speichere Artikel für " + artikel.getLand() + " mit CO2: " + artikel.getCo2Ausstoss());
-            artikel.setUser(user);
-            artikelDAO.saveArtikel(artikel);
-            LOGGER.info("Artikel erfolgreich gespeichert");
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Fehler beim Speichern des Artikels", e);
-        }
-    }
-
-    /**
-     * Aktualisiert einen bestehenden Artikel.
-     */
-    public void updateArtikel(Artikel artikel) {
-        try {
-            LOGGER.info("Aktualisiere Artikel für " + artikel.getLand() + " mit Status: " + artikel.getStatus());
-            artikelDAO.updateArtikel(artikel);
-            LOGGER.info("Artikel erfolgreich aktualisiert");
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Fehler beim Aktualisieren des Artikels", e);
-        }
-    }
-
-    /**
-     * Holt alle ausstehenden Artikel.
-     */
     public List<Artikel> getPendingArtikel() {
+        if (entityManager == null) {
+            LOGGER.severe("EntityManager ist null - kann keine ausstehenden Artikel abrufen");
+            return new ArrayList<>();
+        }
+
         try {
-            LOGGER.info("Hole ausstehende Artikel");
-            return artikelDAO.getPendingArtikel();
+            return entityManager.createQuery(
+                "SELECT a FROM Artikel a WHERE a.status = 'pending'", 
+                Artikel.class
+            ).getResultList();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Fehler beim Laden der ausstehenden Artikel", e);
+            LOGGER.log(Level.SEVERE, "Fehler beim Abrufen der ausstehenden Artikel", e);
             return new ArrayList<>();
         }
     }
 
-    /**
-     * Holt alle Artikel eines bestimmten Benutzers.
-     */
     public List<Artikel> getArtikelByUser(User user) {
+        if (entityManager == null) {
+            LOGGER.severe("EntityManager ist null - kann keine Artikel für Benutzer abrufen");
+            return new ArrayList<>();
+        }
+
         try {
-            LOGGER.info("Hole Artikel für Benutzer: " + user.getUsername());
-            return artikelDAO.getArtikelByUser(user);
+            return entityManager.createQuery(
+                "SELECT a FROM Artikel a WHERE a.user = :user", 
+                Artikel.class
+            )
+            .setParameter("user", user)
+            .getResultList();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Fehler beim Laden der Artikel für Benutzer: " + user.getUsername(), e);
+            LOGGER.log(Level.SEVERE, "Fehler beim Abrufen der Artikel für Benutzer: " + user.getUsername(), e);
             return new ArrayList<>();
         }
     }
 
-    public List<Number> handleLatestValues(String country) {
-        return artikelDAO.getLatestValues(country);
+    public void init() {
+        LOGGER.info("Initialisiere Shop");
+        if (entityManager == null) {
+            LOGGER.severe("EntityManager ist null - konnte nicht initialisiert werden");
+            return;
+        }
+
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            for (Artikel artikel : baseSortiment) {
+                entityManager.persist(artikel);
+            }
+            transaction.commit();
+            LOGGER.info("Basis-Sortiment erfolgreich initialisiert");
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            LOGGER.log(Level.SEVERE, "Fehler beim Initialisieren des Shops", e);
+        }
     }
 }
