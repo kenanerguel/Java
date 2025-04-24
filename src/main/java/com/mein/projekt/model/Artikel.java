@@ -34,7 +34,7 @@ public class Artikel implements Serializable {
     @Column(name = "jahr", nullable = false)
     private Integer jahr;
 
-    @Column(name = "co2ausstoss", nullable = false)
+    @Column(name = "co2ausstoss", nullable = true)
     private Double co2Ausstoss;
     
     @Column(name = "einheit")
@@ -54,6 +54,7 @@ public class Artikel implements Serializable {
     public Artikel() {
         this.status = "pending";
         this.erstelltAm = new Date();
+        this.co2Ausstoss = 0.0;
     }
     
     public Artikel(String land, Double co2Ausstoss, String beschreibung, Integer jahr) {

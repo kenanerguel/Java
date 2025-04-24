@@ -48,8 +48,8 @@ public class EntityManagerProvider implements Serializable {
             init();
         }
         if (entityManager == null || !entityManager.isOpen()) {
-            LOGGER.info("EntityManager ist geschlossen oder null, erstelle einen neuen");
-            entityManager = entityManagerFactory.createEntityManager();
+            cleanup();
+            init();
         }
         return entityManager;
     }
@@ -59,30 +59,19 @@ public class EntityManagerProvider implements Serializable {
     }
     
     private void cleanup() {
-        initialized = false;
-        
-        if (entityManager != null && entityManager.isOpen()) {
-            try {
-                LOGGER.info("Schließe EntityManager");
+        try {
+            if (entityManager != null && entityManager.isOpen()) {
                 entityManager.close();
-                LOGGER.info("EntityManager wurde geschlossen");
-            } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "Fehler beim Schließen des EntityManagers", e);
-            } finally {
-                entityManager = null;
             }
-        }
-        
-        if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
-            try {
-                LOGGER.info("Schließe EntityManagerFactory");
+            if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
                 entityManagerFactory.close();
-                LOGGER.info("EntityManagerFactory wurde geschlossen");
-            } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "Fehler beim Schließen der EntityManagerFactory", e);
-            } finally {
-                entityManagerFactory = null;
             }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler beim Aufräumen der EntityManager-Ressourcen", e);
+        } finally {
+            entityManager = null;
+            entityManagerFactory = null;
+            initialized = false;
         }
     }
 }

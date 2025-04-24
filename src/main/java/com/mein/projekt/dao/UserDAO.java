@@ -68,7 +68,11 @@ public class UserDAO {
      * Überprüft, ob ein Benutzer Admin oder Client ist.
      */
     public User isAdminOrClient(String username, String password) {
+        EntityTransaction transaction = null;
         try {
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            
             TypedQuery<User> query = entityManager.createQuery(
                 "SELECT u FROM User u WHERE u.username = :username AND u.password = :password",
                 User.class);
@@ -76,12 +80,19 @@ public class UserDAO {
             query.setParameter("password", password);
             
             User user = query.getSingleResult();
+            transaction.commit();
             LOGGER.info("Benutzer gefunden: " + username);
             return user;
         } catch (NoResultException e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
             LOGGER.info("Kein Benutzer gefunden für: " + username);
             return null;
         } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
             LOGGER.log(Level.SEVERE, "Fehler beim Suchen des Benutzers: " + username, e);
             return null;
         }
