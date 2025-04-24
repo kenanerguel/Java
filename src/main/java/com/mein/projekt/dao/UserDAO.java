@@ -74,9 +74,10 @@ public class UserDAO {
         }
         
         try {
-            LOGGER.info("=== Login-Versuch Details ===");
+            LOGGER.info("=== Login-Versuch Details in UserDAO ===");
             LOGGER.info("Eingegebener Benutzername: " + username);
             LOGGER.info("Eingegebener Passwort-Hash: " + password);
+            LOGGER.info("Hash-Länge (eingegeben): " + password.length());
             
             // Zuerst nur nach dem Benutzernamen suchen
             User foundUser = entityManager.createQuery(
@@ -86,8 +87,11 @@ public class UserDAO {
                 
             LOGGER.info("Gefundener Benutzer: " + foundUser.getUsername());
             LOGGER.info("Gespeicherter Hash in DB: " + foundUser.getPassword());
-            LOGGER.info("Hash-Längen - Eingegeben: " + password.length() + ", Gespeichert: " + foundUser.getPassword().length());
+            LOGGER.info("Hash-Länge (DB): " + foundUser.getPassword().length());
             LOGGER.info("Hashes identisch? " + password.equals(foundUser.getPassword()));
+            LOGGER.info("Hash-Vergleich Details:");
+            LOGGER.info("Eingegeben [" + password + "]");
+            LOGGER.info("Gespeichert [" + foundUser.getPassword() + "]");
             
             // Überprüfen, ob das Passwort übereinstimmt
             if (foundUser.getPassword().equals(password)) {

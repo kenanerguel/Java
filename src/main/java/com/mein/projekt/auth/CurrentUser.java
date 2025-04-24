@@ -49,9 +49,13 @@ public class CurrentUser implements Serializable {
                 this.userDAO.setEntityManagerProvider(entityManagerProvider);
             }
             
+            LOGGER.info("=== Login-Versuch in CurrentUser ===");
+            LOGGER.info("Benutzername: " + username);
+            LOGGER.info("Rohes Passwort (Länge): " + password.length());
+            
             String passHash = hashPassword(password);
-            LOGGER.info("Versuche Login für Benutzer: " + username);
             LOGGER.info("Generierter Hash: " + passHash);
+            LOGGER.info("Hash-Länge: " + passHash.length());
             
             user = userDAO.isAdminOrClient(username, passHash);
             
@@ -81,7 +85,12 @@ public class CurrentUser implements Serializable {
             // Convert the password string to bytes using UTF-8 encoding
             byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
             // Convert the byte array to a Base64 string
-            return Base64.getEncoder().encodeToString(hash);
+            String result = Base64.getEncoder().encodeToString(hash);
+            LOGGER.info("Password hashing details:");
+            LOGGER.info("Input password length: " + password.length());
+            LOGGER.info("Generated hash: " + result);
+            LOGGER.info("Hash length: " + result.length());
+            return result;
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Hashen des Passworts", e);
             throw new RuntimeException(e);
