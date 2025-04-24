@@ -66,10 +66,6 @@ public class UserDAO {
 
     /**
      * Überprüft, ob ein Benutzer Client (nicht Admin) ist.
-     * Beispielhafte Abfrage: SELECT u FROM User u WHERE ...
-     * Hier wird angenommen, dass User ein Feld "admin" hat,
-     * das angibt, ob er Admin ist oder nicht.
-     * Überprüft, ob ein Benutzer Admin oder Client ist.
      */
     public User isAdminOrClient(String username, String password) {
         if (entityManager == null) {
@@ -78,8 +74,9 @@ public class UserDAO {
         }
         
         try {
-            LOGGER.info("Suche Benutzer mit Username: " + username);
-            LOGGER.info("Verwendeter Passwort-Hash: " + password);
+            LOGGER.info("=== Login-Versuch Details ===");
+            LOGGER.info("Eingegebener Benutzername: " + username);
+            LOGGER.info("Eingegebener Passwort-Hash: " + password);
             
             // Zuerst nur nach dem Benutzernamen suchen
             User foundUser = entityManager.createQuery(
@@ -88,21 +85,23 @@ public class UserDAO {
                 .getSingleResult();
                 
             LOGGER.info("Gefundener Benutzer: " + foundUser.getUsername());
-            LOGGER.info("Gespeicherter Hash: " + foundUser.getPassword());
+            LOGGER.info("Gespeicherter Hash in DB: " + foundUser.getPassword());
+            LOGGER.info("Hash-Längen - Eingegeben: " + password.length() + ", Gespeichert: " + foundUser.getPassword().length());
+            LOGGER.info("Hashes identisch? " + password.equals(foundUser.getPassword()));
             
             // Überprüfen, ob das Passwort übereinstimmt
             if (foundUser.getPassword().equals(password)) {
-                LOGGER.info("Passwort korrekt für Benutzer: " + username);
+                LOGGER.info("Login erfolgreich - Passwort korrekt für: " + username);
                 return foundUser;
             } else {
-                LOGGER.warning("Passwort falsch für Benutzer: " + username);
+                LOGGER.warning("Login fehlgeschlagen - Falsches Passwort für: " + username);
                 return null;
             }
         } catch (NoResultException e) {
-            LOGGER.warning("Kein Benutzer gefunden mit Username: " + username);
+            LOGGER.warning("Login fehlgeschlagen - Kein Benutzer gefunden mit Username: " + username);
             return null;
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Fehler bei der Benutzersuche", e);
+            LOGGER.log(Level.SEVERE, "Login fehlgeschlagen - Unerwarteter Fehler", e);
             return null;
         }
     }

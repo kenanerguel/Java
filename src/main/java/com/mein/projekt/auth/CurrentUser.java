@@ -76,8 +76,11 @@ public class CurrentUser implements Serializable {
 
     private static String hashPassword(String password) {
         try {
+            // Using SHA-256 for password hashing
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            // Convert the password string to bytes using UTF-8 encoding
             byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            // Convert the byte array to a Base64 string
             return Base64.getEncoder().encodeToString(hash);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Hashen des Passworts", e);
