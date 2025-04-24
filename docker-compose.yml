@@ -13,7 +13,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./src/main/resources/init_users.sql:/docker-entrypoint-initdb.d/init_users.sql
+      - ./src/main/resources/init_database.sql:/docker-entrypoint-initdb.d/init_database.sql
     command: --default-authentication-plugin=mysql_native_password
     restart: unless-stopped
 
