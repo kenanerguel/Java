@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glassfish-web-app PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 Servlet 3.0//EN" "http://glassfish.org/dtds/glassfish-web-app_3_0-1.dtd">
+<glassfish-web-app>
+    <class-loader delegate="false"/>
+    <parameter-encoding default-charset="UTF-8"/>
+    <property name="alternatedocroot_1" value="from=/files/* dir=/tmp"/>
+    <property name="useMyFaces" value="false"/>
+    <property name="useBundledJsf" value="true"/>
+    <property name="enableWebContainerExtensions" value="true"/>
+    <property name="preserveRequestURLOnForward" value="true"/>
+    <jsp-config>
+        <property name="keepgenerated" value="true">
+            <description>Keep a copy of the generated servlet class' java code.</description>
+        </property>
+    </jsp-config>
+    <property name="com.sun.faces.enableRestoreView11Compatibility" value="true"/>
+</glassfish-web-app> 
