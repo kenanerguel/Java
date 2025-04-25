@@ -16,8 +16,11 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Artikel> artikelListe = new ArrayList<>();
 
-
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
@@ -39,6 +42,14 @@ public class User {
     }
 
     // Getter & Setter
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getUsername() {
         return username;
     }
