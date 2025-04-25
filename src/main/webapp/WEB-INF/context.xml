@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
-    <Resource name="jdbc/co2db" 
+    <Resource name="jdbc/co2db"
               auth="Container"
               type="javax.sql.DataSource"
               maxTotal="100"
@@ -9,7 +9,7 @@
               username="root"
               password="root"
               driverClassName="com.mysql.cj.jdbc.Driver"
-              url="jdbc:mysql://like_hero_mysql:3306/co2db?useSSL=false&amp;allowPublicKeyRetrieval=true"
+              url="jdbc:mysql://localhost:3306/co2db?useSSL=false&amp;serverTimezone=UTC"
               validationQuery="SELECT 1"
               testOnBorrow="true"/>
 </Context> 
