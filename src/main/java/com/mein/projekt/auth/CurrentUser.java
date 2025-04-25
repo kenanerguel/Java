@@ -78,7 +78,7 @@ public class CurrentUser implements Serializable {
         this.user = null;
     }
 
-    private static String hashPassword(String username, String password) {
+    public static String hashPassword(String username, String password) {
         try {
             MessageDigest digester = MessageDigest.getInstance("SHA-512");
             byte[] hashBytes = digester.digest((password + salt).getBytes(StandardCharsets.UTF_8));

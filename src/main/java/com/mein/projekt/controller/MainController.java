@@ -2,6 +2,7 @@ package com.mein.projekt.controller;
 
 import com.mein.projekt.auth.CurrentUser;
 import com.mein.projekt.auth.Shop;
+import com.mein.projekt.auth.LoginDiagnostic;
 import com.mein.projekt.model.Artikel;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
@@ -28,6 +29,9 @@ public class MainController implements Serializable {
 
     @Inject
     private CurrentUser currentUser;
+
+    @Inject
+    private LoginDiagnostic loginDiagnostic;
 
     // Neue Eingabefelder für CO₂-Daten
     private String landInput;
@@ -78,7 +82,37 @@ public class MainController implements Serializable {
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Ein unerwarteter Fehler ist aufgetreten beim Login für Benutzer: " + userInput, e);
-            failureMessage = "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.";
+            failureMessage = "Login fehlgeschlagen: Benutzername oder Passwort falsch";
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", failureMessage));
+            return "";
+        }
+    }
+
+    // Login-Diagnose
+    public String diagnoseLogin() {
+        try {
+            LoginDiagnostic.LoginDiagnosticResult result = loginDiagnostic.diagnoseLogin(userInput, passwordInput);
+            LOGGER.info("Login-Diagnose durchgeführt:\n" + result.toString());
+            
+            if (!result.isDatabaseConnection()) {
+                failureMessage = "Datenbankverbindung fehlgeschlagen";
+            } else if (!result.isUserExists()) {
+                failureMessage = "Benutzer existiert nicht";
+            } else if (!result.isPasswordHashing()) {
+                failureMessage = "Passwort-Hashing fehlgeschlagen";
+            } else if (!result.isLoginAttempt()) {
+                failureMessage = "Login fehlgeschlagen: Benutzername oder Passwort falsch";
+            } else {
+                failureMessage = "Login-Diagnose erfolgreich";
+            }
+            
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Diagnose", failureMessage));
+            return "";
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler bei der Login-Diagnose", e);
+            failureMessage = "Fehler bei der Login-Diagnose: " + e.getMessage();
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", failureMessage));
             return "";

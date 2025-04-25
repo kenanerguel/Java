@@ -29,6 +29,11 @@
                                    update="loginForm messages"
                                    styleClass="ui-button-primary"
                                    style="width: 100%;" />
+                    <p:commandButton value="Login-Diagnose"
+                                   action="#{mainController.diagnoseLogin}"
+                                   update="loginForm messages"
+                                   styleClass="ui-button-secondary"
+                                   style="width: 100%; margin-top: 10px;" />
                     <p:messages id="messages" showDetail="true" closable="true" style="margin-top: 15px;"/>
                 </p:panel>
             </h:form>
