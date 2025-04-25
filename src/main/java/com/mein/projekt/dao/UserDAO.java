@@ -11,6 +11,7 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jakarta.persistence.criteria.CriteriaBuilder;
 
 @Named
 @ApplicationScoped
@@ -19,7 +20,10 @@ public class UserDAO {
     private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
     
     @Inject
+    private EntityManagerProvider entityManagerProvider;
+    
     private EntityManager entityManager;
+    private CriteriaBuilder criteriaBuilder;
 
     // Standardkonstruktor für CDI
     public UserDAO() {
@@ -34,10 +38,20 @@ public class UserDAO {
     
     public void setEntityManagerProvider(EntityManagerProvider provider) {
         try {
+            if (provider == null) {
+                LOGGER.severe("EntityManagerProvider ist null");
+                throw new IllegalArgumentException("EntityManagerProvider darf nicht null sein");
+            }
+            this.entityManagerProvider = provider;
             this.entityManager = provider.getEntityManager();
-            LOGGER.info("EntityManager erfolgreich gesetzt");
+            if (this.entityManager == null) {
+                LOGGER.severe("EntityManager konnte nicht initialisiert werden");
+                throw new IllegalStateException("EntityManager konnte nicht initialisiert werden");
+            }
+            LOGGER.info("EntityManager erfolgreich initialisiert");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Setzen des EntityManagers", e);
+            throw new RuntimeException("Fehler beim Initialisieren des EntityManagers", e);
         }
     }
 
@@ -95,6 +109,10 @@ public class UserDAO {
             }
             LOGGER.log(Level.SEVERE, "Fehler beim Suchen des Benutzers: " + username, e);
             return null;
+        } finally {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
         }
     }
 

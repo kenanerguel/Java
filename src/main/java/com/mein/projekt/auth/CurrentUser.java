@@ -81,7 +81,7 @@ public class CurrentUser implements Serializable {
     private static String hashPassword(String username, String password) {
         try {
             MessageDigest digester = MessageDigest.getInstance("SHA-512");
-            byte[] hashBytes = digester.digest((password).getBytes(StandardCharsets.UTF_8));
+            byte[] hashBytes = digester.digest((password + salt).getBytes(StandardCharsets.UTF_8));
             return new String(Base64.getEncoder().encode(hashBytes));
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Hashen des Passworts", e);

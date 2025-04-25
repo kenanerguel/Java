@@ -14,10 +14,14 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Named
 @SessionScoped
 public class MainController implements Serializable {
+
+    private static final Logger LOGGER = Logger.getLogger(MainController.class.getName());
 
     @Inject
     private Shop shop;
@@ -53,23 +57,27 @@ public class MainController implements Serializable {
     // Login-Logik
     public String login() {
         try {
+            LOGGER.info("Login-Versuch für Benutzer: " + userInput);
             currentUser.reset();
             currentUser.handleUser(userInput, passwordInput);
 
             if (!currentUser.isValid()) {
                 failureMessage = "Login fehlgeschlagen: Benutzername oder Passwort falsch";
+                LOGGER.warning("Login fehlgeschlagen für Benutzer: " + userInput);
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", failureMessage));
                 return "";
             }
 
             failureMessage = "";
+            LOGGER.info("Login erfolgreich für Benutzer: " + userInput + ", isAdmin: " + currentUser.getUser().isAdmin());
             if (currentUser.getUser().isAdmin()) {
                 return "admin/pending.xhtml?faces-redirect=true";
             } else {
                 return "myarticles.xhtml?faces-redirect=true";
             }
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Ein unerwarteter Fehler ist aufgetreten beim Login für Benutzer: " + userInput, e);
             failureMessage = "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.";
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", failureMessage));
