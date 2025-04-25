@@ -13,13 +13,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.annotation.PostConstruct;
-import org.mindrot.jbcrypt.BCrypt;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Base64;
 
 @Named
 @ApplicationScoped
 public class UserDAO {
 
     private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
+    private static final String salt = "vXsia8c04PhBtnG3isvjlemj7Bm6rAhBR8JRkf2z";
     
     @Inject
     private EntityManagerProvider entityManagerProvider;
@@ -72,7 +75,7 @@ public class UserDAO {
         }
         
         // Hash the password before saving
-        user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
+        user.setPassword(hashPassword(user.getUsername(), user.getPassword()));
         
         EntityTransaction transaction = entityManager.getTransaction();
         try {
@@ -100,8 +103,9 @@ public class UserDAO {
             
             User user = query.getSingleResult();
             
-            // Verify the password using BCrypt
-            if (user != null && BCrypt.checkpw(password, user.getPassword())) {
+            // Hash the password and verify
+            String hashedPassword = hashPassword(username, password);
+            if (user != null && user.getPassword().equals(hashedPassword)) {
                 LOGGER.info("Benutzer gefunden und authentifiziert: " + username);
                 return user;
             }
@@ -117,6 +121,17 @@ public class UserDAO {
         }
     }
 
+    private String hashPassword(String username, String password) {
+        try {
+            MessageDigest digester = MessageDigest.getInstance("SHA-512");
+            byte[] hashBytes = digester.digest((username + password + salt).getBytes(StandardCharsets.UTF_8));
+            return new String(Base64.getEncoder().encode(hashBytes));
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler beim Hashen des Passworts", e);
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * Main-Methode für Tests
      */
@@ -124,9 +139,18 @@ public class UserDAO {
         EntityManagerProvider entityManagerProvider = new EntityManagerProvider();
         UserDAO userDAO = new UserDAO(entityManagerProvider);
 
+        // Test password hash
+        String testPassword = "admin123";
+        String username = "admin";
+        String generatedHash = userDAO.hashPassword(username, testPassword);
+        System.out.println("Password verification test:");
+        System.out.println("Username: " + username);
+        System.out.println("Password: " + testPassword);
+        System.out.println("Generated hash: " + generatedHash);
+        
         // Test-Logik: Admin/Client prüfen
-        System.out.println("root isAdmin? " + userDAO.isAdminOrClient("root", "dXRcRLCMz+kUxl9QORmRxyPfliMK/6hF1zild9sVmuu4BHCemIAfqAH8GXjbomZAFmjdAJ0F6nESJhDjCraIRQ==")); // sollte true sein
-        System.out.println("Wissenschaftler_1 isClient? " + userDAO.isAdminOrClient("Wissenschaftler_1", "+sasj0x49+vlfzERhRBCRHazOgEOo2WWljaclLTWv9M7xdYJvX0g0hAxFWhErpEebMCQox83NijXNi4AoC3Jhw==")); // sollte true sein
+        System.out.println("\nadmin isAdmin? " + userDAO.isAdminOrClient("admin", "admin123"));
+        System.out.println("science1 isClient? " + userDAO.isAdminOrClient("science1", "pass123"));
     }
 }
 
