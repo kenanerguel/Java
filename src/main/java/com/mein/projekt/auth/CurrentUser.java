@@ -50,7 +50,7 @@ public class CurrentUser implements Serializable {
     public void handleUser(String username, String password) {
         try {
             LOGGER.info("Login-Versuch für Benutzer: " + username);
-            String passHash = hashPassword(password);
+            String passHash = hashPassword(username, password);
             user = userDAO.isAdminOrClient(username, passHash);
             
             if (user != null) {
@@ -78,10 +78,10 @@ public class CurrentUser implements Serializable {
         this.user = null;
     }
 
-    private static String hashPassword(String password) {
+    private static String hashPassword(String username, String password) {
         try {
             MessageDigest digester = MessageDigest.getInstance("SHA-512");
-            byte[] hashBytes = digester.digest((password + salt).getBytes(StandardCharsets.UTF_8));
+            byte[] hashBytes = digester.digest((username + password + salt).getBytes(StandardCharsets.UTF_8));
             return new String(Base64.getEncoder().encode(hashBytes));
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Hashen des Passworts", e);
