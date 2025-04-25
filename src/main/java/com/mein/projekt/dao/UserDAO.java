@@ -12,6 +12,8 @@ import jakarta.persistence.TypedQuery;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.annotation.PostConstruct;
+import org.mindrot.jbcrypt.BCrypt;
 
 @Named
 @ApplicationScoped
@@ -28,6 +30,11 @@ public class UserDAO {
     // Standardkonstruktor für CDI
     public UserDAO() {
         LOGGER.info("UserDAO wurde mit Standard-Konstruktor erstellt");
+    }
+    
+    @PostConstruct
+    public void init() {
+        setEntityManagerProvider(entityManagerProvider);
     }
     
     // Konstruktor für manuelle Instanziierung (z.B. in main Methode)
@@ -64,6 +71,9 @@ public class UserDAO {
             return;
         }
         
+        // Hash the password before saving
+        user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
+        
         EntityTransaction transaction = entityManager.getTransaction();
         try {
             transaction.begin();
@@ -82,37 +92,28 @@ public class UserDAO {
      * Überprüft, ob ein Benutzer Admin oder Client ist.
      */
     public User isAdminOrClient(String username, String password) {
-        EntityTransaction transaction = null;
         try {
-            transaction = entityManager.getTransaction();
-            transaction.begin();
-            
             TypedQuery<User> query = entityManager.createQuery(
-                "SELECT u FROM User u WHERE u.username = :username AND u.password = :password",
+                "SELECT u FROM User u WHERE u.username = :username",
                 User.class);
             query.setParameter("username", username);
-            query.setParameter("password", password);
             
             User user = query.getSingleResult();
-            transaction.commit();
-            LOGGER.info("Benutzer gefunden: " + username);
-            return user;
-        } catch (NoResultException e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
+            
+            // Verify the password using BCrypt
+            if (user != null && BCrypt.checkpw(password, user.getPassword())) {
+                LOGGER.info("Benutzer gefunden und authentifiziert: " + username);
+                return user;
             }
+            
+            LOGGER.info("Passwort falsch für Benutzer: " + username);
+            return null;
+        } catch (NoResultException e) {
             LOGGER.info("Kein Benutzer gefunden für: " + username);
             return null;
         } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
             LOGGER.log(Level.SEVERE, "Fehler beim Suchen des Benutzers: " + username, e);
             return null;
-        } finally {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
         }
     }
 

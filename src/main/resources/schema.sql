@@ -25,10 +25,10 @@ CREATE TABLE IF NOT EXISTS countries (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert default admin user if not exists
+-- Insert default admin user if not exists (password: admin)
 INSERT INTO users (username, password, is_admin) 
-VALUES ('admin', '$2a$10$X7G3Y5J9Z1B2C4D6E8F0G1H2I3J4K5L6M7N8O9P0Q1R2S3T4U5V6W7X8Y9Z', 1)
-ON DUPLICATE KEY UPDATE id=id;
+VALUES ('admin', '$2a$10$qPOYBWn9dFAuLZvLhBWqEeZqZKnGGXizbanYxcpYxGVr0yZxvMhGi', 1)
+ON DUPLICATE KEY UPDATE password='$2a$10$qPOYBWn9dFAuLZvLhBWqEeZqZKnGGXizbanYxcpYxGVr0yZxvMhGi';
 
 -- Insert some default countries if not exists
 INSERT INTO countries (name, code) VALUES

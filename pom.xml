@@ -123,6 +123,13 @@
             <version>8.3.0</version>
         </dependency>
 
+        <!-- Password Hashing -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
+
         <!-- LanguageTool -->
         <dependency>
             <groupId>org.languagetool</groupId>
