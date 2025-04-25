@@ -1,24 +1,12 @@
 -- Tabellen löschen, falls sie existieren
 DROP TABLE IF EXISTS artikel;
-DROP TABLE IF EXISTS user_roles;
 DROP TABLE IF EXISTS users;
 
 -- Benutzer-Tabelle erstellen
 CREATE TABLE users (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(255) NOT NULL UNIQUE,
+    username VARCHAR(255) PRIMARY KEY,
     password VARCHAR(255) NOT NULL,
-    email VARCHAR(255),
-    first_name VARCHAR(255),
-    last_name VARCHAR(255)
-);
-
--- Rollen-Tabelle erstellen
-CREATE TABLE user_roles (
-    user_id BIGINT,
-    role VARCHAR(255),
-    PRIMARY KEY (user_id, role),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- Artikel-Tabelle erstellen
@@ -30,7 +18,7 @@ CREATE TABLE artikel (
     einheit VARCHAR(255) NOT NULL,
     beschreibung TEXT,
     status VARCHAR(255) NOT NULL,
-    erstellungsdatum TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    user_id BIGINT,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    erstellt_am TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id VARCHAR(255),
+    FOREIGN KEY (user_id) REFERENCES users(username)
 ); 
