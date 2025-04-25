@@ -52,21 +52,28 @@ public class MainController implements Serializable {
 
     // Login-Logik
     public String login() {
-        currentUser.reset();
-        currentUser.handleUser(userInput, passwordInput);
+        try {
+            currentUser.reset();
+            currentUser.handleUser(userInput, passwordInput);
 
-        if (!currentUser.isValid()) {
-            failureMessage = "Login fehlgeschlagen!";
+            if (!currentUser.isValid()) {
+                failureMessage = "Login fehlgeschlagen: Benutzername oder Passwort falsch";
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", failureMessage));
+                return "";
+            }
+
+            failureMessage = "";
+            if (currentUser.getUser().isAdmin()) {
+                return "admin/pending.xhtml?faces-redirect=true";
+            } else {
+                return "myarticles.xhtml?faces-redirect=true";
+            }
+        } catch (Exception e) {
+            failureMessage = "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.";
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, failureMessage, ""));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", failureMessage));
             return "";
-        }
-
-        failureMessage = "";
-        if (currentUser.getUser().isAdmin()) {
-            return "admin/pending.xhtml?faces-redirect=true";
-        } else {
-            return "myarticles.xhtml?faces-redirect=true";
         }
     }
 

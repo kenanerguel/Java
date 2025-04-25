@@ -2,12 +2,12 @@
 DELETE FROM user_roles;
 DELETE FROM users;
 
--- Insert admin user (password: admin)
-INSERT INTO users (username, password) VALUES ('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918');
+-- Füge Admin-Benutzer hinzu (Passwort: admin123)
+INSERT INTO users (username, password, is_admin) VALUES ('admin', 'pRnf+TXORKJefRH6x9HcfOyIxKEetJvxAqZc10GgB/bxuzFtjHMtSLqaPMYAU9zelkfUwAaP8S0QnclBkbgVJQ==', b'1');
 
--- Insert scientist user (password: scientist)
-INSERT INTO users (username, password) VALUES ('scientist', '7b52009b64fd0a2a49e6d8a939753077792b0554c8a7c79f0e8c02c856ee15f5');
+-- Füge Wissenschaftler hinzu (Passwort: pass123)
+INSERT INTO users (username, password, is_admin) VALUES ('science1', 'KW/Q+quBB936f+vEzM79JDs+4TYDraef7VS8i/vAS8fj6Zr+fvwOIk28l1G7IP0p1JmEeNvJj+BBdFia6EXKUw==', b'0');
 
 -- Assign roles
 INSERT INTO user_roles (user_id, role) SELECT id, 'ADMIN' FROM users WHERE username = 'admin';
-INSERT INTO user_roles (user_id, role) SELECT id, 'SCIENTIST' FROM users WHERE username = 'scientist'; 
+INSERT INTO user_roles (user_id, role) SELECT id, 'SCIENTIST' FROM users WHERE username = 'science1'; 

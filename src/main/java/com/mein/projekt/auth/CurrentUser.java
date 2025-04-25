@@ -80,15 +80,9 @@ public class CurrentUser implements Serializable {
 
     private static String hashPassword(String password) {
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
+            MessageDigest digester = MessageDigest.getInstance("SHA-512");
+            byte[] hashBytes = digester.digest((password + salt).getBytes(StandardCharsets.UTF_8));
+            return new String(Base64.getEncoder().encode(hashBytes));
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Hashen des Passworts", e);
             throw new RuntimeException(e);
