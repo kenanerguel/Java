@@ -17,6 +17,11 @@ services:
       - mysql_data:/var/lib/mysql
     command: --default-authentication-plugin=mysql_native_password
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   app:
     build: .
@@ -24,14 +29,16 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
-      - DB_HOST=like_hero_mysql
-      - DB_PORT=3306
-      - DB_NAME=co2db
-      - DB_USER=root
-      - DB_PASSWORD=root
+      - CATALINA_OPTS=-Djava.security.egd=file:/dev/./urandom
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   mysql_data: 

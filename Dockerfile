@@ -4,40 +4,36 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean package
 
-FROM eclipse-temurin:17-jdk-jammy
-ENV PAYARA_PATH /opt/payara
-ENV DOMAIN_NAME domain1
-ENV INSTALL_DIR /opt/payara
-ENV PAYARA_VERSION 6.2024.1
+FROM tomcat:11.0-jdk17
+ENV CATALINA_HOME /usr/local/tomcat
+ENV PATH $CATALINA_HOME/bin:$PATH
 
-RUN apt-get update && \
-    apt-get install -y wget unzip && \
-    wget --no-verbose -O /tmp/payara.zip https://nexus.payara.fish/repository/payara-community/fish/payara/distributions/payara/${PAYARA_VERSION}/payara-${PAYARA_VERSION}.zip && \
-    unzip -q /tmp/payara.zip -d /opt && \
-    mv /opt/payara6 ${PAYARA_PATH} && \
-    rm /tmp/payara.zip && \
-    apt-get remove -y wget unzip && \
-    apt-get autoremove -y && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Remove default Tomcat webapps
+RUN rm -rf $CATALINA_HOME/webapps/*
 
-COPY --from=build /app/target/*.war ${PAYARA_PATH}/glassfish/domains/${DOMAIN_NAME}/autodeploy/
+# Copy the WAR file to Tomcat's webapps directory
+COPY --from=build /app/target/*.war $CATALINA_HOME/webapps/ROOT.war
 
-# Create a script to initialize the JDBC resources
-RUN echo '#!/bin/sh\n\
-./asadmin start-domain --verbose ${DOMAIN_NAME} && \
-./asadmin create-jdbc-connection-pool \
-    --datasourceclassname com.mysql.cj.jdbc.MysqlDataSource \
-    --restype javax.sql.DataSource \
-    --property user=root:password=root:serverName=like_hero_mysql:portNumber=3306:databaseName=co2db:useSSL=false \
-    co2Pool && \
-./asadmin create-jdbc-resource --connectionpoolid co2Pool jdbc/co2db && \
-./asadmin stop-domain ${DOMAIN_NAME} && \
-echo "JDBC resources created successfully"' > ${PAYARA_PATH}/bin/init-jdbc.sh && \
-chmod +x ${PAYARA_PATH}/bin/init-jdbc.sh
+# Create context.xml for database configuration
+RUN mkdir -p $CATALINA_HOME/conf/Catalina/localhost
+COPY <<EOF $CATALINA_HOME/conf/Catalina/localhost/ROOT.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Resource name="jdbc/co2db"
+              auth="Container"
+              type="javax.sql.DataSource"
+              maxTotal="100"
+              maxIdle="30"
+              maxWaitMillis="10000"
+              username="root"
+              password="root"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              url="jdbc:mysql://like_hero_mysql:3306/co2db?useSSL=false"/>
+</Context>
+EOF
 
-EXPOSE 8080 4848 8181
-WORKDIR ${PAYARA_PATH}/bin
+# Copy MySQL driver to Tomcat's lib directory
+COPY --from=build /app/target/like-hero-to-zero/WEB-INF/lib/mysql-connector-j-*.jar $CATALINA_HOME/lib/
 
-# Run the initialization script and then start the domain
-CMD ["sh", "-c", "./init-jdbc.sh && ./asadmin start-domain --verbose"] 
+EXPOSE 8080
+CMD ["catalina.sh", "run"] 
