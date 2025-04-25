@@ -18,5 +18,20 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: unless-stopped
 
+  app:
+    build: .
+    container_name: co2_app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=like_hero_mysql
+      - DB_PORT=3306
+      - DB_NAME=co2db
+      - DB_USER=root
+      - DB_PASSWORD=root
+    restart: unless-stopped
+
 volumes:
   mysql_data: 
