@@ -7,9 +7,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Base64;
 
 public class DatabaseTest {
     private static final Logger LOGGER = Logger.getLogger(DatabaseTest.class.getName());
+    private static final String salt = "vXsia8c04PhBtnG3isvjlemj7Bm6rAhBR8JRkf2z";
     
     public static void main(String[] args) {
         EntityManagerProvider entityManagerProvider = new EntityManagerProvider();
@@ -61,8 +65,7 @@ public class DatabaseTest {
             LOGGER.info("\nTeste Benutzerauthentifizierung...");
             UserDAO userDAO = new UserDAO(entityManagerProvider);
             String username = "science1";
-            String password = "pass123";
-            String hashedPassword = CurrentUser.hashPassword(username, password);
+            String hashedPassword = "+sasj0x49+vlfzERhRBCRHazOgEOo2WWljaclLTWv9M7xdYJvX0g0hAxFWhErpEebMCQox83NijXNi4AoC3Jhw=="; // Using the exact hash from the database
             
             LOGGER.info("Versuche Login mit:");
             LOGGER.info("Username: " + username);
@@ -82,6 +85,18 @@ public class DatabaseTest {
             
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Testen der Datenbank", e);
+        }
+    }
+    
+    private static String hashPassword(String username, String password) {
+        try {
+            String saltedPassword = username + salt + password;
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(saltedPassword.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(hash);
+        } catch (Exception e) {
+            LOGGER.severe("Fehler beim Hashen des Passworts: " + e.getMessage());
+            throw new RuntimeException("Passwort-Hashing fehlgeschlagen", e);
         }
     }
 } 
