@@ -29,6 +29,20 @@ public class LoginDiagnosticTest {
         System.out.println("Username: " + username);
         System.out.println("Password: " + password);
         
+        // Check if user exists
+        User existingUser = diagnostic.userDAO.isAdminOrClient(username, CurrentUser.hashPassword(username, password));
+        if (existingUser == null) {
+            System.out.println("User does not exist, creating new user...");
+            User newUser = new User();
+            newUser.setUsername(username);
+            newUser.setPassword(password);
+            newUser.setAdmin(false);
+            diagnostic.userDAO.saveUser(newUser);
+            System.out.println("User created successfully");
+        } else {
+            System.out.println("User already exists");
+        }
+        
         // Run the diagnostic
         LoginDiagnostic.LoginDiagnosticResult result = diagnostic.diagnoseLogin(username, password);
         System.out.println("\nDiagnostic Results:");
