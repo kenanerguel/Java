@@ -166,6 +166,13 @@
             <version>5.1.0</version>
         </dependency>
 
+        <!-- Hibernate HikariCP Integration -->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-hikaricp</artifactId>
+            <version>6.4.4.Final</version>
+        </dependency>
+
         <!-- Password Hashing -->
         <dependency>
             <groupId>org.mindrot</groupId>
