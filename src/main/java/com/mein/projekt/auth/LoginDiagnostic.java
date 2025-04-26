@@ -3,7 +3,9 @@ package com.mein.projekt.auth;
 import com.mein.projekt.dao.UserDAO;
 import com.mein.projekt.model.User;
 import com.mein.projekt.util.EntityManagerProvider;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
@@ -13,6 +15,8 @@ import jakarta.ws.rs.core.Response;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Named
+@ApplicationScoped
 @Path("/auth")
 public class LoginDiagnostic {
     private static final Logger LOGGER = Logger.getLogger(LoginDiagnostic.class.getName());
