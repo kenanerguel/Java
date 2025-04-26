@@ -33,6 +33,22 @@
         <param-value>.xhtml</param-value>
     </context-param>
 
+    <!-- Additional JSF Parameters -->
+    <context-param>
+        <param-name>jakarta.faces.FACELETS_REFRESH_PERIOD</param-name>
+        <param-value>0</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>jakarta.faces.STATE_SAVING_METHOD</param-name>
+        <param-value>server</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>jakarta.faces.PARTIAL_STATE_SAVING</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
     <!-- Kontextparameter für PrimeFaces -->
     <context-param>
         <param-name>primefaces.THEME</param-name>
@@ -44,6 +60,11 @@
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
+        <async-supported>true</async-supported>
+        <init-param>
+            <param-name>jakarta.faces.ENABLE_CDI_RESOLVER_CHAIN</param-name>
+            <param-value>true</param-value>
+        </init-param>
     </servlet>
 
     <!-- Servlet-Mapping für JSF -->
@@ -62,6 +83,7 @@
             <param-value>com.mein.projekt.config.JaxRsConfig</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
+        <async-supported>true</async-supported>
     </servlet>
     <servlet-mapping>
         <servlet-name>Jersey Web Application</servlet-name>

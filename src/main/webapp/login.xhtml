@@ -15,26 +15,49 @@
         <h:panelGroup layout="block" styleClass="login-panel">
             <h:form id="loginForm">
                 <p:panel header="Login">
-                    <h:panelGrid columns="2" cellpadding="8" style="margin-bottom: 15px;">
-                        <p:outputLabel for="username" value="Benutzer:" />
-                        <p:inputText id="username" value="#{mainController.userInput}" 
-                                   required="true" placeholder="Benutzername eingeben"/>
+                    <p:messages id="messages" showDetail="true" closable="true" />
+                    
+                    <div class="ui-fluid">
+                        <div class="p-field">
+                            <p:outputLabel for="username" value="Benutzer:" />
+                            <p:inputText id="username" 
+                                       value="#{mainController.userInput}" 
+                                       required="true" 
+                                       requiredMessage="Bitte geben Sie einen Benutzernamen ein"
+                                       placeholder="Benutzername eingeben"/>
+                            <p:message for="username" />
+                        </div>
 
-                        <p:outputLabel for="password" value="Passwort:" />
-                        <p:password id="password" value="#{mainController.passwordInput}" 
-                                  required="true" placeholder="Passwort eingeben"/>
-                    </h:panelGrid>
+                        <div class="p-field">
+                            <p:outputLabel for="password" value="Passwort:" />
+                            <p:password id="password" 
+                                      value="#{mainController.passwordInput}" 
+                                      required="true" 
+                                      requiredMessage="Bitte geben Sie ein Passwort ein"
+                                      placeholder="Passwort eingeben"/>
+                            <p:message for="password" />
+                        </div>
+                    </div>
+
                     <p:commandButton value="Einloggen"
                                    action="#{mainController.login}"
-                                   update="loginForm messages"
+                                   update="@form"
+                                   process="@form"
                                    styleClass="ui-button-primary"
-                                   style="width: 100%;" />
+                                   style="width: 100%; margin-top: 10px;">
+                        <p:ajax event="success" update="@form" />
+                        <p:ajax event="error" update="messages" />
+                    </p:commandButton>
+
                     <p:commandButton value="Login-Diagnose"
                                    action="#{mainController.diagnoseLogin}"
-                                   update="loginForm messages"
+                                   update="@form"
+                                   process="@form"
                                    styleClass="ui-button-secondary"
-                                   style="width: 100%; margin-top: 10px;" />
-                    <p:messages id="messages" showDetail="true" closable="true" style="margin-top: 15px;"/>
+                                   style="width: 100%; margin-top: 10px;">
+                        <p:ajax event="success" update="@form" />
+                        <p:ajax event="error" update="messages" />
+                    </p:commandButton>
                 </p:panel>
             </h:form>
         </h:panelGroup>
