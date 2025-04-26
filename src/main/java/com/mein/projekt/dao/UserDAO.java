@@ -94,7 +94,7 @@ public class UserDAO {
     /**
      * Überprüft, ob ein Benutzer Admin oder Client ist.
      */
-    public User isAdminOrClient(String username, String password) {
+    public User isAdminOrClient(String username, String hashedPassword) {
         try {
             TypedQuery<User> query = entityManager.createQuery(
                 "SELECT u FROM User u WHERE u.username = :username",
@@ -103,8 +103,7 @@ public class UserDAO {
             
             User user = query.getSingleResult();
             
-            // Hash the password and verify
-            String hashedPassword = hashPassword(username, password);
+            // Compare the hashed passwords
             if (user != null && user.getPassword().equals(hashedPassword)) {
                 LOGGER.info("Benutzer gefunden und authentifiziert: " + username);
                 return user;

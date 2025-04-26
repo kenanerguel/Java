@@ -17,10 +17,10 @@ public class LoginDiagnostic {
     private static final Logger LOGGER = Logger.getLogger(LoginDiagnostic.class.getName());
     
     @Inject
-    private EntityManagerProvider entityManagerProvider;
+    EntityManagerProvider entityManagerProvider;
     
     @Inject
-    private UserDAO userDAO;
+    UserDAO userDAO;
     
     /**
      * Führt eine vollständige Diagnose des Login-Prozesses durch

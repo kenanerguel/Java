@@ -50,7 +50,8 @@ public class CurrentUser implements Serializable {
     public void handleUser(String username, String password) {
         try {
             LOGGER.info("Login-Versuch für Benutzer: " + username);
-            user = userDAO.isAdminOrClient(username, password);
+            String hashedPassword = hashPassword(username, password);
+            user = userDAO.isAdminOrClient(username, hashedPassword);
             
             if (user != null) {
                 LOGGER.info("Login erfolgreich für: " + username);
