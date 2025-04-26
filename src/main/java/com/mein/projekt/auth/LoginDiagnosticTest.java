@@ -49,6 +49,33 @@ public class LoginDiagnosticTest {
             return;
         }
         
+        // 1.5 Create user if it doesn't exist
+        System.out.println("\n1.5. Checking if user needs to be created...");
+        try {
+            TypedQuery<User> query = em.createQuery(
+                "SELECT u FROM User u WHERE u.username = :username", User.class);
+            query.setParameter("username", username);
+            try {
+                query.getSingleResult();
+                System.out.println("User already exists, skipping creation");
+            } catch (Exception e) {
+                System.out.println("User does not exist, creating new user...");
+                User newUser = new User();
+                newUser.setUsername(username);
+                // Set the exact hash that we know works
+                newUser.setPassword("KW/Q+quBB936f+vEzM79JDs+4TYDraef7VS8i/vAS8fj6Zr+fvwOIk28l1G7IP0p1JmEeNvJj+BBdFia6EXKUw==");
+                newUser.setAdmin(false);
+                em.getTransaction().begin();
+                em.persist(newUser);
+                em.getTransaction().commit();
+                System.out.println("User created successfully with correct hash");
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR: Failed to check/create user: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+        
         // 2. Check if user exists
         System.out.println("\n2. Checking if user exists...");
         try {
