@@ -6,10 +6,12 @@
               maxTotal="100"
               maxIdle="30"
               maxWaitMillis="10000"
-              username="root"
-              password=""
+              username="co2app"
+              password="Co2app123!"
               driverClassName="com.mysql.cj.jdbc.Driver"
-              url="jdbc:mysql://localhost:3306/co2db?useSSL=false&amp;serverTimezone=UTC"
+              url="jdbc:mysql://localhost:3306/co2db?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=UTF-8"
               validationQuery="SELECT 1"
-              testOnBorrow="true"/>
+              testOnBorrow="true"
+              removeAbandoned="true"
+              removeAbandonedTimeout="60"/>
 </Context> 
