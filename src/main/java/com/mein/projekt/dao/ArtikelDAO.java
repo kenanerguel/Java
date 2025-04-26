@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import com.mein.projekt.model.Artikel;
 import com.mein.projekt.auth.Shop;
 import com.mein.projekt.model.User;
+import jakarta.persistence.NoResultException;
 
 @Named
 @ApplicationScoped
@@ -247,43 +248,29 @@ public class ArtikelDAO {
             if (!results.isEmpty()) {
                 Artikel latest = results.get(0);
                 LOGGER.info("Gefundene Daten: CO2=" + latest.getCo2Ausstoss() + 
-                           ", Jahr=" + latest.getJahr() + 
-                           ", Status=" + latest.getStatus());
+                           ", Jahr=" + latest.getJahr());
                 return List.of(latest.getCo2Ausstoss(), latest.getJahr());
             }
-            LOGGER.info("Keine Daten gefunden für: " + country);
-            return List.of(-1.0, -1);
+            return Collections.emptyList();
         } catch (Exception e) {
-            LOGGER.severe("Fehler beim Abrufen der Daten für " + country + ": " + e.getMessage());
-            return List.of(-1.0, -1);
+            LOGGER.severe("Fehler beim Abrufen der neuesten Werte für " + country + ": " + e.getMessage());
+            return Collections.emptyList();
         }
     }
 
     public Artikel getAktuellerArtikelByLand(String land) {
         try {
             TypedQuery<Artikel> query = entityManager.createQuery(
-                "SELECT a FROM Artikel a WHERE a.land = :land AND a.status = 'approved' " +
-                "ORDER BY a.jahr DESC, a.erstelltAm DESC", 
+                "SELECT a FROM Artikel a WHERE a.land = :land ORDER BY a.jahr DESC",
                 Artikel.class);
             query.setParameter("land", land);
             query.setMaxResults(1);
-            
-            List<Artikel> results = query.getResultList();
-            LOGGER.info("Anzahl gefundener Ergebnisse für " + land + ": " + results.size());
-            
-            if (!results.isEmpty()) {
-                Artikel artikel = results.get(0);
-                LOGGER.info("Gefundene Daten: Land=" + artikel.getLand() + 
-                           ", Jahr=" + artikel.getJahr() + 
-                           ", CO2=" + artikel.getCo2Ausstoss() + 
-                           ", Status=" + artikel.getStatus() +
-                           ", Erstellt am=" + artikel.getErstelltAm());
-                return artikel;
-            }
-            LOGGER.info("Keine Daten gefunden für Land: " + land);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            LOGGER.info("Kein aktueller Artikel gefunden für Land: " + land);
             return null;
         } catch (Exception e) {
-            LOGGER.severe("Fehler beim Abrufen der Daten für " + land + ": " + e.getMessage());
+            LOGGER.severe("Fehler beim Abrufen des aktuellen Artikels für " + land + ": " + e.getMessage());
             return null;
         }
     }

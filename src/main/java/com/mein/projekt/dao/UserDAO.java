@@ -75,11 +75,15 @@ public class UserDAO {
     /**
      * Überprüft, ob ein Benutzer Admin oder Client ist.
      */
-    public User isAdminOrClient(String username, String hashedPassword) {
+    public User isAdminOrClient(String username, String password) {
         EntityManager em = entityManagerProvider.getEntityManager();
+        if (em == null) {
+            LOGGER.severe("EntityManager ist null - konnte nicht initialisiert werden");
+            return null;
+        }
+
         try {
             LOGGER.info("Versuche Benutzer zu finden: " + username);
-            LOGGER.info("EntityManager ist " + (em != null ? "nicht null" : "null"));
             
             // First, try to find the user
             TypedQuery<User> query = em.createQuery(
@@ -91,22 +95,20 @@ public class UserDAO {
             try {
                 user = query.getSingleResult();
                 LOGGER.info("Benutzer gefunden: " + username);
+                
+                // Hash the provided password for comparison
+                String hashedInputPassword = hashPassword(username, password);
                 LOGGER.info("Gespeicherter Hash: " + user.getPassword());
-                LOGGER.info("Übergebener Hash: " + hashedPassword);
+                LOGGER.info("Berechneter Hash: " + hashedInputPassword);
+                
+                // Compare the hashed passwords
+                if (user.getPassword().equals(hashedInputPassword)) {
+                    LOGGER.info("Benutzer gefunden und authentifiziert: " + username);
+                    return user;
+                }
             } catch (NoResultException e) {
                 LOGGER.warning("Kein Benutzer gefunden für: " + username);
                 return null;
-            }
-            
-            // Compare the hashed passwords
-            if (user != null && user.getPassword().equals(hashedPassword)) {
-                LOGGER.info("Benutzer gefunden und authentifiziert: " + username);
-                // If roles are missing, use is_admin flag as fallback
-                if (user.getRoles() == null || user.getRoles().isEmpty()) {
-                    LOGGER.info("Keine Rollen gefunden, verwende is_admin Flag");
-                    return user;
-                }
-                return user;
             }
             
             LOGGER.warning("Passwort falsch für Benutzer: " + username);
@@ -117,7 +119,10 @@ public class UserDAO {
         }
     }
 
-    private String hashPassword(String username, String password) {
+    /**
+     * Berechnet den Hash für ein Passwort unter Verwendung des Benutzernamens und eines Salts.
+     */
+    protected String hashPassword(String username, String password) {
         try {
             MessageDigest digester = MessageDigest.getInstance("SHA-512");
             byte[] hashBytes = digester.digest((username + password + salt).getBytes(StandardCharsets.UTF_8));

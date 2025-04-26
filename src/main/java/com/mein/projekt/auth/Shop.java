@@ -30,6 +30,25 @@ public class Shop implements Serializable {
     private List<String> countries;
     private String selectedCountry;
     private Artikel currentArtikel;
+    private static final List<Artikel> baseSortiment;
+
+    static {
+        baseSortiment = new ArrayList<>(Arrays.asList(
+            createArtikel("Deutschland", 8.5, 2023),
+            createArtikel("USA", 15.2, 2023),
+            createArtikel("Frankreich", 5.4, 2023)
+        ));
+    }
+
+    private static Artikel createArtikel(String land, double co2, int jahr) {
+        Artikel a = new Artikel();
+        a.setLand(land);
+        a.setCo2Ausstoss(co2);
+        a.setJahr(jahr);
+        a.setBeschreibung("Wissenschaftler");
+        a.setStatus("approved");
+        return a;
+    }
 
     // Default constructor for CDI
     public Shop() {
@@ -48,22 +67,6 @@ public class Shop implements Serializable {
 
     public List<Artikel> getSortiment() {
         return baseSortiment;
-    }
-
-    public static final List<Artikel> baseSortiment = new ArrayList<>(Arrays.asList(
-            createArtikel("Deutschland", 8.5, 2023),
-            createArtikel("USA", 15.2, 2023),
-            createArtikel("Frankreich", 5.4, 2023)
-    ));
-    
-    private static Artikel createArtikel(String land, double co2, int jahr) {
-        Artikel a = new Artikel();
-        a.setLand(land);
-        a.setCo2Ausstoss(co2);
-        a.setJahr(jahr);
-        a.setBeschreibung("Wissenschaftler");
-        a.setStatus("approved");
-        return a;
     }
 
     public List<String> getCountries() {
