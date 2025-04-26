@@ -159,6 +159,13 @@
             <version>8.3.0</version>
         </dependency>
 
+        <!-- HikariCP Connection Pool -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.1.0</version>
+        </dependency>
+
         <!-- Password Hashing -->
         <dependency>
             <groupId>org.mindrot</groupId>
