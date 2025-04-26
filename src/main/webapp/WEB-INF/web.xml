@@ -98,6 +98,14 @@
         <resource-env-ref-type>jakarta.enterprise.inject.spi.BeanManager</resource-env-ref-type>
     </resource-env-ref>
 
+    <!-- JNDI Datasource -->
+    <resource-ref>
+        <description>DB Connection</description>
+        <res-ref-name>jdbc/co2db</res-ref-name>
+        <res-type>jakarta.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
+
     <!-- Session Timeout -->
     <session-config>
         <session-timeout>30</session-timeout>
@@ -119,12 +127,6 @@
         <location>/error/500.xhtml</location>
     </error-page>
 
-    <!-- Database Resource Reference -->
-    <resource-ref>
-        <description>DB Connection</description>
-        <res-ref-name>jdbc/co2db</res-ref-name>
-        <res-type>jakarta.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-    </resource-ref>
+    <!-- Security Constraints -->
 
 </web-app>

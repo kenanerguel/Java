@@ -18,6 +18,7 @@
             <property name="hibernate.hbm2ddl.auto" value="update"/>
             <!-- Connection Pool Settings -->
             <property name="hibernate.connection.pool_size" value="10"/>
+            <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider"/>
             <!-- Cache Settings -->
             <property name="hibernate.cache.use_second_level_cache" value="false"/>
             <!-- Debug Settings -->
@@ -25,6 +26,9 @@
             <!-- Logging Konfiguration -->
             <property name="hibernate.use_sql_comments" value="true"/>
             <property name="hibernate.generate_statistics" value="true"/>
+            <!-- JNDI Settings -->
+            <property name="hibernate.jndi.url" value="java:comp/env"/>
+            <property name="hibernate.jndi.class" value="org.apache.naming.java.javaURLContextFactory"/>
         </properties>
     </persistence-unit>
 </persistence>
