@@ -2,7 +2,6 @@ package com.mein.projekt.controller;
 
 import com.mein.projekt.auth.CurrentUser;
 import com.mein.projekt.auth.Shop;
-import com.mein.projekt.auth.LoginDiagnostic;
 import com.mein.projekt.model.Artikel;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
@@ -29,9 +28,6 @@ public class MainController implements Serializable {
 
     @Inject
     private CurrentUser currentUser;
-
-    @Inject
-    private LoginDiagnostic loginDiagnostic;
 
     // Neue Eingabefelder für CO₂-Daten
     private String landInput;
@@ -66,7 +62,6 @@ public class MainController implements Serializable {
             LOGGER.info("Benutzer: " + userInput);
             LOGGER.info("CurrentUser Objekt: " + (currentUser != null ? "vorhanden" : "null"));
             LOGGER.info("Shop Objekt: " + (shop != null ? "vorhanden" : "null"));
-            LOGGER.info("LoginDiagnostic Objekt: " + (loginDiagnostic != null ? "vorhanden" : "null"));
             
             if (currentUser == null) {
                 LOGGER.severe("CurrentUser ist null - CDI Injection fehlgeschlagen");
@@ -107,50 +102,6 @@ public class MainController implements Serializable {
             return "";
         } finally {
             LOGGER.info("=== Login-Versuch Ende ===");
-        }
-    }
-
-    // Login-Diagnose
-    public String diagnoseLogin() {
-        try {
-            jakarta.ws.rs.client.Client client = jakarta.ws.rs.client.ClientBuilder.newClient();
-            jakarta.ws.rs.client.WebTarget target = client.target("http://localhost:8082/like-hero-to-zero/rest/auth/diagnose");
-            
-            jakarta.ws.rs.core.Form form = new jakarta.ws.rs.core.Form();
-            form.param("username", userInput);
-            form.param("password", passwordInput);
-            
-            jakarta.ws.rs.core.Response response = target.request()
-                .post(jakarta.ws.rs.client.Entity.form(form));
-            
-            if (response.getStatus() == jakarta.ws.rs.core.Response.Status.OK.getStatusCode()) {
-                LoginDiagnostic.LoginDiagnosticResult result = response.readEntity(LoginDiagnostic.LoginDiagnosticResult.class);
-                LOGGER.info("Login-Diagnose durchgeführt:\n" + result.toString());
-                
-                if (!result.isDatabaseConnection()) {
-                    failureMessage = "Datenbankverbindung fehlgeschlagen";
-                } else if (!result.isUserExists()) {
-                    failureMessage = "Benutzer existiert nicht";
-                } else if (!result.isPasswordHashing()) {
-                    failureMessage = "Passwort-Hashing fehlgeschlagen";
-                } else if (!result.isLoginAttempt()) {
-                    failureMessage = "Login fehlgeschlagen: Benutzername oder Passwort falsch";
-                } else {
-                    failureMessage = "Login-Diagnose erfolgreich";
-                }
-            } else {
-                failureMessage = "Fehler bei der Login-Diagnose: " + response.getStatus();
-            }
-            
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Diagnose", failureMessage));
-            return "";
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Fehler bei der Login-Diagnose", e);
-            failureMessage = "Fehler bei der Login-Diagnose: " + e.getMessage();
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", failureMessage));
-            return "";
         }
     }
 
