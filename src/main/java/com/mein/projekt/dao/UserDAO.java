@@ -101,6 +101,11 @@ public class UserDAO {
             // Compare the hashed passwords
             if (user != null && user.getPassword().equals(hashedPassword)) {
                 LOGGER.info("Benutzer gefunden und authentifiziert: " + username);
+                // If roles are missing, use is_admin flag as fallback
+                if (user.getRoles() == null || user.getRoles().isEmpty()) {
+                    LOGGER.info("Keine Rollen gefunden, verwende is_admin Flag");
+                    return user;
+                }
                 return user;
             }
             

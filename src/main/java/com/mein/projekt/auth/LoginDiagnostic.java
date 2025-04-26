@@ -8,10 +8,14 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @ApplicationScoped
+@Path("/auth")
 public class LoginDiagnostic {
     private static final Logger LOGGER = Logger.getLogger(LoginDiagnostic.class.getName());
     
@@ -21,13 +25,27 @@ public class LoginDiagnostic {
     @Inject
     UserDAO userDAO;
     
+    @POST
+    @Path("/diagnose")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response diagnoseLoginEndpoint(@FormParam("username") String username, @FormParam("password") String password) {
+        try {
+            LoginDiagnosticResult result = performDiagnosis(username, password);
+            return Response.ok(result).build();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler bei der Login-Diagnose", e);
+            return Response.serverError().entity("Fehler bei der Login-Diagnose: " + e.getMessage()).build();
+        }
+    }
+    
     /**
      * Führt eine vollständige Diagnose des Login-Prozesses durch
      * @param username Der zu testende Benutzername
      * @param password Das zu testende Passwort
      * @return Ein Diagnose-Ergebnis mit detaillierten Informationen
      */
-    public LoginDiagnosticResult diagnoseLogin(String username, String password) {
+    private LoginDiagnosticResult performDiagnosis(String username, String password) {
         LoginDiagnosticResult result = new LoginDiagnosticResult();
         
         // 1. Überprüfe Datenbankverbindung
@@ -43,6 +61,65 @@ public class LoginDiagnostic {
         result.setLoginAttempt(checkLoginAttempt(username, password));
         
         return result;
+    }
+    
+    public static class LoginDiagnosticResult {
+        private boolean databaseConnection;
+        private boolean userExists;
+        private boolean passwordHashing;
+        private boolean loginAttempt;
+        private String message;
+        
+        public boolean isDatabaseConnection() {
+            return databaseConnection;
+        }
+        
+        public void setDatabaseConnection(boolean databaseConnection) {
+            this.databaseConnection = databaseConnection;
+        }
+        
+        public boolean isUserExists() {
+            return userExists;
+        }
+        
+        public void setUserExists(boolean userExists) {
+            this.userExists = userExists;
+        }
+        
+        public boolean isPasswordHashing() {
+            return passwordHashing;
+        }
+        
+        public void setPasswordHashing(boolean passwordHashing) {
+            this.passwordHashing = passwordHashing;
+        }
+        
+        public boolean isLoginAttempt() {
+            return loginAttempt;
+        }
+        
+        public void setLoginAttempt(boolean loginAttempt) {
+            this.loginAttempt = loginAttempt;
+        }
+        
+        public String getMessage() {
+            return message;
+        }
+        
+        public void setMessage(String message) {
+            this.message = message;
+        }
+        
+        @Override
+        public String toString() {
+            return "LoginDiagnosticResult{" +
+                   "databaseConnection=" + databaseConnection +
+                   ", userExists=" + userExists +
+                   ", passwordHashing=" + passwordHashing +
+                   ", loginAttempt=" + loginAttempt +
+                   ", message='" + message + '\'' +
+                   '}';
+        }
     }
     
     private boolean checkDatabaseConnection() {
@@ -97,59 +174,6 @@ public class LoginDiagnostic {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Login-Versuch", e);
             return false;
-        }
-    }
-    
-    /**
-     * Klasse zur Speicherung der Diagnose-Ergebnisse
-     */
-    public static class LoginDiagnosticResult {
-        private boolean databaseConnection;
-        private boolean userExists;
-        private boolean passwordHashing;
-        private boolean loginAttempt;
-        
-        public boolean isDatabaseConnection() {
-            return databaseConnection;
-        }
-        
-        public void setDatabaseConnection(boolean databaseConnection) {
-            this.databaseConnection = databaseConnection;
-        }
-        
-        public boolean isUserExists() {
-            return userExists;
-        }
-        
-        public void setUserExists(boolean userExists) {
-            this.userExists = userExists;
-        }
-        
-        public boolean isPasswordHashing() {
-            return passwordHashing;
-        }
-        
-        public void setPasswordHashing(boolean passwordHashing) {
-            this.passwordHashing = passwordHashing;
-        }
-        
-        public boolean isLoginAttempt() {
-            return loginAttempt;
-        }
-        
-        public void setLoginAttempt(boolean loginAttempt) {
-            this.loginAttempt = loginAttempt;
-        }
-        
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Login-Diagnose-Ergebnis:\n");
-            sb.append("Datenbankverbindung: ").append(databaseConnection ? "OK" : "FEHLER").append("\n");
-            sb.append("Benutzer existiert: ").append(userExists ? "JA" : "NEIN").append("\n");
-            sb.append("Passwort-Hashing: ").append(passwordHashing ? "OK" : "FEHLER").append("\n");
-            sb.append("Login-Versuch: ").append(loginAttempt ? "ERFOLGREICH" : "FEHLGESCHLAGEN").append("\n");
-            return sb.toString();
         }
     }
 } 

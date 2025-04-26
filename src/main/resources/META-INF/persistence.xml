@@ -5,6 +5,11 @@
     <persistence-unit name="co2PU" transaction-type="JTA">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <jta-data-source>jdbc/co2db</jta-data-source>
+        
+        <!-- Explizite Entity-Klassen-Deklarationen -->
+        <class>com.mein.projekt.model.User</class>
+        <class>com.mein.projekt.model.Artikel</class>
+        
         <properties>
             <property name="jakarta.persistence.schema-generation.database.action" value="update"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
@@ -17,6 +22,9 @@
             <property name="hibernate.cache.use_second_level_cache" value="false"/>
             <!-- Debug Settings -->
             <property name="hibernate.logger.level" value="DEBUG"/>
+            <!-- Logging Konfiguration -->
+            <property name="hibernate.use_sql_comments" value="true"/>
+            <property name="hibernate.generate_statistics" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>

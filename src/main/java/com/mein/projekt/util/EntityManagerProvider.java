@@ -37,9 +37,14 @@ public class EntityManagerProvider implements Serializable {
     public EntityManager getEntityManager() {
         EntityManager em = entityManager.get();
         if (em == null || !em.isOpen()) {
-            em = entityManagerFactory.createEntityManager();
-            entityManager.set(em);
-            LOGGER.fine("New EntityManager created");
+            try {
+                em = entityManagerFactory.createEntityManager();
+                entityManager.set(em);
+                LOGGER.fine("New EntityManager created");
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error creating EntityManager", e);
+                throw new RuntimeException("Failed to create EntityManager", e);
+            }
         }
         return em;
     }

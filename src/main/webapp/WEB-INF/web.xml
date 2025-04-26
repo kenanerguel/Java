@@ -67,10 +67,6 @@
         <servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
         <async-supported>true</async-supported>
-        <init-param>
-            <param-name>jakarta.faces.ENABLE_CDI_RESOLVER_CHAIN</param-name>
-            <param-value>true</param-value>
-        </init-param>
     </servlet>
 
     <!-- Servlet-Mapping für JSF -->
@@ -93,7 +89,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>Jersey Web Application</servlet-name>
-        <url-pattern>/api/*</url-pattern>
+        <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
 
     <!-- Bean Manager -->
