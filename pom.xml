@@ -39,6 +39,12 @@
             <version>${tomcat.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jsp-api</artifactId>
+            <version>${tomcat.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- JAX-RS Implementation -->
         <dependency>
@@ -72,6 +78,11 @@
         <dependency>
             <groupId>org.jboss.weld.servlet</groupId>
             <artifactId>weld-servlet-core</artifactId>
+            <version>5.1.0.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet-shaded</artifactId>
             <version>5.1.0.Final</version>
         </dependency>
 
@@ -162,12 +173,19 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat11-maven-plugin</artifactId>
-                <version>3.0.0</version>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <version>1.10.7</version>
                 <configuration>
-                    <port>8080</port>
-                    <path>/</path>
+                    <container>
+                        <containerId>tomcat11x</containerId>
+                        <type>embedded</type>
+                    </container>
+                    <configuration>
+                        <properties>
+                            <cargo.servlet.port>8080</cargo.servlet.port>
+                        </properties>
+                    </configuration>
                 </configuration>
             </plugin>
         </plugins>

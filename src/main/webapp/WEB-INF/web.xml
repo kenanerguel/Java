@@ -7,6 +7,12 @@
     <!-- Anzeigename der Webanwendung -->
     <display-name>like-hero-to-zero</display-name>
 
+    <!-- CDI Configuration -->
+    <context-param>
+        <param-name>org.jboss.weld.environment.servlet.container.initialized</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
     <!-- Welcome-Datei (Startseite) -->
     <welcome-file-list>
         <welcome-file>login.xhtml</welcome-file>

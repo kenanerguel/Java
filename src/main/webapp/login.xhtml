@@ -22,6 +22,10 @@
     </script>
 </h:head>
 <h:body>
+    <h:panelGroup rendered="#{facesContext.maximumSeverity.ordinal ge 0}">
+        <p:messages id="errorMessages" showDetail="true" closable="true" />
+    </h:panelGroup>
+    
     <h1 class="page-title">CO2-Daten Portal</h1>
     
     <div class="clearfix">
