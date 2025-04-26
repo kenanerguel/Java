@@ -32,55 +32,47 @@ public class DatabaseTest {
             Object result = testQuery.getSingleResult();
             LOGGER.info("Datenbankverbindung erfolgreich: " + result);
             
-            // Check if users table exists
-            LOGGER.info("Prüfe users Tabelle...");
-            Query tableQuery = em.createNativeQuery(
-                "SELECT COUNT(*) FROM information_schema.tables " +
-                "WHERE table_schema = 'co2db' AND table_name = 'users'");
-            Long tableCount = ((Number) tableQuery.getSingleResult()).longValue();
-            LOGGER.info("Users Tabelle existiert: " + (tableCount > 0));
+            // Test admin login
+            LOGGER.info("\nTeste Admin Login...");
+            UserDAO userDAO = new UserDAO(entityManagerProvider);
+            String adminUsername = "admin";
+            String adminPassword = "admin123";
+            String adminHash = hashPassword(adminUsername, adminPassword);
             
-            // Count users
-            if (tableCount > 0) {
-                Query countQuery = em.createNativeQuery("SELECT COUNT(*) FROM users");
-                Long userCount = ((Number) countQuery.getSingleResult()).longValue();
-                LOGGER.info("Anzahl Benutzer in der Datenbank: " + userCount);
-                
-                // Check science1 user specifically
-                Query userQuery = em.createNativeQuery(
-                    "SELECT * FROM users WHERE username = 'science1'");
-                try {
-                    Object[] userData = (Object[]) userQuery.getSingleResult();
-                    LOGGER.info("science1 Benutzer gefunden:");
-                    LOGGER.info("ID: " + userData[0]);
-                    LOGGER.info("Username: " + userData[3]);
-                    LOGGER.info("Password Hash: " + userData[2]);
-                    LOGGER.info("Is Admin: " + userData[1]);
-                } catch (Exception e) {
-                    LOGGER.warning("science1 Benutzer nicht gefunden");
-                }
+            LOGGER.info("Versuche Admin Login mit:");
+            LOGGER.info("Username: " + adminUsername);
+            LOGGER.info("Password: " + adminPassword);
+            
+            User adminUser = userDAO.isAdminOrClient(adminUsername, adminHash);
+            if (adminUser != null) {
+                LOGGER.info("Admin Login erfolgreich!");
+                LOGGER.info("Admin Details:");
+                LOGGER.info("- ID: " + adminUser.getId());
+                LOGGER.info("- Username: " + adminUser.getUsername());
+                LOGGER.info("- Is Admin: " + adminUser.isAdmin());
+            } else {
+                LOGGER.warning("Admin Login fehlgeschlagen!");
             }
             
-            // Test user authentication
-            LOGGER.info("\nTeste Benutzerauthentifizierung...");
-            UserDAO userDAO = new UserDAO(entityManagerProvider);
-            String username = "science1";
-            String hashedPassword = "+sasj0x49+vlfzERhRBCRHazOgEOo2WWljaclLTWv9M7xdYJvX0g0hAxFWhErpEebMCQox83NijXNi4AoC3Jhw=="; // Using the exact hash from the database
+            // Test scientist login
+            LOGGER.info("\nTeste Scientist Login...");
+            String scientistUsername = "science1";
+            String scientistPassword = "science123";
+            String scientistHash = hashPassword(scientistUsername, scientistPassword);
             
-            LOGGER.info("Versuche Login mit:");
-            LOGGER.info("Username: " + username);
-            LOGGER.info("Password Hash: " + hashedPassword);
+            LOGGER.info("Versuche Scientist Login mit:");
+            LOGGER.info("Username: " + scientistUsername);
+            LOGGER.info("Password: " + scientistPassword);
             
-            User user = userDAO.isAdminOrClient(username, hashedPassword);
-            if (user != null) {
-                LOGGER.info("Login erfolgreich!");
-                LOGGER.info("User Details:");
-                LOGGER.info("- ID: " + user.getId());
-                LOGGER.info("- Username: " + user.getUsername());
-                LOGGER.info("- Is Admin: " + user.isAdmin());
-                LOGGER.info("- Stored Hash: " + user.getPassword());
+            User scientistUser = userDAO.isAdminOrClient(scientistUsername, scientistHash);
+            if (scientistUser != null) {
+                LOGGER.info("Scientist Login erfolgreich!");
+                LOGGER.info("Scientist Details:");
+                LOGGER.info("- ID: " + scientistUser.getId());
+                LOGGER.info("- Username: " + scientistUser.getUsername());
+                LOGGER.info("- Is Admin: " + scientistUser.isAdmin());
             } else {
-                LOGGER.warning("Login fehlgeschlagen!");
+                LOGGER.warning("Scientist Login fehlgeschlagen!");
             }
             
         } catch (Exception e) {
@@ -90,10 +82,9 @@ public class DatabaseTest {
     
     private static String hashPassword(String username, String password) {
         try {
-            String saltedPassword = username + salt + password;
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(saltedPassword.getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(hash);
+            MessageDigest digester = MessageDigest.getInstance("SHA-512");
+            byte[] hashBytes = digester.digest((username + password + salt).getBytes(StandardCharsets.UTF_8));
+            return new String(Base64.getEncoder().encode(hashBytes));
         } catch (Exception e) {
             LOGGER.severe("Fehler beim Hashen des Passworts: " + e.getMessage());
             throw new RuntimeException("Passwort-Hashing fehlgeschlagen", e);
