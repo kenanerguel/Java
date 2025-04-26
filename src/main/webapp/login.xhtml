@@ -4,7 +4,7 @@
       xmlns:f="jakarta.faces.core"
       xmlns:p="http://primefaces.org/ui">
 <h:head>
-    <title>CO&#x2082;-Daten Portal</title>
+    <title>CO2-Daten Portal</title>
     <h:outputStylesheet library="css" name="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script type="text/javascript">
@@ -22,7 +22,7 @@
     </script>
 </h:head>
 <h:body>
-    <h1 class="page-title">CO&#x2082;-Daten Portal</h1>
+    <h1 class="page-title">CO2-Daten Portal</h1>
     
     <div class="clearfix">
         <h:panelGroup layout="block" styleClass="login-panel">
@@ -70,7 +70,7 @@
         </h:panelGroup>
 
         <h:panelGroup layout="block" styleClass="data-panel">
-            <p:panel header="Aktuelle CO&#x2082;-Daten">
+            <p:panel header="Aktuelle CO2-Daten">
                 <h:form id="co2Form">
                     <p:selectOneMenu value="#{shop.selectedCountry}">
                         <f:selectItem itemLabel="-- Land auswählen --" itemValue="" />
@@ -83,7 +83,7 @@
                             <h:panelGroup layout="block">
                                 <h:outputText value="#{shop.currentArtikel.land}" styleClass="heading-text" />
                                 <h:panelGroup layout="block" styleClass="data-value">
-                                    <h:outputText value="CO&#x2082;-Ausstoß: #{shop.currentArtikel.co2Ausstoss} #{shop.currentArtikel.einheit}" />
+                                    <h:outputText value="CO2-Ausstoß: #{shop.currentArtikel.co2Ausstoss} #{shop.currentArtikel.einheit}" />
                                 </h:panelGroup>
                                 <h:panelGroup layout="block" styleClass="data-date">
                                     <h:outputText value="Stand: #{shop.currentArtikel.jahr}" />
@@ -97,7 +97,7 @@
                             </h:panelGroup>
                         </h:panelGroup>
                         <h:panelGroup rendered="#{empty shop.currentArtikel}">
-                            <h:outputText value="Bitte wählen Sie ein Land aus, um die aktuellen CO&#x2082;-Daten anzuzeigen." 
+                            <h:outputText value="Bitte wählen Sie ein Land aus, um die aktuellen CO2-Daten anzuzeigen." 
                                         style="color: #666; display: block; text-align: center; padding: 20px;"/>
                         </h:panelGroup>
                     </h:panelGroup>
