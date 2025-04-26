@@ -121,7 +121,7 @@
 
     <!-- Database Resource Reference -->
     <resource-ref>
-        <description>MySQL Datasource</description>
+        <description>DB Connection</description>
         <res-ref-name>jdbc/co2db</res-ref-name>
         <res-type>jakarta.sql.DataSource</res-type>
         <res-auth>Container</res-auth>
