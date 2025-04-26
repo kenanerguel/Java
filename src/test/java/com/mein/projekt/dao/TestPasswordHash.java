@@ -1,9 +1,13 @@
 package com.mein.projekt.dao;
 
 import com.mein.projekt.util.EntityManagerProvider;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestPasswordHash {
-    public static void main(String[] args) {
+    
+    @Test
+    public void testPasswordHashing() {
         // Test für Admin-Benutzer
         String adminUsername = "admin";
         String adminPassword = "admin123"; // Standard-Passwort für Admin
@@ -14,18 +18,28 @@ public class TestPasswordHash {
         
         UserDAO userDAO = new UserDAO(new EntityManagerProvider());
         
+        // Test für Admin
+        String adminGeneratedHash = userDAO.hashPassword(adminUsername, adminPassword);
+        String adminStoredHash = "pRnf+TXORKJefRH6x9HcfOyIxKEetJvxAqZc10GgB/bxuzFtjHMtSLqaPMYAU9zelkfUwAaP8S0QnclBkbgVJQ==";
+        
         System.out.println("Test Hash für Admin:");
         System.out.println("Username: " + adminUsername);
         System.out.println("Password: " + adminPassword);
-        System.out.println("Generated Hash: " + userDAO.hashPassword(adminUsername, adminPassword));
-        System.out.println("\nStored Hash from DB:");
-        System.out.println("pRnf+TXORKJefRH6x9HcfOyIxKEetJvxAqZc10GgB/bxuzFtjHMtSLqaPMYAU9zelkfUwAaP8S0QnclBkbgVJQ==");
+        System.out.println("Generated Hash: " + adminGeneratedHash);
+        System.out.println("Stored Hash:    " + adminStoredHash);
+        
+        assertEquals(adminStoredHash, adminGeneratedHash, "Admin-Hash stimmt nicht überein");
+        
+        // Test für Wissenschaftler
+        String scientistGeneratedHash = userDAO.hashPassword(scientistUsername, scientistPassword);
+        String scientistStoredHash = "KW/Q+quBB936f+vEzM79JDs+4TYDraef7VS8i/vAS8fj6Zr+fvwOIk28l1G7IP0p1JmEeNvJj+BBdFia6EXKUw==";
         
         System.out.println("\nTest Hash für Wissenschaftler:");
         System.out.println("Username: " + scientistUsername);
         System.out.println("Password: " + scientistPassword);
-        System.out.println("Generated Hash: " + userDAO.hashPassword(scientistUsername, scientistPassword));
-        System.out.println("\nStored Hash from DB:");
-        System.out.println("KW/Q+quBB936f+vEzM79JDs+4TYDraef7VS8i/vAS8fj6Zr+fvwOIk28l1G7IP0p1JmEeNvJj+BBdFia6EXKUw==");
+        System.out.println("Generated Hash: " + scientistGeneratedHash);
+        System.out.println("Stored Hash:    " + scientistStoredHash);
+        
+        assertEquals(scientistStoredHash, scientistGeneratedHash, "Wissenschaftler-Hash stimmt nicht überein");
     }
 } 
