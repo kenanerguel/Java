@@ -30,7 +30,7 @@ public class Shop implements Serializable {
     private List<String> countries;
     private String selectedCountry;
     private Artikel currentArtikel;
-    private static final List<Artikel> baseSortiment;
+    static final List<Artikel> baseSortiment;
 
     static {
         baseSortiment = new ArrayList<>(Arrays.asList(
@@ -48,6 +48,14 @@ public class Shop implements Serializable {
         a.setBeschreibung("Wissenschaftler");
         a.setStatus("approved");
         return a;
+    }
+
+    /**
+     * Gibt die Basis-Sortimentsliste zurück.
+     * Diese Methode wird von ArtikelDAO während der Initialisierung verwendet.
+     */
+    public static List<Artikel> getBaseSortiment() {
+        return baseSortiment;
     }
 
     // Default constructor for CDI

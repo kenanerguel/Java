@@ -51,8 +51,8 @@ public class ArtikelDAO {
                 LOGGER.info("Initialisierung der CO₂-Datensätze.");
                 EntityTransaction t = getAndBeginTransaction();
                 try {
-                    // Hier werden die Basis-Datensätze aus Shop.baseSortiment eingefügt
-                    for (Artikel art : Shop.baseSortiment) {
+                    // Hier werden die Basis-Datensätze aus Shop.getBaseSortiment() eingefügt
+                    for (Artikel art : Shop.getBaseSortiment()) {
                         persist(art);
                     }
                     t.commit();
