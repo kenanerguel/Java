@@ -2,33 +2,42 @@
 <persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
-    <persistence-unit name="co2PU" transaction-type="JTA">
+    <persistence-unit name="co2PU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <jta-data-source>jdbc/co2db</jta-data-source>
         
         <!-- Explizite Entity-Klassen-Deklarationen -->
         <class>com.mein.projekt.model.User</class>
         <class>com.mein.projekt.model.Artikel</class>
         
         <properties>
-            <property name="jakarta.persistence.schema-generation.database.action" value="update"/>
+            <!-- JDBC Connection Properties -->
+            <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/co2db?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+            <property name="jakarta.persistence.jdbc.user" value="co2user"/>
+            <property name="jakarta.persistence.jdbc.password" value="co2password"/>
+            
+            <!-- Hibernate Properties -->
+            <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider"/>
+            <property name="hibernate.connection.datasource" value=""/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
+            
             <!-- Connection Pool Settings -->
-            <property name="hibernate.connection.pool_size" value="10"/>
-            <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider"/>
+            <property name="hibernate.hikari.minimumIdle" value="5"/>
+            <property name="hibernate.hikari.maximumPoolSize" value="20"/>
+            <property name="hibernate.hikari.idleTimeout" value="300000"/>
+            
             <!-- Cache Settings -->
             <property name="hibernate.cache.use_second_level_cache" value="false"/>
+            
             <!-- Debug Settings -->
             <property name="hibernate.logger.level" value="DEBUG"/>
+            
             <!-- Logging Konfiguration -->
             <property name="hibernate.use_sql_comments" value="true"/>
             <property name="hibernate.generate_statistics" value="true"/>
-            <!-- JNDI Settings -->
-            <property name="hibernate.jndi.url" value="java:comp/env"/>
-            <property name="hibernate.jndi.class" value="org.apache.naming.java.javaURLContextFactory"/>
         </properties>
     </persistence-unit>
 </persistence>

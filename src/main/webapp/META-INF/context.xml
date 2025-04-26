@@ -14,5 +14,6 @@
               testOnBorrow="true"
               removeAbandonedOnBorrow="true"
               removeAbandonedOnMaintenance="true"
-              removeAbandonedTimeout="60"/>
+              removeAbandonedTimeout="60"
+              factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"/>
 </Context> 
