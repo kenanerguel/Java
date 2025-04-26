@@ -5,6 +5,8 @@ import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,37 +21,25 @@ public class EntityManagerProvider implements Serializable {
     
     private EntityManagerFactory entityManagerFactory;
     private final ThreadLocal<EntityManager> entityManager = new ThreadLocal<>();
-    private boolean initialized = false;
     
-    public EntityManagerProvider() {
-        LOGGER.info("EntityManagerProvider wurde instanziiert");
-    }
-    
+    @PostConstruct
     public void init() {
-        if (!initialized) {
-            try {
-                LOGGER.info("Initialisiere EntityManagerFactory mit " + PERSISTENCE_UNIT_NAME);
-                entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-                initialized = true;
-                LOGGER.info("EntityManagerFactory erfolgreich initialisiert");
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Fehler bei der Initialisierung von EntityManagerProvider", e);
-                cleanup();
-                throw new RuntimeException("Fehler bei der Initialisierung des Persistence-Systems", e);
-            }
+        try {
+            LOGGER.info("Initializing EntityManagerFactory with " + PERSISTENCE_UNIT_NAME);
+            entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+            LOGGER.info("EntityManagerFactory successfully initialized");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error initializing EntityManagerFactory", e);
+            throw new RuntimeException("Failed to initialize persistence system", e);
         }
     }
     
     public EntityManager getEntityManager() {
-        if (!initialized) {
-            init();
-        }
-        
         EntityManager em = entityManager.get();
         if (em == null || !em.isOpen()) {
             em = entityManagerFactory.createEntityManager();
             entityManager.set(em);
-            LOGGER.fine("Neuer EntityManager wurde erstellt");
+            LOGGER.fine("New EntityManager created");
         }
         return em;
     }
@@ -58,27 +48,30 @@ public class EntityManagerProvider implements Serializable {
         EntityManager em = entityManager.get();
         if (em != null && em.isOpen()) {
             try {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 em.close();
-                LOGGER.fine("EntityManager wurde geschlossen");
+                LOGGER.fine("EntityManager closed");
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "Fehler beim Schließen des EntityManagers", e);
+                LOGGER.log(Level.WARNING, "Error closing EntityManager", e);
             } finally {
                 entityManager.remove();
             }
         }
     }
     
-    private void cleanup() {
+    @PreDestroy
+    public void cleanup() {
         closeEntityManager();
         if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
             try {
                 entityManagerFactory.close();
-                LOGGER.info("EntityManagerFactory wurde geschlossen");
+                LOGGER.info("EntityManagerFactory closed");
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Fehler beim Schließen der EntityManagerFactory", e);
+                LOGGER.log(Level.SEVERE, "Error closing EntityManagerFactory", e);
             }
         }
         entityManagerFactory = null;
-        initialized = false;
     }
 }

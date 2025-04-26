@@ -123,8 +123,9 @@
         <location>/error/500.xhtml</location>
     </error-page>
 
-    <!-- Data Source Reference -->
+    <!-- Database Resource Reference -->
     <resource-ref>
+        <description>MySQL Datasource</description>
         <res-ref-name>jdbc/co2db</res-ref-name>
         <res-type>jakarta.sql.DataSource</res-type>
         <res-auth>Container</res-auth>
