@@ -20,14 +20,24 @@ public class Shop implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger(Shop.class.getName());
     
-    @Inject
-    private EntityManagerProvider entityManagerProvider;
-    
-    private ArtikelDAO artikelDAO;
+    private final EntityManagerProvider entityManagerProvider;
+    private final ArtikelDAO artikelDAO;
     
     private List<String> countries;
     private String selectedCountry;
     private Artikel currentArtikel;
+
+    @Inject
+    public Shop(EntityManagerProvider entityManagerProvider, ArtikelDAO artikelDAO) {
+        this.entityManagerProvider = entityManagerProvider;
+        this.artikelDAO = artikelDAO;
+        try {
+            LOGGER.info("Shop erfolgreich initialisiert");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler beim Initialisieren des Shops", e);
+            throw new RuntimeException("Failed to initialize Shop", e);
+        }
+    }
 
     public List<Artikel> getSortiment() {
         return baseSortiment;
@@ -47,22 +57,6 @@ public class Shop implements Serializable {
         a.setBeschreibung("Wissenschaftler");
         a.setStatus("approved");
         return a;
-    }
-
-    public Shop() {
-        // Leerer Konstruktor für CDI
-    }
-    
-    @Inject
-    public void setArtikelDAO(EntityManagerProvider entityManagerProvider) {
-        try {
-            this.artikelDAO = new ArtikelDAO();
-            this.artikelDAO.setEntityManagerProvider(entityManagerProvider);
-            this.artikelDAO.init();
-            LOGGER.info("ArtikelDAO erfolgreich initialisiert");
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Fehler beim Initialisieren des ArtikelDAO", e);
-        }
     }
 
     public List<String> getCountries() {

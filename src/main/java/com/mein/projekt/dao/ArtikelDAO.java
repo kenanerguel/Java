@@ -11,10 +11,11 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.mein.projekt.model.Artikel;
 import com.mein.projekt.auth.Shop;
@@ -24,50 +25,58 @@ import com.mein.projekt.model.User;
 @ApplicationScoped
 public class ArtikelDAO {
 
+    private static final Logger LOGGER = Logger.getLogger(ArtikelDAO.class.getName());
+    
     @Inject
     private EntityManagerProvider entityManagerProvider;
-    
     private EntityManager entityManager;
     private CriteriaBuilder criteriaBuilder;
 
     public ArtikelDAO() {
-        // Standard-Konstruktor für CDI
-    }
-
-    public void setEntityManagerProvider(EntityManagerProvider provider) {
-        this.entityManagerProvider = provider;
+        // Default constructor for CDI
     }
 
     @PostConstruct
     public void init() {
-        this.entityManager = entityManagerProvider.getEntityManager();
         try {
-            criteriaBuilder = entityManager.getCriteriaBuilder();
+            this.entityManager = entityManagerProvider.getEntityManager();
+            this.criteriaBuilder = entityManager.getCriteriaBuilder();
 
             // Initialisierung der Daten, falls noch keine Datensätze vorhanden sind
             long count = getArtikelCount();
-            System.err.println("Aktuell gibt es " + count + " CO₂-Datensätze.");
+            LOGGER.info("Aktuell gibt es " + count + " CO₂-Datensätze.");
 
             if (count == 0) {
-                System.err.println("Initialisierung der CO₂-Datensätze.");
+                LOGGER.info("Initialisierung der CO₂-Datensätze.");
                 EntityTransaction t = getAndBeginTransaction();
-                // Hier werden die Basis-Datensätze aus Shop.baseSortiment eingefügt
-                for (Artikel art : Shop.baseSortiment) {
-                    persist(art);
+                try {
+                    // Hier werden die Basis-Datensätze aus Shop.baseSortiment eingefügt
+                    for (Artikel art : Shop.baseSortiment) {
+                        persist(art);
+                    }
+                    t.commit();
+                } catch (Exception e) {
+                    t.rollback();
+                    throw e;
                 }
-                t.commit();
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            LOGGER.severe("Fehler bei der Initialisierung des ArtikelDAO: " + e.getMessage());
+            throw new RuntimeException("Failed to initialize ArtikelDAO", e);
         }
     }
 
+    @Transactional
     public List<String> getAllCountries() {
-        TypedQuery<String> query = entityManager.createQuery(
-                "SELECT DISTINCT a.land FROM Artikel a ORDER BY a.land", String.class);
-        return query.getResultList();
+        try {
+            TypedQuery<String> query = entityManager.createQuery(
+                    "SELECT DISTINCT a.land FROM Artikel a ORDER BY a.land", String.class);
+            return query.getResultList();
+        } catch (Exception e) {
+            LOGGER.severe("Fehler beim Abrufen der Länder: " + e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     public String findLatestBeschreibungByCountry(String selectedCountry) {
@@ -85,9 +94,15 @@ public class ArtikelDAO {
 
 
     public long getArtikelCount() {
-        CriteriaQuery<Long> cq = criteriaBuilder.createQuery(Long.class);
-        cq.select(criteriaBuilder.count(cq.from(Artikel.class)));
-        return entityManager.createQuery(cq).getSingleResult();
+        try {
+            CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
+            Root<Artikel> root = countQuery.from(Artikel.class);
+            countQuery.select(criteriaBuilder.count(root));
+            return entityManager.createQuery(countQuery).getSingleResult();
+        } catch (Exception e) {
+            LOGGER.severe("Fehler beim Zählen der Artikel: " + e.getMessage());
+            return 0;
+        }
     }
 
     public Artikel getArtikelAtIndex(int pos) {
@@ -104,61 +119,94 @@ public class ArtikelDAO {
                 .getResultList();
     }
 
-    public EntityTransaction getAndBeginTransaction() {
-        EntityTransaction tran = entityManager.getTransaction();
-        tran.begin();
-        return tran;
-    }
-
-    public void merge(Artikel art) {
-        entityManager.merge(art);
-    }
-
-    public void persist(Artikel art) {
-        entityManager.persist(art);
-    }
-
-    public void removeArtikel(Artikel art) {
-        // TODO: Implementiere die Löschlogik (z. B. mit CriteriaDelete)
-    }
-
-    public static void main(String[] args) {
-        EntityManagerProvider provider = new EntityManagerProvider();
-        ArtikelDAO dao = new ArtikelDAO();
-        dao.entityManagerProvider = provider;
-        dao.init();
-        List<Artikel> artikelListe = dao.entityManager.createQuery("SELECT a FROM Artikel a", Artikel.class).getResultList();
-        for (Artikel art : artikelListe) {
-            System.out.println(art.getBeschreibung());
+    private EntityTransaction getAndBeginTransaction() {
+        EntityTransaction t = entityManager.getTransaction();
+        if (!t.isActive()) {
+            t.begin();
         }
-        System.err.println("Es gibt " + dao.getArtikelCount() + " CO₂-Datensätze.");
+        return t;
     }
 
-    public void saveArtikel(Artikel artikel) {
-        EntityTransaction transaction = entityManager.getTransaction();
+    @Transactional
+    public void persist(Artikel artikel) {
         try {
-            transaction.begin();
             entityManager.persist(artikel);
-            transaction.commit();
         } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
+            LOGGER.severe("Fehler beim Speichern des Artikels: " + e.getMessage());
+            throw new RuntimeException("Failed to persist Artikel", e);
         }
     }
 
-    public void updateArtikel(Artikel artikel) {
-        EntityTransaction transaction = entityManager.getTransaction();
+    @Transactional
+    public void merge(Artikel artikel) {
         try {
-            transaction.begin();
             entityManager.merge(artikel);
-            transaction.commit();
         } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
+            LOGGER.severe("Fehler beim Aktualisieren des Artikels: " + e.getMessage());
+            throw new RuntimeException("Failed to merge Artikel", e);
+        }
+    }
+
+    @Transactional
+    public void remove(Artikel artikel) {
+        try {
+            entityManager.remove(entityManager.contains(artikel) ? artikel : entityManager.merge(artikel));
+        } catch (Exception e) {
+            LOGGER.severe("Fehler beim Löschen des Artikels: " + e.getMessage());
+            throw new RuntimeException("Failed to remove Artikel", e);
+        }
+    }
+
+    public List<Artikel> getAllArtikel() {
+        try {
+            CriteriaQuery<Artikel> query = criteriaBuilder.createQuery(Artikel.class);
+            Root<Artikel> root = query.from(Artikel.class);
+            query.select(root);
+            return entityManager.createQuery(query).getResultList();
+        } catch (Exception e) {
+            LOGGER.severe("Fehler beim Abrufen aller Artikel: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    public Artikel findById(Long id) {
+        try {
+            return entityManager.find(Artikel.class, id);
+        } catch (Exception e) {
+            LOGGER.severe("Fehler beim Suchen des Artikels mit ID " + id + ": " + e.getMessage());
+            return null;
+        }
+    }
+
+    public List<Artikel> findByLand(String land) {
+        try {
+            CriteriaQuery<Artikel> query = criteriaBuilder.createQuery(Artikel.class);
+            Root<Artikel> root = query.from(Artikel.class);
+            query.select(root).where(criteriaBuilder.equal(root.get("land"), land));
+            return entityManager.createQuery(query).getResultList();
+        } catch (Exception e) {
+            LOGGER.severe("Fehler beim Suchen der Artikel für Land " + land + ": " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    @Transactional
+    public void saveArtikel(Artikel artikel) {
+        try {
+            entityManager.persist(artikel);
+        } catch (Exception e) {
+            LOGGER.severe("Fehler beim Speichern des Artikels: " + e.getMessage());
+            throw new RuntimeException("Failed to save Artikel", e);
+        }
+    }
+
+    @Transactional
+    public void updateArtikel(Artikel artikel) {
+        try {
+            entityManager.merge(artikel);
+        } catch (Exception e) {
+            LOGGER.severe("Fehler beim Aktualisieren des Artikels: " + e.getMessage());
+            throw new RuntimeException("Failed to update Artikel", e);
         }
     }
 
@@ -168,8 +216,8 @@ public class ArtikelDAO {
                 "SELECT a FROM Artikel a WHERE a.status = 'pending' ORDER BY a.erstelltAm DESC", 
                 Artikel.class).getResultList();
         } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>();
+            LOGGER.severe("Fehler beim Laden der ausstehenden Artikel: " + e.getMessage());
+            return Collections.emptyList();
         }
     }
 
@@ -181,13 +229,12 @@ public class ArtikelDAO {
                 .setParameter("user", user)
                 .getResultList();
         } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>();
+            LOGGER.severe("Fehler beim Laden der Artikel für Benutzer " + user.getUsername() + ": " + e.getMessage());
+            return Collections.emptyList();
         }
     }
 
     public List<Number> getLatestValues(String country) {
-        System.out.println("Suche nach Daten für Land: " + country);
         try {
             TypedQuery<Artikel> query = entityManager.createQuery(
                     "SELECT a FROM Artikel a WHERE a.land = :country ORDER BY a.jahr DESC", Artikel.class);
@@ -195,26 +242,24 @@ public class ArtikelDAO {
             query.setMaxResults(1);
             
             List<Artikel> results = query.getResultList();
-            System.out.println("Gefundene Ergebnisse: " + results.size());
+            LOGGER.info("Gefundene Ergebnisse für " + country + ": " + results.size());
             
             if (!results.isEmpty()) {
                 Artikel latest = results.get(0);
-                System.out.println("Gefundene Daten: CO2=" + latest.getCo2Ausstoss() + 
-                                 ", Jahr=" + latest.getJahr() + 
-                                 ", Status=" + latest.getStatus());
+                LOGGER.info("Gefundene Daten: CO2=" + latest.getCo2Ausstoss() + 
+                           ", Jahr=" + latest.getJahr() + 
+                           ", Status=" + latest.getStatus());
                 return List.of(latest.getCo2Ausstoss(), latest.getJahr());
             }
-            System.out.println("Keine Daten gefunden für: " + country);
+            LOGGER.info("Keine Daten gefunden für: " + country);
             return List.of(-1.0, -1);
         } catch (Exception e) {
-            System.err.println("Fehler beim Abrufen der Daten: " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.severe("Fehler beim Abrufen der Daten für " + country + ": " + e.getMessage());
             return List.of(-1.0, -1);
         }
     }
 
     public Artikel getAktuellerArtikelByLand(String land) {
-        System.out.println("Suche nach aktuellen Daten für Land: " + land);
         try {
             TypedQuery<Artikel> query = entityManager.createQuery(
                 "SELECT a FROM Artikel a WHERE a.land = :land AND a.status = 'approved' " +
@@ -224,22 +269,21 @@ public class ArtikelDAO {
             query.setMaxResults(1);
             
             List<Artikel> results = query.getResultList();
-            System.out.println("Anzahl gefundener Ergebnisse: " + results.size());
+            LOGGER.info("Anzahl gefundener Ergebnisse für " + land + ": " + results.size());
             
             if (!results.isEmpty()) {
                 Artikel artikel = results.get(0);
-                System.out.println("Gefundene Daten: Land=" + artikel.getLand() + 
-                                 ", Jahr=" + artikel.getJahr() + 
-                                 ", CO2=" + artikel.getCo2Ausstoss() + 
-                                 ", Status=" + artikel.getStatus() +
-                                 ", Erstellt am=" + artikel.getErstelltAm());
+                LOGGER.info("Gefundene Daten: Land=" + artikel.getLand() + 
+                           ", Jahr=" + artikel.getJahr() + 
+                           ", CO2=" + artikel.getCo2Ausstoss() + 
+                           ", Status=" + artikel.getStatus() +
+                           ", Erstellt am=" + artikel.getErstelltAm());
                 return artikel;
             }
-            System.out.println("Keine Daten gefunden für Land: " + land);
+            LOGGER.info("Keine Daten gefunden für Land: " + land);
             return null;
         } catch (Exception e) {
-            System.err.println("Fehler beim Abrufen der Daten: " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.severe("Fehler beim Abrufen der Daten für " + land + ": " + e.getMessage());
             return null;
         }
     }

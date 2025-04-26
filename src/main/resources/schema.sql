@@ -1,5 +1,5 @@
 -- Create users table if not exists
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS User (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
@@ -7,18 +7,21 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Create articles table if not exists
-CREATE TABLE IF NOT EXISTS articles (
+CREATE TABLE IF NOT EXISTS Artikel (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    content TEXT NOT NULL,
-    author_id BIGINT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (author_id) REFERENCES users(id)
+    land VARCHAR(255) NOT NULL,
+    jahr INT NOT NULL,
+    co2ausstoss DOUBLE,
+    einheit VARCHAR(50) DEFAULT 'Tonnen',
+    beschreibung TEXT,
+    status VARCHAR(50) DEFAULT 'pending',
+    user_id BIGINT,
+    erstellt_am TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES User(id)
 );
 
 -- Create countries table if not exists
-CREATE TABLE IF NOT EXISTS countries (
+CREATE TABLE IF NOT EXISTS Country (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
     code VARCHAR(2) NOT NULL UNIQUE,
@@ -26,12 +29,12 @@ CREATE TABLE IF NOT EXISTS countries (
 );
 
 -- Insert default admin user if not exists (password: admin)
-INSERT INTO users (username, password, is_admin) 
+INSERT INTO User (username, password, is_admin) 
 VALUES ('admin', '$2a$10$qPOYBWn9dFAuLZvLhBWqEeZqZKnGGXizbanYxcpYxGVr0yZxvMhGi', 1)
 ON DUPLICATE KEY UPDATE password='$2a$10$qPOYBWn9dFAuLZvLhBWqEeZqZKnGGXizbanYxcpYxGVr0yZxvMhGi';
 
 -- Insert some default countries if not exists
-INSERT INTO countries (name, code) VALUES
+INSERT INTO Country (name, code) VALUES
 ('Germany', 'DE'),
 ('United States', 'US'),
 ('United Kingdom', 'GB'),

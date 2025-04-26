@@ -7,13 +7,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @ApplicationScoped
 public class LoginDiagnosticTest {
-    private static final Logger LOGGER = Logger.getLogger(LoginDiagnosticTest.class.getName());
-    
     @Inject
     private LoginDiagnostic loginDiagnostic;
     

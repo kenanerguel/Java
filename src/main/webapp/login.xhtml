@@ -8,6 +8,7 @@
     <h:outputStylesheet library="css" name="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script type="text/javascript">
+        //<![CDATA[
         function handleLoginComplete(xhr, status, args) {
             if (args && args.validationFailed) {
                 PF('messages').show();
@@ -19,6 +20,7 @@
                 PF('messages').show();
             }
         }
+        //]]>
     </script>
 </h:head>
 <h:body>

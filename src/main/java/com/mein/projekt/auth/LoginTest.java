@@ -1,18 +1,13 @@
 package com.mein.projekt.auth;
 
-import com.mein.projekt.dao.UserDAO;
 import com.mein.projekt.model.User;
 import com.mein.projekt.util.EntityManagerProvider;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import java.util.logging.Logger;
 
 public class LoginTest {
-    private static final Logger LOGGER = Logger.getLogger(LoginTest.class.getName());
-
     public static void main(String[] args) {
         EntityManagerProvider entityManagerProvider = new EntityManagerProvider();
-        UserDAO userDAO = new UserDAO(entityManagerProvider);
         CurrentUser currentUser = new CurrentUser();
         currentUser.init(entityManagerProvider);
 

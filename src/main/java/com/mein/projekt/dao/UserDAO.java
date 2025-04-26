@@ -11,8 +11,6 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;

@@ -1,6 +1,5 @@
 package com.mein.projekt.auth;
 
-import com.mein.projekt.dao.UserDAO;
 import com.mein.projekt.util.EntityManagerProvider;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;

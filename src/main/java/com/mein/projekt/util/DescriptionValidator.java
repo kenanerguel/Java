@@ -8,20 +8,13 @@ import jakarta.faces.validator.FacesValidator;
 import jakarta.faces.validator.Validator;
 import jakarta.faces.validator.ValidatorException;
 import jakarta.inject.Inject;
-import org.languagetool.rules.RuleMatch;
-
-import java.io.IOException;
-import java.util.List;
 
 @FacesValidator("descriptionValidator")
 @ApplicationScoped
 public class DescriptionValidator implements Validator<String> {
 
-    private final MyLanguageTool myLangTool;
-
     @Inject
     public DescriptionValidator() {
-        this.myLangTool = new MyLanguageTool();
     }
 
     @Override
