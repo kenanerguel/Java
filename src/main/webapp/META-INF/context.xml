@@ -12,6 +12,7 @@
               url="jdbc:mysql://localhost:3306/like_hero_to_zero?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=UTF-8"
               validationQuery="SELECT 1"
               testOnBorrow="true"
-              removeAbandoned="true"
+              removeAbandonedOnBorrow="true"
+              removeAbandonedOnMaintenance="true"
               removeAbandonedTimeout="60"/>
 </Context> 
