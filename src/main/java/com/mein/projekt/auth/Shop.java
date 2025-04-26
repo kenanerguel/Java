@@ -7,6 +7,7 @@ import com.mein.projekt.dao.ArtikelDAO;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.annotation.PostConstruct;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,17 +21,23 @@ public class Shop implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger(Shop.class.getName());
     
-    private final EntityManagerProvider entityManagerProvider;
-    private final ArtikelDAO artikelDAO;
+    @Inject
+    private EntityManagerProvider entityManagerProvider;
+    
+    @Inject
+    private ArtikelDAO artikelDAO;
     
     private List<String> countries;
     private String selectedCountry;
     private Artikel currentArtikel;
 
-    @Inject
-    public Shop(EntityManagerProvider entityManagerProvider, ArtikelDAO artikelDAO) {
-        this.entityManagerProvider = entityManagerProvider;
-        this.artikelDAO = artikelDAO;
+    // Default constructor for CDI
+    public Shop() {
+        LOGGER.info("Shop default constructor called");
+    }
+    
+    @PostConstruct
+    public void init() {
         try {
             LOGGER.info("Shop erfolgreich initialisiert");
         } catch (Exception e) {
