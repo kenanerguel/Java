@@ -61,15 +61,27 @@ public class MainController implements Serializable {
     // Login-Logik
     public String login() {
         try {
-            LOGGER.info("Login-Versuch für Benutzer: " + userInput);
-            LOGGER.info("CurrentUser vor Reset: " + (currentUser != null ? currentUser.getUser() : "null"));
+            LOGGER.info("=== Login-Versuch Start ===");
+            LOGGER.info("Session ID: " + FacesContext.getCurrentInstance().getExternalContext().getSession(true));
+            LOGGER.info("Benutzer: " + userInput);
+            LOGGER.info("CurrentUser Objekt: " + (currentUser != null ? "vorhanden" : "null"));
+            LOGGER.info("Shop Objekt: " + (shop != null ? "vorhanden" : "null"));
+            LOGGER.info("LoginDiagnostic Objekt: " + (loginDiagnostic != null ? "vorhanden" : "null"));
+            
+            if (currentUser == null) {
+                LOGGER.severe("CurrentUser ist null - CDI Injection fehlgeschlagen");
+                failureMessage = "Systemfehler: Bitte kontaktieren Sie den Administrator";
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", failureMessage));
+                return "";
+            }
             
             currentUser.reset();
-            LOGGER.info("CurrentUser nach Reset: " + (currentUser != null ? currentUser.getUser() : "null"));
+            LOGGER.info("CurrentUser nach Reset: " + (currentUser.getUser() != null ? "hat User" : "kein User"));
             
             LOGGER.info("Versuche Benutzer zu authentifizieren...");
             currentUser.handleUser(userInput, passwordInput);
-            LOGGER.info("CurrentUser nach handleUser: " + (currentUser != null ? currentUser.getUser() : "null"));
+            LOGGER.info("CurrentUser nach handleUser: " + (currentUser.getUser() != null ? "hat User" : "kein User"));
 
             if (!currentUser.isValid()) {
                 failureMessage = "Login fehlgeschlagen: Benutzername oder Passwort falsch";
@@ -82,17 +94,19 @@ public class MainController implements Serializable {
 
             failureMessage = "";
             LOGGER.info("Login erfolgreich für Benutzer: " + userInput + ", isAdmin: " + currentUser.getUser().isAdmin());
-            if (currentUser.getUser().isAdmin()) {
-                return "admin/pending.xhtml?faces-redirect=true";
-            } else {
-                return "myarticles.xhtml?faces-redirect=true";
-            }
+            String redirectUrl = currentUser.getUser().isAdmin() ? 
+                "admin/pending.xhtml?faces-redirect=true" : 
+                "myarticles.xhtml?faces-redirect=true";
+            LOGGER.info("Weiterleitung zu: " + redirectUrl);
+            return redirectUrl;
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Ein unerwarteter Fehler ist aufgetreten beim Login für Benutzer: " + userInput, e);
-            failureMessage = "Login fehlgeschlagen: Benutzername oder Passwort falsch";
+            failureMessage = "Login fehlgeschlagen: Systemfehler";
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", failureMessage));
             return "";
+        } finally {
+            LOGGER.info("=== Login-Versuch Ende ===");
         }
     }
 

@@ -80,12 +80,25 @@ public class UserDAO {
     public User isAdminOrClient(String username, String hashedPassword) {
         EntityManager em = entityManagerProvider.getEntityManager();
         try {
+            LOGGER.info("Versuche Benutzer zu finden: " + username);
+            LOGGER.info("EntityManager ist " + (em != null ? "nicht null" : "null"));
+            
+            // First, try to find the user
             TypedQuery<User> query = em.createQuery(
                 "SELECT u FROM User u WHERE u.username = :username",
                 User.class);
             query.setParameter("username", username);
             
-            User user = query.getSingleResult();
+            User user = null;
+            try {
+                user = query.getSingleResult();
+                LOGGER.info("Benutzer gefunden: " + username);
+                LOGGER.info("Gespeicherter Hash: " + user.getPassword());
+                LOGGER.info("Übergebener Hash: " + hashedPassword);
+            } catch (NoResultException e) {
+                LOGGER.warning("Kein Benutzer gefunden für: " + username);
+                return null;
+            }
             
             // Compare the hashed passwords
             if (user != null && user.getPassword().equals(hashedPassword)) {
@@ -93,10 +106,7 @@ public class UserDAO {
                 return user;
             }
             
-            LOGGER.info("Passwort falsch für Benutzer: " + username);
-            return null;
-        } catch (NoResultException e) {
-            LOGGER.info("Kein Benutzer gefunden für: " + username);
+            LOGGER.warning("Passwort falsch für Benutzer: " + username);
             return null;
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Suchen des Benutzers: " + username, e);
