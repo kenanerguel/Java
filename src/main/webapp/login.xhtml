@@ -7,6 +7,19 @@
     <title>CO₂-Daten Portal</title>
     <h:outputStylesheet library="css" name="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript">
+        function handleLoginComplete(xhr, status, args) {
+            if (args && args.validationFailed) {
+                PF('messages').show();
+            }
+        }
+        
+        function handleDiagnosticComplete(xhr, status, args) {
+            if (args && args.validationFailed) {
+                PF('messages').show();
+            }
+        }
+    </script>
 </h:head>
 <h:body>
     <h1 class="page-title">CO₂-Daten Portal</h1>
@@ -45,8 +58,7 @@
                                    process="@form"
                                    styleClass="ui-button-primary"
                                    style="width: 100%; margin-top: 10px;">
-                        <p:ajax event="success" update="@form" />
-                        <p:ajax event="error" update="messages" />
+                        <p:ajax oncomplete="handleLoginComplete(xhr, status, args)" update="@form" />
                     </p:commandButton>
 
                     <p:commandButton value="Login-Diagnose"
@@ -55,8 +67,7 @@
                                    process="@form"
                                    styleClass="ui-button-secondary"
                                    style="width: 100%; margin-top: 10px;">
-                        <p:ajax event="success" update="@form" />
-                        <p:ajax event="error" update="messages" />
+                        <p:ajax oncomplete="handleDiagnosticComplete(xhr, status, args)" update="@form" />
                     </p:commandButton>
                 </p:panel>
             </h:form>
