@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Fehler - CO2-Daten Portal</title>
+    <h:outputStylesheet library="css" name="styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</h:head>
+<h:body>
+    <div class="error-container">
+        <h1>Ein Fehler ist aufgetreten</h1>
+        
+        <div class="error-message">
+            <p>Es tut uns leid, aber es ist ein Fehler aufgetreten. Bitte versuchen Sie folgendes:</p>
+            
+            <ul>
+                <li>Überprüfen Sie Ihre Internetverbindung</li>
+                <li>Löschen Sie den Browser-Cache und Cookies</li>
+                <li>Versuchen Sie sich erneut einzuloggen</li>
+                <li>Falls das Problem weiterhin besteht, kontaktieren Sie bitte den Administrator</li>
+            </ul>
+        </div>
+        
+        <div class="error-actions">
+            <p:button value="Zurück zur Login-Seite" outcome="/login.xhtml" styleClass="ui-button-primary"/>
+        </div>
+    </div>
+    
+    <style type="text/css">
+        .error-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .error-message {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            text-align: left;
+        }
+        
+        .error-message ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .error-actions {
+            margin-top: 20px;
+        }
+    </style>
+</h:body>
+</html> 

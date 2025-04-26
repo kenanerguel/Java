@@ -63,8 +63,13 @@ public class MainController implements Serializable {
             LOGGER.info("CurrentUser Objekt: " + (currentUser != null ? "vorhanden" : "null"));
             LOGGER.info("Shop Objekt: " + (shop != null ? "vorhanden" : "null"));
             
+            // Neue Debug-Informationen
+            LOGGER.info("Server Info: " + FacesContext.getCurrentInstance().getExternalContext().getRequestServerName());
+            LOGGER.info("Client Info: " + FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("User-Agent"));
+            
             if (currentUser == null) {
                 LOGGER.severe("CurrentUser ist null - CDI Injection fehlgeschlagen");
+                LOGGER.severe("Bean Manager Status: " + checkBeanManagerStatus());
                 failureMessage = "Systemfehler: Bitte kontaktieren Sie den Administrator";
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", failureMessage));
@@ -75,7 +80,13 @@ public class MainController implements Serializable {
             LOGGER.info("CurrentUser nach Reset: " + (currentUser.getUser() != null ? "hat User" : "kein User"));
             
             LOGGER.info("Versuche Benutzer zu authentifizieren...");
-            currentUser.handleUser(userInput, passwordInput);
+            try {
+                currentUser.handleUser(userInput, passwordInput);
+                LOGGER.info("Authentifizierung durchgeführt");
+            } catch (Exception e) {
+                LOGGER.severe("Fehler bei der Authentifizierung: " + e.getMessage());
+                throw e;
+            }
             LOGGER.info("CurrentUser nach handleUser: " + (currentUser.getUser() != null ? "hat User" : "kein User"));
 
             if (!currentUser.isValid()) {
@@ -96,12 +107,22 @@ public class MainController implements Serializable {
             return redirectUrl;
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Ein unerwarteter Fehler ist aufgetreten beim Login für Benutzer: " + userInput, e);
-            failureMessage = "Login fehlgeschlagen: Systemfehler";
+            failureMessage = "Login fehlgeschlagen: " + e.getMessage();
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", failureMessage));
             return "";
         } finally {
             LOGGER.info("=== Login-Versuch Ende ===");
+        }
+    }
+
+    private String checkBeanManagerStatus() {
+        try {
+            jakarta.enterprise.inject.spi.BeanManager beanManager = 
+                jakarta.enterprise.inject.spi.CDI.current().getBeanManager();
+            return beanManager != null ? "BeanManager verfügbar" : "BeanManager nicht verfügbar";
+        } catch (Exception e) {
+            return "BeanManager Status konnte nicht ermittelt werden: " + e.getMessage();
         }
     }
 

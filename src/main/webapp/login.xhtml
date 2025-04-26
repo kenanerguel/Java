@@ -14,12 +14,6 @@
                 PF('messages').show();
             }
         }
-        
-        function handleDiagnosticComplete(xhr, status, args) {
-            if (args && args.validationFailed) {
-                PF('messages').show();
-            }
-        }
         //]]>
     </script>
 </h:head>
@@ -63,13 +57,6 @@
                                    update="@form messages"
                                    process="@form"
                                    styleClass="ui-button-primary"
-                                   style="width: 100%; margin-top: 10px;"/>
-
-                    <p:commandButton value="Login-Diagnose"
-                                   action="#{mainController.diagnoseLogin}"
-                                   update="@form messages"
-                                   process="@form"
-                                   styleClass="ui-button-secondary"
                                    style="width: 100%; margin-top: 10px;"/>
                 </p:panel>
             </h:form>
