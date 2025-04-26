@@ -26,50 +26,33 @@ public class UserDAO {
     
     @Inject
     private EntityManagerProvider entityManagerProvider;
-    
-    private EntityManager entityManager;
-    private CriteriaBuilder criteriaBuilder;
 
     // Standardkonstruktor für CDI
     public UserDAO() {
         LOGGER.info("UserDAO wurde mit Standard-Konstruktor erstellt");
     }
     
-    @PostConstruct
-    public void init() {
-        setEntityManagerProvider(entityManagerProvider);
-    }
-    
     // Konstruktor für manuelle Instanziierung (z.B. in main Methode)
     public UserDAO(EntityManagerProvider provider) {
         LOGGER.info("UserDAO wurde mit EntityManagerProvider erstellt");
-        setEntityManagerProvider(provider);
+        this.entityManagerProvider = provider;
     }
     
     public void setEntityManagerProvider(EntityManagerProvider provider) {
-        try {
-            if (provider == null) {
-                LOGGER.severe("EntityManagerProvider ist null");
-                throw new IllegalArgumentException("EntityManagerProvider darf nicht null sein");
-            }
-            this.entityManagerProvider = provider;
-            this.entityManager = provider.getEntityManager();
-            if (this.entityManager == null) {
-                LOGGER.severe("EntityManager konnte nicht initialisiert werden");
-                throw new IllegalStateException("EntityManager konnte nicht initialisiert werden");
-            }
-            LOGGER.info("EntityManager erfolgreich initialisiert");
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Fehler beim Setzen des EntityManagers", e);
-            throw new RuntimeException("Fehler beim Initialisieren des EntityManagers", e);
+        if (provider == null) {
+            LOGGER.severe("EntityManagerProvider ist null");
+            throw new IllegalArgumentException("EntityManagerProvider darf nicht null sein");
         }
+        this.entityManagerProvider = provider;
+        LOGGER.info("EntityManagerProvider erfolgreich gesetzt");
     }
 
     /**
      * Speichert einen neuen Benutzer in der Datenbank.
      */
     public void saveUser(User user) {
-        if (entityManager == null) {
+        EntityManager em = entityManagerProvider.getEntityManager();
+        if (em == null) {
             LOGGER.severe("EntityManager ist null - konnte nicht initialisiert werden");
             return;
         }
@@ -77,10 +60,10 @@ public class UserDAO {
         // Hash the password before saving
         user.setPassword(hashPassword(user.getUsername(), user.getPassword()));
         
-        EntityTransaction transaction = entityManager.getTransaction();
+        EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
-            entityManager.persist(user);
+            em.persist(user);
             transaction.commit();
             LOGGER.info("Benutzer " + user.getUsername() + " erfolgreich gespeichert");
         } catch (Exception e) {
@@ -95,8 +78,9 @@ public class UserDAO {
      * Überprüft, ob ein Benutzer Admin oder Client ist.
      */
     public User isAdminOrClient(String username, String hashedPassword) {
+        EntityManager em = entityManagerProvider.getEntityManager();
         try {
-            TypedQuery<User> query = entityManager.createQuery(
+            TypedQuery<User> query = em.createQuery(
                 "SELECT u FROM User u WHERE u.username = :username",
                 User.class);
             query.setParameter("username", username);

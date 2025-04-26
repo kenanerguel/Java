@@ -36,8 +36,10 @@ public class CurrentUser implements Serializable {
     public void init(EntityManagerProvider entityManagerProvider) {
         try {
             LOGGER.info("Initialisiere UserDAO");
-            this.userDAO = new UserDAO();
-            this.userDAO.setEntityManagerProvider(entityManagerProvider);
+            if (userDAO == null) {
+                userDAO = new UserDAO();
+            }
+            userDAO.setEntityManagerProvider(entityManagerProvider);
             LOGGER.info("UserDAO erfolgreich initialisiert");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fehler beim Initialisieren des UserDAO", e);

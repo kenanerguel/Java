@@ -3,6 +3,8 @@ package com.mein.projekt.auth;
 import com.mein.projekt.dao.UserDAO;
 import com.mein.projekt.model.User;
 import com.mein.projekt.util.EntityManagerProvider;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import java.util.logging.Logger;
 
 public class LoginTest {
@@ -18,9 +20,32 @@ public class LoginTest {
         System.out.println("Testing admin login:");
         testLogin(currentUser, "admin", "admin123");
 
-        // Test science1 login
-        System.out.println("\nTesting science1 login:");
-        testLogin(currentUser, "science1", "pass123");
+        // Test science1 login specifically
+        System.out.println("\nTesting science1 login in detail:");
+        String username = "science1";
+        String password = "pass123";
+        
+        // Generate hash
+        String hash = CurrentUser.hashPassword(username, password);
+        System.out.println("Generated hash for science1: " + hash);
+        
+        // Try to find user in database
+        try {
+            EntityManager em = entityManagerProvider.getEntityManager();
+            TypedQuery<User> query = em.createQuery(
+                "SELECT u FROM User u WHERE u.username = :username", User.class);
+            query.setParameter("username", username);
+            User user = query.getSingleResult();
+            System.out.println("User found in database:");
+            System.out.println("- Username: " + user.getUsername());
+            System.out.println("- Stored hash: " + user.getPassword());
+            System.out.println("- Generated hash matches stored hash: " + user.getPassword().equals(hash));
+        } catch (Exception e) {
+            System.out.println("Error finding user: " + e.getMessage());
+        }
+        
+        // Test login
+        testLogin(currentUser, username, password);
 
         // Test invalid login
         System.out.println("\nTesting invalid login:");

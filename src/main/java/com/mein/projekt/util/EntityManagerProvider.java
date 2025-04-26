@@ -18,7 +18,7 @@ public class EntityManagerProvider implements Serializable {
     private static final String PERSISTENCE_UNIT_NAME = "co2PU";
     
     private EntityManagerFactory entityManagerFactory;
-    private EntityManager entityManager;
+    private final ThreadLocal<EntityManager> entityManager = new ThreadLocal<>();
     private boolean initialized = false;
     
     public EntityManagerProvider() {
@@ -30,11 +30,8 @@ public class EntityManagerProvider implements Serializable {
             try {
                 LOGGER.info("Initialisiere EntityManagerFactory mit " + PERSISTENCE_UNIT_NAME);
                 entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-                entityManager = entityManagerFactory.createEntityManager();
-                LOGGER.info("EntityManagerFactory erfolgreich initialisiert");
-                
                 initialized = true;
-                LOGGER.info("EntityManagerProvider wurde erfolgreich initialisiert");
+                LOGGER.info("EntityManagerFactory erfolgreich initialisiert");
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Fehler bei der Initialisierung von EntityManagerProvider", e);
                 cleanup();
@@ -47,31 +44,41 @@ public class EntityManagerProvider implements Serializable {
         if (!initialized) {
             init();
         }
-        if (entityManager == null || !entityManager.isOpen()) {
-            cleanup();
-            init();
+        
+        EntityManager em = entityManager.get();
+        if (em == null || !em.isOpen()) {
+            em = entityManagerFactory.createEntityManager();
+            entityManager.set(em);
+            LOGGER.fine("Neuer EntityManager wurde erstellt");
         }
-        return entityManager;
+        return em;
     }
     
     public void closeEntityManager() {
-        cleanup();
+        EntityManager em = entityManager.get();
+        if (em != null && em.isOpen()) {
+            try {
+                em.close();
+                LOGGER.fine("EntityManager wurde geschlossen");
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Fehler beim Schließen des EntityManagers", e);
+            } finally {
+                entityManager.remove();
+            }
+        }
     }
     
     private void cleanup() {
-        try {
-            if (entityManager != null && entityManager.isOpen()) {
-                entityManager.close();
-            }
-            if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
+        closeEntityManager();
+        if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
+            try {
                 entityManagerFactory.close();
+                LOGGER.info("EntityManagerFactory wurde geschlossen");
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Fehler beim Schließen der EntityManagerFactory", e);
             }
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Fehler beim Aufräumen der EntityManager-Ressourcen", e);
-        } finally {
-            entityManager = null;
-            entityManagerFactory = null;
-            initialized = false;
         }
+        entityManagerFactory = null;
+        initialized = false;
     }
 }
