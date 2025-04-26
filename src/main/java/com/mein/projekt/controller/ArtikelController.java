@@ -3,19 +3,17 @@ package com.mein.projekt.controller;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.logging.Logger;
 import com.mein.projekt.model.Artikel;
 
-@Path("/api/artikel")
+@Path("/artikel")
+@RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ArtikelController {
@@ -27,6 +25,7 @@ public class ArtikelController {
 
     @GET
     @Path("/latest/{land}")
+    @Transactional
     public Response getLatestByLand(@PathParam("land") String land) {
         try {
             LOGGER.info("Suche nach neuesten Daten für Land: " + land);
@@ -57,6 +56,7 @@ public class ArtikelController {
 
     @PUT
     @Path("/update/{land}/{jahr}")
+    @Transactional
     public Response updateCo2Ausstoss(@PathParam("land") String land, 
                                      @PathParam("jahr") int jahr, 
                                      Artikel updatedArtikel) {
