@@ -10,7 +10,7 @@ public class PasswordReset {
     private static String hashPassword(String username, String password) {
         try {
             MessageDigest digester = MessageDigest.getInstance("SHA-512");
-            byte[] hashBytes = digester.digest((password + salt).getBytes(StandardCharsets.UTF_8));
+            byte[] hashBytes = digester.digest((username + password + salt).getBytes(StandardCharsets.UTF_8));
             return new String(Base64.getEncoder().encode(hashBytes));
         } catch (Exception e) {
             throw new RuntimeException(e);
