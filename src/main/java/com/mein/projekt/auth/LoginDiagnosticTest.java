@@ -5,9 +5,14 @@ import com.mein.projekt.model.User;
 import com.mein.projekt.util.EntityManagerProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class LoginDiagnosticTest {
+    private static final Logger LOGGER = Logger.getLogger(LoginDiagnosticTest.class.getName());
     
     @Inject
     private LoginDiagnostic loginDiagnostic;
@@ -25,53 +30,83 @@ public class LoginDiagnosticTest {
         String username = "science1";
         String password = "pass123";
         
-        System.out.println("Testing login for science1:");
+        System.out.println("\n=== Detailed Login Diagnostic for science1 ===");
         System.out.println("Username: " + username);
         System.out.println("Password: " + password);
         
-        // Check if user exists
-        User existingUser = diagnostic.userDAO.isAdminOrClient(username, CurrentUser.hashPassword(username, password));
-        if (existingUser == null) {
-            System.out.println("User does not exist, creating new user...");
-            User newUser = new User();
-            newUser.setUsername(username);
-            newUser.setPassword(password);
-            newUser.setAdmin(false);
-            diagnostic.userDAO.saveUser(newUser);
-            System.out.println("User created successfully");
-        } else {
-            System.out.println("User already exists");
+        // 1. Check database connection
+        System.out.println("\n1. Checking database connection...");
+        EntityManager em = entityManagerProvider.getEntityManager();
+        if (em == null) {
+            System.out.println("ERROR: EntityManager is null");
+            return;
+        }
+        try {
+            em.createNativeQuery("SELECT 1").getSingleResult();
+            System.out.println("Database connection: OK");
+        } catch (Exception e) {
+            System.out.println("ERROR: Database connection failed: " + e.getMessage());
+            return;
         }
         
-        // Run the diagnostic
-        LoginDiagnostic.LoginDiagnosticResult result = diagnostic.diagnoseLogin(username, password);
-        System.out.println("\nDiagnostic Results:");
-        System.out.println("Database Connection: " + (result.isDatabaseConnection() ? "OK" : "FAILED"));
-        System.out.println("User Exists: " + (result.isUserExists() ? "YES" : "NO"));
-        System.out.println("Password Hashing: " + (result.isPasswordHashing() ? "OK" : "FAILED"));
-        System.out.println("Login Attempt: " + (result.isLoginAttempt() ? "SUCCESS" : "FAILED"));
-        
-        // Generate and compare password hashes
-        String generatedHash = CurrentUser.hashPassword(username, password);
-        System.out.println("\nPassword Hash Details:");
-        System.out.println("Generated Hash: " + generatedHash);
-        
-        // Try to find user in database
+        // 2. Check if user exists
+        System.out.println("\n2. Checking if user exists...");
         try {
-            UserDAO userDAO = new UserDAO(entityManagerProvider);
-            User user = userDAO.isAdminOrClient(username, generatedHash);
-            if (user != null) {
-                System.out.println("\nUser found in database:");
-                System.out.println("ID: " + user.getId());
-                System.out.println("Username: " + user.getUsername());
-                System.out.println("Is Admin: " + user.isAdmin());
-                System.out.println("Stored Hash: " + user.getPassword());
-                System.out.println("Hash Match: " + user.getPassword().equals(generatedHash));
+            TypedQuery<User> query = em.createQuery(
+                "SELECT u FROM User u WHERE u.username = :username", User.class);
+            query.setParameter("username", username);
+            User user = query.getSingleResult();
+            System.out.println("User found in database:");
+            System.out.println("- ID: " + user.getId());
+            System.out.println("- Username: " + user.getUsername());
+            System.out.println("- Is Admin: " + user.isAdmin());
+            System.out.println("- Stored Hash: " + user.getPassword());
+        } catch (Exception e) {
+            System.out.println("ERROR: User not found or error accessing database: " + e.getMessage());
+            return;
+        }
+        
+        // 3. Check password hashing
+        System.out.println("\n3. Checking password hashing...");
+        String generatedHash = CurrentUser.hashPassword(username, password);
+        System.out.println("Generated hash: " + generatedHash);
+        
+        // 4. Try to authenticate
+        System.out.println("\n4. Attempting authentication...");
+        try {
+            User authenticatedUser = diagnostic.userDAO.isAdminOrClient(username, generatedHash);
+            if (authenticatedUser != null) {
+                System.out.println("Authentication successful!");
+                System.out.println("User details:");
+                System.out.println("- ID: " + authenticatedUser.getId());
+                System.out.println("- Username: " + authenticatedUser.getUsername());
+                System.out.println("- Is Admin: " + authenticatedUser.isAdmin());
+                System.out.println("- Stored Hash: " + authenticatedUser.getPassword());
+                System.out.println("- Hash Match: " + authenticatedUser.getPassword().equals(generatedHash));
             } else {
-                System.out.println("\nUser not found or password incorrect");
+                System.out.println("ERROR: Authentication failed - user not found or password incorrect");
             }
         } catch (Exception e) {
-            System.out.println("\nError accessing database: " + e.getMessage());
+            System.out.println("ERROR: Authentication failed with exception: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        // 5. Check CurrentUser handling
+        System.out.println("\n5. Testing CurrentUser handling...");
+        try {
+            CurrentUser currentUser = new CurrentUser();
+            currentUser.init(entityManagerProvider);
+            currentUser.handleUser(username, password);
+            if (currentUser.isValid()) {
+                System.out.println("CurrentUser authentication successful!");
+                System.out.println("User details:");
+                System.out.println("- Username: " + currentUser.getUser().getUsername());
+                System.out.println("- Is Admin: " + currentUser.getUser().isAdmin());
+            } else {
+                System.out.println("ERROR: CurrentUser authentication failed");
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR: CurrentUser handling failed: " + e.getMessage());
             e.printStackTrace();
         }
     }

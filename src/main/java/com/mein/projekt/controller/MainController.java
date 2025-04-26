@@ -62,12 +62,19 @@ public class MainController implements Serializable {
     public String login() {
         try {
             LOGGER.info("Login-Versuch für Benutzer: " + userInput);
+            LOGGER.info("CurrentUser vor Reset: " + (currentUser != null ? currentUser.getUser() : "null"));
+            
             currentUser.reset();
+            LOGGER.info("CurrentUser nach Reset: " + (currentUser != null ? currentUser.getUser() : "null"));
+            
+            LOGGER.info("Versuche Benutzer zu authentifizieren...");
             currentUser.handleUser(userInput, passwordInput);
+            LOGGER.info("CurrentUser nach handleUser: " + (currentUser != null ? currentUser.getUser() : "null"));
 
             if (!currentUser.isValid()) {
                 failureMessage = "Login fehlgeschlagen: Benutzername oder Passwort falsch";
                 LOGGER.warning("Login fehlgeschlagen für Benutzer: " + userInput);
+                LOGGER.warning("CurrentUser ist nicht gültig: " + (currentUser != null ? currentUser.getUser() : "null"));
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", failureMessage));
                 return "";

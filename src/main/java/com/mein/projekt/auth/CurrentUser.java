@@ -37,6 +37,7 @@ public class CurrentUser implements Serializable {
         try {
             LOGGER.info("Initialisiere UserDAO");
             if (userDAO == null) {
+                LOGGER.warning("UserDAO ist null, erstelle neue Instanz");
                 userDAO = new UserDAO();
             }
             userDAO.setEntityManagerProvider(entityManagerProvider);
@@ -52,11 +53,18 @@ public class CurrentUser implements Serializable {
     public void handleUser(String username, String password) {
         try {
             LOGGER.info("Login-Versuch für Benutzer: " + username);
+            LOGGER.info("UserDAO ist " + (userDAO != null ? "nicht null" : "null"));
+            LOGGER.info("EntityManagerProvider ist " + (entityManagerProvider != null ? "nicht null" : "null"));
+            
             String hashedPassword = hashPassword(username, password);
+            LOGGER.info("Passwort gehasht: " + hashedPassword);
+            
             user = userDAO.isAdminOrClient(username, hashedPassword);
+            LOGGER.info("UserDAO.isAdminOrClient Ergebnis: " + (user != null ? "User gefunden" : "null"));
             
             if (user != null) {
                 LOGGER.info("Login erfolgreich für: " + username);
+                LOGGER.info("User Details: ID=" + user.getId() + ", Username=" + user.getUsername() + ", isAdmin=" + user.isAdmin());
             } else {
                 LOGGER.info("Login fehlgeschlagen für: " + username);
             }
