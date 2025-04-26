@@ -18,10 +18,19 @@ public class LoginDiagnostic {
     private static final Logger LOGGER = Logger.getLogger(LoginDiagnostic.class.getName());
     
     @Inject
-    private EntityManagerProvider entityManagerProvider;
+    protected EntityManagerProvider entityManagerProvider;
     
     @Inject
-    private UserDAO userDAO;
+    protected UserDAO userDAO;
+    
+    // Setter für Tests
+    public void setEntityManagerProvider(EntityManagerProvider provider) {
+        this.entityManagerProvider = provider;
+    }
+    
+    public void setUserDAO(UserDAO dao) {
+        this.userDAO = dao;
+    }
     
     @POST
     @Path("/diagnose")

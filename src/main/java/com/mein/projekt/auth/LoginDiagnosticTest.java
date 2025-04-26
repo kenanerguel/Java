@@ -20,8 +20,8 @@ public class LoginDiagnosticTest {
         entityManagerProvider.init();
         
         LoginDiagnostic diagnostic = new LoginDiagnostic();
-        diagnostic.entityManagerProvider = entityManagerProvider;
-        diagnostic.userDAO = new UserDAO(entityManagerProvider);
+        diagnostic.setEntityManagerProvider(entityManagerProvider);
+        diagnostic.setUserDAO(new UserDAO(entityManagerProvider));
         
         // Test science1 login
         String username = "science1";
