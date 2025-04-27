@@ -18,13 +18,10 @@
             
             <!-- Hibernate Properties -->
             <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider"/>
-            <property name="hibernate.connection.datasource" value=""/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
-            <property name="hibernate.connection.autoReconnect" value="true"/>
-            <property name="hibernate.connection.autoReconnectForPools" value="true"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
-            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
             
             <!-- SQL-Skript für initiale Daten -->
             <property name="jakarta.persistence.sql-load-script-source" value="META-INF/init_users.sql"/>
@@ -34,15 +31,8 @@
             <property name="hibernate.hikari.maximumPoolSize" value="20"/>
             <property name="hibernate.hikari.idleTimeout" value="300000"/>
             
-            <!-- Cache Settings -->
-            <property name="hibernate.cache.use_second_level_cache" value="false"/>
-            
             <!-- Debug Settings -->
             <property name="hibernate.logger.level" value="DEBUG"/>
-            
-            <!-- Logging Konfiguration -->
-            <property name="hibernate.use_sql_comments" value="true"/>
-            <property name="hibernate.generate_statistics" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>

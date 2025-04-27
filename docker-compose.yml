@@ -14,6 +14,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./src/main/resources/META-INF/init_users.sql:/docker-entrypoint-initdb.d/init_users.sql
     command:
       - --default-authentication-plugin=mysql_native_password
       - --character-set-server=utf8mb4
