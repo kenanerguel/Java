@@ -10,15 +10,17 @@ services:
       MYSQL_DATABASE: co2db
       MYSQL_USER: co2user
       MYSQL_PASSWORD: 123
+      MYSQL_ROOT_HOST: '%'
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./src/main/resources/META-INF/init_users.sql:/docker-entrypoint-initdb.d/init_users.sql
+      - ./src/main/resources/META-INF/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
     command:
       - --default-authentication-plugin=mysql_native_password
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
+      - --bind-address=0.0.0.0
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "co2user", "-p123"]
       interval: 10s
@@ -35,6 +37,9 @@ services:
         condition: service_healthy
     environment:
       - CATALINA_OPTS=-Djava.security.egd=file:/dev/./urandom
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/co2db
+      - SPRING_DATASOURCE_USERNAME=co2user
+      - SPRING_DATASOURCE_PASSWORD=123
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/"]
