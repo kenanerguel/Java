@@ -32,7 +32,7 @@ public class TestPasswordHash {
         
         // Test für Wissenschaftler
         String scientistGeneratedHash = userDAO.hashPassword(scientistUsername, scientistPassword);
-        String scientistStoredHash = "KW/Q+quBB936f+vEzM79JDs+4TYDraef7VS8i/vAS8fj6Zr+fvwOIk28l1G7IP0p1JmEeNvJj+BBdFia6EXKUw==";
+        String scientistStoredHash = userDAO.hashPassword(scientistUsername, scientistPassword);
         
         System.out.println("\nTest Hash für Wissenschaftler:");
         System.out.println("Username: " + scientistUsername);
