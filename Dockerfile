@@ -25,8 +25,8 @@ COPY <<EOF $CATALINA_HOME/conf/Catalina/localhost/ROOT.xml
               maxTotal="100"
               maxIdle="30"
               maxWaitMillis="10000"
-              username="root"
-              password="root"
+              username="co2user"
+              password="123"
               driverClassName="com.mysql.cj.jdbc.Driver"
               url="jdbc:mysql://like_hero_mysql:3306/co2db?useSSL=false"/>
 </Context>
