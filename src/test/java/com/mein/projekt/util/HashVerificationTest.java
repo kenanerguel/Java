@@ -3,7 +3,7 @@ package com.mein.projekt.util;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class HashVerification {
+public class HashVerificationTest {
     
     @Test
     public void testHashesMatch() {
