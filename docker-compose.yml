@@ -6,7 +6,7 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: MyNewPass123!@#
+      MYSQL_ROOT_PASSWORD: root123
       MYSQL_DATABASE: co2db
       MYSQL_USER: co2user
       MYSQL_PASSWORD: 123
@@ -22,7 +22,7 @@ services:
       - --collation-server=utf8mb4_unicode_ci
       - --bind-address=0.0.0.0
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "co2user", "-p123"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
