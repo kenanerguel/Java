@@ -12,7 +12,7 @@
         <properties>
             <!-- JDBC Connection Properties -->
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/co2db?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;failOverReadOnly=false"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/co2db?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;createDatabaseIfNotExist=true&amp;autoReconnect=true&amp;failOverReadOnly=false"/>
             <property name="jakarta.persistence.jdbc.user" value="co2user"/>
             <property name="jakarta.persistence.jdbc.password" value="co2password"/>
             
@@ -24,7 +24,10 @@
             <property name="hibernate.connection.autoReconnectForPools" value="true"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            
+            <!-- SQL-Skript für initiale Daten -->
+            <property name="jakarta.persistence.sql-load-script-source" value="META-INF/init_users.sql"/>
             
             <!-- Connection Pool Settings -->
             <property name="hibernate.hikari.minimumIdle" value="5"/>

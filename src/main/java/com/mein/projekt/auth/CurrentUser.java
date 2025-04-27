@@ -56,10 +56,10 @@ public class CurrentUser implements Serializable {
             LOGGER.info("UserDAO ist " + (userDAO != null ? "nicht null" : "null"));
             LOGGER.info("EntityManagerProvider ist " + (entityManagerProvider != null ? "nicht null" : "null"));
             
-            String hashedPassword = hashPassword(username, password);
-            LOGGER.info("Passwort gehasht: " + hashedPassword);
+            // Das Passwort wird nicht mehr hier gehasht, sondern in der UserDAO-Klasse
+            LOGGER.info("Versuche Login mit Benutzername: " + username);
             
-            user = userDAO.isAdminOrClient(username, hashedPassword);
+            user = userDAO.isAdminOrClient(username, password);
             LOGGER.info("UserDAO.isAdminOrClient Ergebnis: " + (user != null ? "User gefunden" : "null"));
             
             if (user != null) {
