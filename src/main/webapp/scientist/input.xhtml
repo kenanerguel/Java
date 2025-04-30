@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>CO₂-Daten eingeben</title>
+    <style>
+        .input-form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .status-pending {
+            color: orange;
+            font-weight: bold;
+        }
+        .status-approved {
+            color: green;
+            font-weight: bold;
+        }
+        .status-rejected {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <h:form>
+        <p:panel header="Neue CO₂-Daten eingeben" styleClass="input-form">
+            <p:messages id="messages" showDetail="true" closable="true" />
+            
+            <p:panelGrid columns="2" style="width: 100%">
+                <p:outputLabel for="land" value="Land:" />
+                <p:inputText id="land" value="#{mainController.landInput}" required="true" />
+                
+                <p:outputLabel for="jahr" value="Jahr:" />
+                <p:inputNumber id="jahr" value="#{mainController.jahrInput}" required="true" />
+                
+                <p:outputLabel for="co2" value="CO₂-Ausstoß:" />
+                <p:inputNumber id="co2" value="#{mainController.co2AusstossInput}" required="true" />
+                
+                <p:outputLabel for="einheit" value="Einheit:" />
+                <p:inputText id="einheit" value="#{mainController.einheitInput}" required="true" />
+                
+                <p:outputLabel for="beschreibung" value="Beschreibung:" />
+                <p:inputTextarea id="beschreibung" value="#{mainController.beschreibungInput}" 
+                               rows="3" cols="30" required="true" />
+            </p:panelGrid>
+            
+            <p:commandButton value="Daten speichern" 
+                           action="#{mainController.saveCo2Data}"
+                           styleClass="ui-button-primary"
+                           update="messages" />
+            
+            <p:commandButton value="Zurück" 
+                           action="myarticles.xhtml?faces-redirect=true"
+                           styleClass="ui-button-secondary" />
+        </p:panel>
+    </h:form>
+</h:body>
+</html> 

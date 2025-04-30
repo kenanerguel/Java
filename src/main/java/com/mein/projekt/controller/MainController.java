@@ -49,9 +49,12 @@ public class MainController implements Serializable {
     private Artikel selectedArtikel;
     private String rejectionReason;
 
+    private List<Artikel> pendingArticles;
+
     @PostConstruct
     public void init() {
         this.countries = shop.getCountries();
+        loadPendingArticles();
     }
 
     // Login-Logik
@@ -127,43 +130,38 @@ public class MainController implements Serializable {
     }
 
     // CO₂-Daten speichern
-    public String saveCO2Data() {
-        Artikel newArtikel = new Artikel();
-        newArtikel.setLand(landInput);
-        newArtikel.setJahr(jahrInput);
-        newArtikel.setCo2Ausstoss(co2AusstossInput);
-        newArtikel.setEinheit(einheitInput);
-        newArtikel.setBeschreibung(beschreibungInput);
-        newArtikel.setErstelltAm(new Date());
-        newArtikel.setUser(currentUser.getUser());
-        
-        // Status basierend auf Benutzerrolle setzen
-        if (currentUser.getUser().isAdmin()) {
-            newArtikel.setStatus("approved");
-        } else {
-            newArtikel.setStatus("pending");
-        }
-        
-        shop.handleArtikel(newArtikel, currentUser.getUser());
-        
-        // Felder zurücksetzen
-        landInput = null;
-        jahrInput = 0;
-        co2AusstossInput = 0.0;
-        einheitInput = null;
-        beschreibungInput = null;
-        
-        String message = currentUser.getUser().isAdmin() ? 
-            "CO₂-Daten wurden erfolgreich gespeichert." :
-            "CO₂-Daten wurden erfolgreich zur Überprüfung eingereicht.";
+    public String saveCo2Data() {
+        try {
+            LOGGER.info("Speichere neue CO₂-Daten für " + landInput);
             
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Erfolg", message));
-                
-        // Weiterleitung zur entsprechenden Seite
-        return currentUser.getUser().isAdmin() ? 
-            "admin/pending.xhtml?faces-redirect=true" : 
-            "myarticles.xhtml?faces-redirect=true";
+            // Erstelle neuen Artikel
+            Artikel artikel = new Artikel();
+            artikel.setLand(landInput);
+            artikel.setJahr(jahrInput);
+            artikel.setCo2Ausstoss(co2AusstossInput);
+            artikel.setEinheit(einheitInput);
+            artikel.setBeschreibung(beschreibungInput);
+            artikel.setStatus("pending");
+            artikel.setUser(currentUser.getUser());
+            
+            // Speichere den Artikel
+            shop.handleArtikel(artikel, currentUser.getUser());
+            
+            // Zeige Erfolgsmeldung
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Erfolg", 
+                    "CO₂-Daten wurden erfolgreich gespeichert und warten auf Freigabe."));
+            
+            // Zurück zur Übersicht
+            return "myarticles.xhtml?faces-redirect=true";
+            
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler beim Speichern der CO₂-Daten", e);
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", 
+                    "Fehler beim Speichern der CO₂-Daten: " + e.getMessage()));
+            return null;
+        }
     }
 
     // Neue Methode für Admin-Genehmigungen
@@ -261,4 +259,55 @@ public class MainController implements Serializable {
     
     public String getRejectionReason() { return rejectionReason; }
     public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
+
+    public List<Artikel> getPendingArticles() {
+        return pendingArticles;
+    }
+    
+    private void loadPendingArticles() {
+        try {
+            pendingArticles = shop.getPendingArtikel();
+        } catch (Exception e) {
+            LOGGER.severe("Fehler beim Laden der ausstehenden Artikel");
+            FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", 
+                "Fehler beim Laden der ausstehenden Artikel"));
+        }
+    }
+    
+    public void approveArticle(Artikel artikel) {
+        try {
+            LOGGER.info("Genehmige Artikel: " + artikel.getId());
+            artikel.setStatus("approved");
+            artikel.setUpdatedBy(currentUser.getUser());
+            shop.handleArtikel(artikel, currentUser.getUser());
+            loadPendingArticles();
+            FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Erfolg", 
+                "Artikel wurde genehmigt"));
+        } catch (Exception e) {
+            LOGGER.severe("Fehler beim Genehmigen des Artikels");
+            FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", 
+                "Fehler beim Genehmigen des Artikels"));
+        }
+    }
+    
+    public void rejectArticle(Artikel artikel) {
+        try {
+            LOGGER.info("Lehne Artikel ab: " + artikel.getId());
+            artikel.setStatus("rejected");
+            artikel.setUpdatedBy(currentUser.getUser());
+            shop.handleArtikel(artikel, currentUser.getUser());
+            loadPendingArticles();
+            FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Erfolg", 
+                "Artikel wurde abgelehnt"));
+        } catch (Exception e) {
+            LOGGER.severe("Fehler beim Ablehnen des Artikels");
+            FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", 
+                "Fehler beim Ablehnen des Artikels"));
+        }
+    }
 }

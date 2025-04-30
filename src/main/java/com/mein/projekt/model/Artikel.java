@@ -51,6 +51,28 @@ public class Artikel implements Serializable {
     @OneToMany(mappedBy = "artikel", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Bewertung> bewertungen = new ArrayList<>();
 
+    @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+    
+    @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+    
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+    
+    @ManyToOne
+    @JoinColumn(name = "updated_by")
+    private User updatedBy;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Date();
+        status = "pending";
+    }
+
     public Artikel() {
         this.status = "pending";
         this.erstelltAm = new Date();
@@ -96,4 +118,16 @@ public class Artikel implements Serializable {
     
     public void setUser(User user) { this.user = user; }
     public User getUser() { return this.user; }
+    
+    public Date getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+    
+    public Date getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
+    
+    public User getCreatedBy() { return createdBy; }
+    public void setCreatedBy(User createdBy) { this.createdBy = createdBy; }
+    
+    public User getUpdatedBy() { return updatedBy; }
+    public void setUpdatedBy(User updatedBy) { this.updatedBy = updatedBy; }
 }
