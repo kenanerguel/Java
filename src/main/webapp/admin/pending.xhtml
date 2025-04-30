@@ -31,9 +31,10 @@
         <p:panel header="CO₂-Daten zur Überprüfung" styleClass="pending-table">
             <p:messages id="messages" showDetail="true" closable="true" />
             
-            <p:dataTable var="artikel" value="#{mainController.pendingArticles}" 
+            <p:dataTable var="artikel" value="#{mainController.pendingArtikel}" 
                         paginator="true" rows="10"
-                        styleClass="ui-datatable-striped">
+                        styleClass="ui-datatable-striped"
+                        id="artikelTable">
                 
                 <p:column headerText="Land">
                     <h:outputText value="#{artikel.land}" />
@@ -59,13 +60,13 @@
                     <p:commandButton value="Genehmigen" 
                                    action="#{mainController.approveArticle(artikel)}"
                                    styleClass="ui-button-success"
-                                   update="messages,pendingArticles"
+                                   update="messages,artikelTable"
                                    rendered="#{artikel.status eq 'pending'}" />
                                    
                     <p:commandButton value="Ablehnen" 
                                    action="#{mainController.rejectArticle(artikel)}"
                                    styleClass="ui-button-danger"
-                                   update="messages,pendingArticles"
+                                   update="messages,artikelTable"
                                    rendered="#{artikel.status eq 'pending'}" />
                 </p:column>
             </p:dataTable>

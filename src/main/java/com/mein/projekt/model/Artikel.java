@@ -20,6 +20,7 @@ public class Artikel implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "nr")
     private Long id;
 
     @Column(name = "beschreibung")
@@ -29,23 +30,23 @@ public class Artikel implements Serializable {
     private String land;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    private String status = "pending";
 
     @Column(name = "jahr", nullable = false)
     private Integer jahr;
 
-    @Column(name = "co2ausstoss", nullable = true)
+    @Column(name = "co2ausstoss")
     private Double co2Ausstoss;
     
     @Column(name = "einheit")
     private String einheit = "Tonnen";
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "erstellt_am")
     @Temporal(TemporalType.DATE)
-    @Column(name = "erstellt_am", nullable = false)
     private Date erstelltAm;
 
     @OneToMany(mappedBy = "artikel", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -59,17 +60,20 @@ public class Artikel implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "created_by")
     private User createdBy;
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "updated_by")
     private User updatedBy;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = new Date();
+        Date now = new Date();
+        createdAt = now;
+        updatedAt = now;
+        erstelltAm = now;
         status = "pending";
     }
 
@@ -116,8 +120,8 @@ public class Artikel implements Serializable {
     public List<Bewertung> getBewertungen() { return bewertungen; }
     public void addBewertung(Bewertung bewertung) { bewertungen.add(bewertung); }
     
+    public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
-    public User getUser() { return this.user; }
     
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }

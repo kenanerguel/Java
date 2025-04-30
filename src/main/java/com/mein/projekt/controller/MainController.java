@@ -141,8 +141,16 @@ public class MainController implements Serializable {
             artikel.setCo2Ausstoss(co2AusstossInput);
             artikel.setEinheit(einheitInput);
             artikel.setBeschreibung(beschreibungInput);
-            artikel.setStatus("pending");
             artikel.setUser(currentUser.getUser());
+            
+            // Setze Zeitstempel und Status
+            Date now = new Date();
+            artikel.setCreatedAt(now);
+            artikel.setUpdatedAt(now);
+            artikel.setCreatedBy(currentUser.getUser());
+            artikel.setUpdatedBy(currentUser.getUser());
+            artikel.setStatus("pending");
+            artikel.setErstelltAm(now);
             
             // Speichere den Artikel
             shop.handleArtikel(artikel, currentUser.getUser());
@@ -151,6 +159,13 @@ public class MainController implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Erfolg", 
                     "CO₂-Daten wurden erfolgreich gespeichert und warten auf Freigabe."));
+            
+            // Felder zurücksetzen
+            landInput = null;
+            jahrInput = 0;
+            co2AusstossInput = 0.0;
+            einheitInput = null;
+            beschreibungInput = null;
             
             // Zurück zur Übersicht
             return "myarticles.xhtml?faces-redirect=true";
