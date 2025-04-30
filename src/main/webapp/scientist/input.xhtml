@@ -25,36 +25,62 @@
             color: red;
             font-weight: bold;
         }
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+        }
     </style>
 </h:head>
 
 <h:body>
-    <h:form>
+    <h:form id="co2Form">
         <p:panel header="Neue CO₂-Daten eingeben" styleClass="input-form">
             <p:messages id="messages" showDetail="true" closable="true" />
             
             <p:panelGrid columns="2" style="width: 100%">
                 <p:outputLabel for="land" value="Land:" />
-                <p:inputText id="land" value="#{mainController.landInput}" required="true" />
+                <p:inputText id="land" value="#{mainController.landInput}" required="true">
+                    <f:validateLength minimum="2" maximum="100" />
+                    <p:ajax event="blur" update="landMessage" />
+                </p:inputText>
+                <p:message for="land" id="landMessage" />
                 
                 <p:outputLabel for="jahr" value="Jahr:" />
-                <p:inputNumber id="jahr" value="#{mainController.jahrInput}" required="true" />
+                <p:inputNumber id="jahr" value="#{mainController.jahrInput}" required="true">
+                    <f:validateLongRange minimum="1900" maximum="2100" />
+                    <p:ajax event="blur" update="jahrMessage" />
+                </p:inputNumber>
+                <p:message for="jahr" id="jahrMessage" />
                 
                 <p:outputLabel for="co2" value="CO₂-Ausstoß:" />
-                <p:inputNumber id="co2" value="#{mainController.co2AusstossInput}" required="true" />
+                <p:inputNumber id="co2" value="#{mainController.co2AusstossInput}" required="true">
+                    <f:validateDoubleRange minimum="0" />
+                    <p:ajax event="blur" update="co2Message" />
+                </p:inputNumber>
+                <p:message for="co2" id="co2Message" />
                 
                 <p:outputLabel for="einheit" value="Einheit:" />
-                <p:inputText id="einheit" value="#{mainController.einheitInput}" required="true" />
+                <p:inputText id="einheit" value="#{mainController.einheitInput}" required="true">
+                    <f:validateLength minimum="1" maximum="50" />
+                    <p:ajax event="blur" update="einheitMessage" />
+                </p:inputText>
+                <p:message for="einheit" id="einheitMessage" />
                 
                 <p:outputLabel for="beschreibung" value="Beschreibung:" />
                 <p:inputTextarea id="beschreibung" value="#{mainController.beschreibungInput}" 
-                               rows="3" cols="30" required="true" />
+                               rows="3" cols="30" required="true">
+                    <f:validateLength minimum="10" maximum="1000" />
+                    <p:ajax event="blur" update="beschreibungMessage" />
+                </p:inputTextarea>
+                <p:message for="beschreibung" id="beschreibungMessage" />
             </p:panelGrid>
             
             <p:commandButton value="Daten speichern" 
                            action="#{mainController.saveCo2Data}"
                            styleClass="ui-button-primary"
-                           update="messages" />
+                           update="messages co2Form"
+                           process="@form"
+                           oncomplete="if(args &amp;&amp; !args.validationFailed) {PF('co2Form').reset();}" />
             
             <p:commandButton value="Zurück" 
                            action="myarticles.xhtml?faces-redirect=true"

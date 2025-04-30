@@ -132,15 +132,38 @@ public class MainController implements Serializable {
     // CO₂-Daten speichern
     public String saveCo2Data() {
         try {
-            LOGGER.info("Speichere neue CO₂-Daten für " + landInput);
+            LOGGER.info("=== Speichere neue CO₂-Daten ===");
+            LOGGER.info("Land: " + landInput);
+            LOGGER.info("Jahr: " + jahrInput);
+            LOGGER.info("CO₂-Ausstoß: " + co2AusstossInput);
+            LOGGER.info("Einheit: " + einheitInput);
+            LOGGER.info("Beschreibung: " + beschreibungInput);
+            LOGGER.info("Benutzer: " + (currentUser != null ? currentUser.getUser().getUsername() : "null"));
+            
+            // Validierung der Eingaben
+            if (landInput == null || landInput.trim().isEmpty()) {
+                throw new IllegalArgumentException("Land ist erforderlich");
+            }
+            if (jahrInput < 1900 || jahrInput > 2100) {
+                throw new IllegalArgumentException("Jahr muss zwischen 1900 und 2100 liegen");
+            }
+            if (co2AusstossInput < 0) {
+                throw new IllegalArgumentException("CO₂-Ausstoß muss positiv sein");
+            }
+            if (einheitInput == null || einheitInput.trim().isEmpty()) {
+                throw new IllegalArgumentException("Einheit ist erforderlich");
+            }
+            if (beschreibungInput == null || beschreibungInput.trim().isEmpty()) {
+                throw new IllegalArgumentException("Beschreibung ist erforderlich");
+            }
             
             // Erstelle neuen Artikel
             Artikel artikel = new Artikel();
-            artikel.setLand(landInput);
+            artikel.setLand(landInput.trim());
             artikel.setJahr(jahrInput);
             artikel.setCo2Ausstoss(co2AusstossInput);
-            artikel.setEinheit(einheitInput);
-            artikel.setBeschreibung(beschreibungInput);
+            artikel.setEinheit(einheitInput.trim());
+            artikel.setBeschreibung(beschreibungInput.trim());
             artikel.setUser(currentUser.getUser());
             
             // Setze Zeitstempel und Status
@@ -154,6 +177,8 @@ public class MainController implements Serializable {
             
             // Speichere den Artikel
             shop.handleArtikel(artikel, currentUser.getUser());
+            
+            LOGGER.info("Artikel erfolgreich gespeichert mit ID: " + artikel.getId());
             
             // Zeige Erfolgsmeldung
             FacesContext.getCurrentInstance().addMessage(null,
@@ -176,6 +201,8 @@ public class MainController implements Serializable {
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", 
                     "Fehler beim Speichern der CO₂-Daten: " + e.getMessage()));
             return null;
+        } finally {
+            LOGGER.info("=== Ende CO₂-Daten speichern ===");
         }
     }
 
