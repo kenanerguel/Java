@@ -12,7 +12,7 @@
         <properties>
             <!-- JDBC Connection Properties -->
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://like_hero_mysql:3306/co2db?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;createDatabaseIfNotExist=true&amp;autoReconnect=true&amp;failOverReadOnly=false"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/co2db?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;createDatabaseIfNotExist=true&amp;autoReconnect=true&amp;failOverReadOnly=false"/>
             <property name="jakarta.persistence.jdbc.user" value="co2user"/>
             <property name="jakarta.persistence.jdbc.password" value="123"/>
             
