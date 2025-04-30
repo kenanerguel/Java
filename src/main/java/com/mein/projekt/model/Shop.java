@@ -61,6 +61,7 @@ public class Shop {
                 artikel.setErstelltAm(now);
                 artikel.setUser(user);
                 em.persist(artikel);
+                em.flush();
                 LOGGER.info("Artikel persisted");
             } else {
                 // Existierender Artikel
@@ -72,6 +73,7 @@ public class Shop {
                     managedArtikel.setStatus(artikel.getStatus());
                     managedArtikel.setBeschreibung(artikel.getBeschreibung());
                     em.merge(managedArtikel);
+                    em.flush();
                 }
             }
             
@@ -84,7 +86,9 @@ public class Shop {
             }
             throw new RuntimeException("Fehler beim Speichern des Artikels: " + e.getMessage(), e);
         } finally {
-            entityManagerProvider.closeEntityManager();
+            if (em != null && em.isOpen()) {
+                entityManagerProvider.closeEntityManager();
+            }
         }
     }
 
