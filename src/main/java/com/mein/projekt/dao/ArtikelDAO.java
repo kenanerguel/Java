@@ -193,9 +193,18 @@ public class ArtikelDAO {
 
     @Transactional
     public void saveArtikel(Artikel artikel) {
+        EntityTransaction transaction = entityManager.getTransaction();
         try {
+            if (!transaction.isActive()) {
+                transaction.begin();
+            }
             entityManager.persist(artikel);
+            transaction.commit();
+            LOGGER.info("Artikel erfolgreich gespeichert: " + artikel.getId());
         } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
             LOGGER.severe("Fehler beim Speichern des Artikels: " + e.getMessage());
             throw new RuntimeException("Failed to save Artikel", e);
         }

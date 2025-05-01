@@ -183,11 +183,7 @@ public class MainController implements Serializable {
                     "CO₂-Daten wurden erfolgreich gespeichert und warten auf Freigabe."));
             
             // Felder zurücksetzen
-            landInput = null;
-            jahrInput = 0;
-            co2AusstossInput = 0.0;
-            einheitInput = null;
-            beschreibungInput = null;
+            resetFields();
             
             // Zurück zur Übersicht
             return "myarticles.xhtml?faces-redirect=true";
@@ -198,9 +194,15 @@ public class MainController implements Serializable {
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", 
                     "Fehler beim Speichern der CO₂-Daten: " + e.getMessage()));
             return null;
-        } finally {
-            LOGGER.info("=== Ende CO₂-Daten speichern ===");
         }
+    }
+
+    private void resetFields() {
+        landInput = null;
+        jahrInput = 0;
+        co2AusstossInput = 0.0;
+        einheitInput = null;
+        beschreibungInput = null;
     }
 
     // Neue Methode für Admin-Genehmigungen
