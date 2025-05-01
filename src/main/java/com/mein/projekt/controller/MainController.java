@@ -137,7 +137,7 @@ public class MainController implements Serializable {
             LOGGER.info("Jahr: " + jahrInput);
             LOGGER.info("CO₂-Ausstoß: " + co2AusstossInput);
             LOGGER.info("Einheit: " + einheitInput);
-            LOGGER.info("Beschreibung: " + beschreibungInput);
+            LOGGER.info("Beschreibung: Thomas Müller");
             LOGGER.info("Benutzer: " + (currentUser != null ? currentUser.getUser().getUsername() : "null"));
             
             // Validierung der Eingaben
@@ -153,9 +153,6 @@ public class MainController implements Serializable {
             if (einheitInput == null || einheitInput.trim().isEmpty()) {
                 throw new IllegalArgumentException("Einheit ist erforderlich");
             }
-            if (beschreibungInput == null || beschreibungInput.trim().isEmpty()) {
-                throw new IllegalArgumentException("Beschreibung ist erforderlich");
-            }
             
             // Erstelle neuen Artikel
             Artikel artikel = new Artikel();
@@ -163,7 +160,7 @@ public class MainController implements Serializable {
             artikel.setJahr(jahrInput);
             artikel.setCo2Ausstoss(co2AusstossInput);
             artikel.setEinheit(einheitInput.trim());
-            artikel.setBeschreibung(beschreibungInput.trim());
+            artikel.setBeschreibung("Thomas Müller");
             artikel.setUser(currentUser.getUser());
             
             // Setze Zeitstempel und Status

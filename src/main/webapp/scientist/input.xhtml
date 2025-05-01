@@ -66,11 +66,9 @@
                 </p:inputText>
                 <p:message for="einheit" id="einheitMessage" />
                 
-                <p:outputLabel for="beschreibung" value="Beschreibung:" />
-                <p:inputTextarea id="beschreibung" value="#{mainController.beschreibungInput}" 
-                               rows="3" cols="30" required="true">
-                    <f:validateLength minimum="10" maximum="1000" />
-                    <p:ajax event="blur" update="beschreibungMessage" />
+                <p:outputLabel for="beschreibung" value="Wissenschaftler:" />
+                <p:inputTextarea id="beschreibung" value="Thomas Müller" 
+                               rows="1" cols="50" disabled="true">
                 </p:inputTextarea>
                 <p:message for="beschreibung" id="beschreibungMessage" />
             </p:panelGrid>
