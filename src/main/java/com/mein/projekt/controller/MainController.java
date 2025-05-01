@@ -132,15 +132,13 @@ public class MainController implements Serializable {
     // CO₂-Daten speichern
     public String saveCo2Data() {
         try {
-            LOGGER.info("=== Speichere neue CO₂-Daten ===");
-            LOGGER.info("Land: " + landInput);
-            LOGGER.info("Jahr: " + jahrInput);
-            LOGGER.info("CO₂-Ausstoß: " + co2AusstossInput);
-            LOGGER.info("Einheit: " + einheitInput);
-            LOGGER.info("Beschreibung: Thomas Müller");
-            LOGGER.info("Benutzer: " + (currentUser != null ? currentUser.getUser().getUsername() : "null"));
+            LOGGER.info("=== Starte saveCo2Data ===");
             
             // Validierung der Eingaben
+            if (currentUser == null || currentUser.getUser() == null) {
+                throw new IllegalStateException("Kein Benutzer angemeldet");
+            }
+            
             if (landInput == null || landInput.trim().isEmpty()) {
                 throw new IllegalArgumentException("Land ist erforderlich");
             }
@@ -153,6 +151,8 @@ public class MainController implements Serializable {
             if (einheitInput == null || einheitInput.trim().isEmpty()) {
                 throw new IllegalArgumentException("Einheit ist erforderlich");
             }
+            
+            LOGGER.info("Eingaben validiert");
             
             // Erstelle neuen Artikel
             Artikel artikel = new Artikel();
@@ -172,6 +172,8 @@ public class MainController implements Serializable {
             artikel.setStatus("pending");
             artikel.setErstelltAm(now);
             
+            LOGGER.info("Artikel erstellt, starte Speichern");
+            
             // Speichere den Artikel
             shop.handleArtikel(artikel, currentUser.getUser());
             
@@ -184,6 +186,8 @@ public class MainController implements Serializable {
             
             // Felder zurücksetzen
             resetFields();
+            
+            LOGGER.info("=== Ende saveCo2Data ===");
             
             // Zurück zur Übersicht
             return "myarticles.xhtml?faces-redirect=true";

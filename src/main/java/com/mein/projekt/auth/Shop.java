@@ -130,12 +130,18 @@ public class Shop implements Serializable {
      */
     public void handleArtikel(Artikel artikel, User user) {
         try {
-            LOGGER.info("Speichere Artikel für " + artikel.getLand() + " mit CO2: " + artikel.getCo2Ausstoss());
+            LOGGER.info("Starte handleArtikel für Land: " + artikel.getLand());
+            LOGGER.info("Benutzer: " + user.getUsername());
+            LOGGER.info("Status: " + artikel.getStatus());
+            LOGGER.info("CO2-Ausstoß: " + artikel.getCo2Ausstoss());
+            
             artikel.setUser(user);
             artikelDAO.saveArtikel(artikel);
-            LOGGER.info("Artikel erfolgreich gespeichert");
+            
+            LOGGER.info("Artikel erfolgreich verarbeitet");
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Fehler beim Speichern des Artikels", e);
+            LOGGER.severe("Fehler beim Verarbeiten des Artikels: " + e.getMessage());
+            throw new RuntimeException("Fehler beim Verarbeiten des Artikels", e);
         }
     }
 
