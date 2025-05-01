@@ -27,7 +27,7 @@
 </h:head>
 
 <h:body>
-    <h:form>
+    <h:form id="adminForm">
         <p:panel header="CO₂-Daten zur Überprüfung" styleClass="pending-table">
             <p:messages id="messages" showDetail="true" closable="true" />
             
@@ -60,13 +60,13 @@
                     <p:commandButton value="Genehmigen" 
                                    action="#{mainController.approveArticle(artikel)}"
                                    styleClass="ui-button-success"
-                                   update="messages,artikelTable"
+                                   update=":adminForm:messages :adminForm:artikelTable"
                                    rendered="#{artikel.status eq 'pending'}" />
                                    
                     <p:commandButton value="Ablehnen" 
                                    action="#{mainController.rejectArticle(artikel)}"
                                    styleClass="ui-button-danger"
-                                   update="messages,artikelTable"
+                                   update=":adminForm:messages :adminForm:artikelTable"
                                    rendered="#{artikel.status eq 'pending'}" />
                 </p:column>
             </p:dataTable>
