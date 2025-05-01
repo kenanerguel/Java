@@ -130,9 +130,9 @@ public class MainController implements Serializable {
     }
 
     // CO₂-Daten speichern
-    public String saveCo2Data() {
+    public String saveCO2Data() {
         try {
-            LOGGER.info("=== Starte saveCo2Data ===");
+            LOGGER.info("=== Starte saveCO2Data ===");
             
             // Validierung der Eingaben
             if (currentUser == null || currentUser.getUser() == null) {
@@ -187,7 +187,7 @@ public class MainController implements Serializable {
             // Felder zurücksetzen
             resetFields();
             
-            LOGGER.info("=== Ende saveCo2Data ===");
+            LOGGER.info("=== Ende saveCO2Data ===");
             
             // Zurück zur Übersicht
             return "myarticles.xhtml?faces-redirect=true";
