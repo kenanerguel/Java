@@ -30,15 +30,19 @@ public class User {
     @Column(name = "is_admin", nullable = false)
     private boolean isAdmin;
 
+    @Column(name = "full_name")
+    private String fullName;
+
     // JPA erfordert einen Standard-Konstruktor
     public User() {
     }
 
     // Konstruktor zur Initialisierung
-    public User(String username, String password, boolean isAdmin) {
+    public User(String username, String password, boolean isAdmin, String fullName) {
         this.username = username;
         this.password = password;
         this.isAdmin = isAdmin;
+        this.fullName = fullName;
     }
 
     // Getter & Setter
@@ -72,6 +76,14 @@ public class User {
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public List<Artikel> getArtikelListe() {

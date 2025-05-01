@@ -7,6 +7,14 @@
     <title>CO2-Daten Portal</title>
     <h:outputStylesheet library="css" name="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style type="text/css">
+        .source-text {
+            margin-top: 10px;
+            word-wrap: break-word;
+            overflow: visible;
+            white-space: normal;
+        }
+    </style>
     <script type="text/javascript">
         //<![CDATA[
         function handleLoginComplete(xhr, status, args) {
@@ -85,7 +93,7 @@
                                     </h:outputText>
                                 </h:panelGroup>
                                 <h:panelGroup layout="block" styleClass="source-text">
-                                    <h:outputText value="Wissenschaftler: #{shop.currentArtikel.beschreibung}" />
+                                    <h:outputText value="Wissenschaftler: #{shop.currentArtikel.user.fullName}" />
                                 </h:panelGroup>
                             </h:panelGroup>
                         </h:panelGroup>
