@@ -35,7 +35,7 @@
             <p:panel header="CO₂-Daten Anzeige">
                 <p:selectOneMenu value="#{shop.selectedCountry}" style="width: 200px;">
                     <f:selectItem itemLabel="Land auswählen" itemValue="" noSelectionOption="true"/>
-                    <f:selectItems value="#{shop.countries}"/>
+                    <f:selectItems value="#{mainController.availableCountries}"/>
                     <p:ajax listener="#{shop.onCountryChange}" update="dataPanel"/>
                 </p:selectOneMenu>
             </p:panel>
@@ -46,7 +46,7 @@
                     <span class="co2-value">CO₂-Ausstoß: #{shop.currentArtikel.co2Ausstoss} #{shop.currentArtikel.einheit}</span>
                 </p>
                 <p>Stand: #{shop.currentArtikel.jahr}</p>
-                <p><em>Quelle: Wissenschaftler</em></p>
+                <p><em>Wissenschaftler: #{shop.currentArtikel.user.username}</em></p>
             </p:panel>
         </h:form>
     </div>

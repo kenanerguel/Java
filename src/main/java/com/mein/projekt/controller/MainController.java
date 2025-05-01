@@ -160,7 +160,7 @@ public class MainController implements Serializable {
             artikel.setJahr(jahrInput);
             artikel.setCo2Ausstoss(co2AusstossInput);
             artikel.setEinheit(einheitInput.trim());
-            artikel.setBeschreibung("Thomas Müller");
+            artikel.setBeschreibung(currentUser.getUser().getUsername());
             artikel.setUser(currentUser.getUser());
             
             // Setze Zeitstempel und Status
