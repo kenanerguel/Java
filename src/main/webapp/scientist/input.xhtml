@@ -39,10 +39,11 @@
             
             <p:panelGrid columns="2" style="width: 100%">
                 <p:outputLabel for="land" value="Land:" />
-                <p:inputText id="land" value="#{mainController.landInput}" required="true">
-                    <f:validateLength minimum="2" maximum="100" />
-                    <p:ajax event="blur" update="landMessage" />
-                </p:inputText>
+                <p:selectOneMenu id="land" value="#{mainController.landInput}" required="true" style="width: 200px;">
+                    <f:selectItem itemLabel="Land auswählen" itemValue="" noSelectionOption="true"/>
+                    <f:selectItems value="#{shop.countries}"/>
+                    <p:ajax event="change" update="landMessage" />
+                </p:selectOneMenu>
                 <p:message for="land" id="landMessage" />
                 
                 <p:outputLabel for="jahr" value="Jahr:" />
@@ -67,7 +68,7 @@
                 <p:message for="einheit" id="einheitMessage" />
                 
                 <p:outputLabel for="beschreibung" value="Wissenschaftler:" />
-                <p:inputTextarea id="beschreibung" value="Thomas Müller" 
+                <p:inputTextarea id="beschreibung" value="Wissenschaftler" 
                                rows="1" cols="50" disabled="true">
                 </p:inputTextarea>
                 <p:message for="beschreibung" id="beschreibungMessage" />
