@@ -198,19 +198,15 @@ public class ArtikelDAO {
             LOGGER.info("Starte saveArtikel für Artikel: " + artikel.getLand());
             entityManager = entityManagerProvider.getEntityManager();
             transaction = entityManager.getTransaction();
+            LOGGER.info("Starte neue Transaktion");
+            transaction.begin();
             
-            if (!transaction.isActive()) {
-                LOGGER.info("Starte neue Transaktion");
-                transaction.begin();
-            }
+            // Verwende merge statt persist für existierende Entitäten
+            LOGGER.info("Merge Artikel");
+            artikel = entityManager.merge(artikel);
             
-            LOGGER.info("Persistiere Artikel");
-            entityManager.persist(artikel);
-            
-            LOGGER.info("Commit Transaktion");
             transaction.commit();
-            
-            LOGGER.info("Artikel erfolgreich gespeichert mit ID: " + artikel.getId());
+            LOGGER.info("Artikel erfolgreich gespeichert");
         } catch (Exception e) {
             LOGGER.severe("Fehler beim Speichern des Artikels: " + e.getMessage());
             if (transaction != null && transaction.isActive()) {
