@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Date;
 
 @Named("shop")
 @SessionScoped
@@ -136,6 +137,15 @@ public class Shop implements Serializable {
             LOGGER.info("CO2-Ausstoß: " + artikel.getCo2Ausstoss());
             
             artikel.setUser(user);
+            artikel.setUpdatedBy(user);
+            artikel.setUpdatedAt(new Date());
+            
+            // Wenn der Artikel genehmigt wird, aktualisiere die Länderliste
+            if ("approved".equals(artikel.getStatus())) {
+                LOGGER.info("Artikel wird genehmigt, aktualisiere Länderliste");
+                initCountries(); // Länderliste neu laden
+            }
+            
             artikelDAO.saveArtikel(artikel);
             
             LOGGER.info("Artikel erfolgreich verarbeitet");
