@@ -24,6 +24,14 @@
             font-size: 1.2em;
             font-weight: bold;
         }
+        .wissenschaftler-label {
+            display: block;
+            margin-top: 18px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #222;
+            white-space: normal;
+        }
     </style>
 </h:head>
 
@@ -46,7 +54,7 @@
                     <span class="co2-value">CO₂-Ausstoß: #{shop.currentArtikel.co2Ausstoss} #{shop.currentArtikel.einheit}</span>
                 </p>
                 <p>Stand: #{shop.currentArtikel.jahr}</p>
-                <p style="font-size: 1.1em;"><span style="font-weight: bold;">Wissenschaftler:</span> #{shop.currentArtikel.user.fullName}</p>
+                <p><span class="wissenschaftler-label">Wissenschaftler: #{shop.currentArtikel.user.fullName}</span></p>
             </p:panel>
         </h:form>
     </div>
