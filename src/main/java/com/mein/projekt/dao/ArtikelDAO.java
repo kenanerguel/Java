@@ -277,7 +277,7 @@ public class ArtikelDAO {
     public Artikel getAktuellerArtikelByLand(String land) {
         try {
             TypedQuery<Artikel> query = entityManager.createQuery(
-                "SELECT a FROM Artikel a WHERE a.land = :land AND a.status = 'approved' ORDER BY a.jahr DESC",
+                "SELECT a FROM Artikel a WHERE a.land = :land AND a.status = 'approved' ORDER BY a.updatedAt DESC",
                 Artikel.class);
             query.setParameter("land", land);
             query.setMaxResults(1);
