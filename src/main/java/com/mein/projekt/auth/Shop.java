@@ -135,19 +135,22 @@ public class Shop implements Serializable {
             LOGGER.info("Benutzer: " + user.getUsername());
             LOGGER.info("Status: " + artikel.getStatus());
             LOGGER.info("CO2-Ausstoß: " + artikel.getCo2Ausstoss());
-            
-            artikel.setUser(user);
+
+            // Setze den User nur, wenn es kein Admin ist
+            if (!user.isAdmin()) {
+                artikel.setUser(user);
+            }
             artikel.setUpdatedBy(user);
             artikel.setUpdatedAt(new Date());
-            
+
             // Wenn der Artikel genehmigt wird, aktualisiere die Länderliste
             if ("approved".equals(artikel.getStatus())) {
                 LOGGER.info("Artikel wird genehmigt, aktualisiere Länderliste");
                 initCountries(); // Länderliste neu laden
             }
-            
+
             artikelDAO.saveArtikel(artikel);
-            
+
             LOGGER.info("Artikel erfolgreich verarbeitet");
         } catch (Exception e) {
             LOGGER.severe("Fehler beim Verarbeiten des Artikels: " + e.getMessage());
