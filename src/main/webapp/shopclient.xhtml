@@ -31,8 +31,8 @@
                     <f:selectItem itemLabel="Megatonnen" itemValue="Mt" />
                 </p:selectOneMenu>
 
-                <h:outputLabel for="beschreibung" value="Wissenschaftler:" />
-                <h:outputText id="beschreibung" value="Thomas Müller" />
+                <h:outputLabel for="beschreibung" value="Wissenschaftler:" style="padding-left: 20px;" />
+                <h:outputText id="beschreibung" value="#{mainController.currentUser.user.fullName}" />
 
                 <h:outputText />
                 <p:commandButton value="Daten speichern" action="#{mainController.saveCO2Data}" 
