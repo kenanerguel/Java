@@ -94,4 +94,15 @@ body {
         width: calc(100% - 40px);
         float: none;
     }
+}
+
+/* Verhindert das Abschneiden von Panel-Inhalten und Datenbereichen */
+.data-panel,
+.data-display,
+.ui-panel,
+.ui-widget-content {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding-bottom: 20px !important;
 } 
