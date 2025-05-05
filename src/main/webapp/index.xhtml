@@ -7,6 +7,8 @@
 
 <h:head>
     <title>CO₂-Daten Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <h:outputStylesheet library="css" name="styles.css" />
     <style>
         .container {
             max-width: 800px;
@@ -18,11 +20,30 @@
             padding: 20px;
             border: 1px solid #ddd;
             border-radius: 5px;
+            background: #fff;
         }
         .co2-value {
             color: #007bff;
             font-size: 1.2em;
             font-weight: bold;
+        }
+        .wissenschaftler-label {
+            display: block;
+            margin-top: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #222;
+            background: #ffe066;
+            padding-left: 16px;
+            border-radius: 3px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 8px;
+            }
+            .data-display {
+                padding: 10px;
+            }
         }
     </style>
 </h:head>
@@ -30,16 +51,15 @@
 <h:body>
     <div class="container">
         <h1>Aktuelle CO₂-Daten</h1>
-        
-        <h:form>
+        <h:form styleClass="ui-fluid">
             <p:panel header="CO₂-Daten Anzeige">
-                <p:selectOneMenu value="#{shop.selectedCountry}" style="width: 200px;">
+                <p:selectOneMenu value="#{shop.selectedCountry}" style="width: 100%; max-width: 300px;">
                     <f:selectItem itemLabel="Land auswählen" itemValue="" noSelectionOption="true"/>
                     <f:selectItems value="#{mainController.availableCountries}"/>
-                    <p:ajax listener="#{shop.onCountryChange}" update="dataPanel"/>
+                    <p:ajax listener="#{shop.onCountryChange}" update="dataPanel messages"/>
                 </p:selectOneMenu>
             </p:panel>
-
+            <p:messages id="messages" showDetail="true" closable="true" autoUpdate="true" />
             <p:panel id="dataPanel" styleClass="data-display">
                 <h2>
                   <h:outputText value="#{shop.currentArtikel.land}" rendered="#{shop.currentArtikel != null}" />
@@ -56,9 +76,11 @@
                   <h:outputText value="-" rendered="#{shop.currentArtikel == null}" />
                 </p>
                 <p>
-                  <h:outputText value="Wissenschaftler: " style="display:block; margin-top:20px; font-size:1.2em; font-weight:bold; color:#222; background:yellow !important; padding-left:16px; position:relative; z-index:2;" />
-                  <h:outputText value="#{shop.currentArtikel.user.fullName}" rendered="#{shop.currentArtikel != null and shop.currentArtikel.user != null and not empty shop.currentArtikel.user.fullName}" />
-                  <h:outputText value="Nicht verfügbar" rendered="#{shop.currentArtikel == null or shop.currentArtikel.user == null or empty shop.currentArtikel.user.fullName}" />
+                  <span class="wissenschaftler-label" aria-label="Wissenschaftler">
+                    <h:outputText value="Wissenschaftler: " />
+                    <h:outputText value="#{shop.currentArtikel.user.fullName}" rendered="#{shop.currentArtikel != null and shop.currentArtikel.user != null and not empty shop.currentArtikel.user.fullName}" />
+                    <h:outputText value="Nicht verfügbar" rendered="#{shop.currentArtikel == null or shop.currentArtikel.user == null or empty shop.currentArtikel.user.fullName}" />
+                  </span>
                 </p>
             </p:panel>
         </h:form>

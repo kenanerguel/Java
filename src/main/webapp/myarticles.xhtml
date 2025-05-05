@@ -5,67 +5,85 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
     <title>Meine CO₂-Daten</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <h:outputStylesheet library="css" name="styles.css" />
     <style type="text/css">
-        .status-approved { color: green; }
-        .status-rejected { color: red; }
-        .status-pending { color: orange; }
+        .myarticles-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 24px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .status-approved { color: green; font-weight: bold; }
+        .status-rejected { color: red; font-weight: bold; }
+        .status-pending { color: orange; font-weight: bold; }
+        .myarticles-btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+        @media (max-width: 600px) {
+            .myarticles-container {
+                padding: 8px;
+            }
+            .ui-datatable {
+                font-size: 0.95em;
+            }
+        }
     </style>
 </h:head>
 <h:body>
-    <h:form id="artikelFormular">
-        <p:panel header="Meine CO₂-Daten Einreichungen">
-            <p:dataTable id="artikelTabelle" value="#{mainController.myArtikel}" var="artikel"
-                        emptyMessage="Sie haben noch keine CO₂-Daten eingereicht">
-                
-                <p:column headerText="Land">
-                    <h:outputText value="#{artikel.land}" />
-                </p:column>
-                
-                <p:column headerText="Jahr">
-                    <h:outputText value="#{artikel.jahr}" />
-                </p:column>
-                
-                <p:column headerText="CO₂-Ausstoß">
-                    <h:outputText value="#{artikel.co2Ausstoss}" />
-                </p:column>
-                
-                <p:column headerText="Einheit">
-                    <h:outputText value="#{artikel.einheit}" />
-                </p:column>
-                
-                <p:column headerText="Status">
-                    <h:outputText value="#{artikel.status eq 'approved' ? 'Genehmigt' : (artikel.status eq 'rejected' ? 'Abgelehnt' : 'Ausstehend')}"
-                                styleClass="#{artikel.status eq 'approved' ? 'status-approved' : (artikel.status eq 'rejected' ? 'status-rejected' : 'status-pending')}" />
-                </p:column>
-                
-                <p:column headerText="Eingereicht am">
-                    <h:outputText value="#{artikel.erstelltAm}">
-                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm" />
-                    </h:outputText>
-                </p:column>
-                
-                <p:column headerText="Anmerkungen">
-                    <h:outputText value="#{artikel.beschreibung}" 
-                                rendered="#{artikel.status eq 'rejected'}"
-                                styleClass="status-rejected" />
-                </p:column>
-                
-                <p:column headerText="Aktionen">
-                    <p:commandButton value="Erneut einreichen" 
-                                   rendered="#{artikel.status eq 'rejected'}"
+    <div class="myarticles-container">
+        <h:form id="artikelFormular" styleClass="ui-fluid">
+            <p:panel header="Meine CO₂-Daten Einreichungen">
+                <p:messages id="meldungen" showDetail="true" closable="true" autoUpdate="true" />
+                <p:dataTable id="artikelTabelle" value="#{mainController.myArtikel}" var="artikel"
+                            emptyMessage="Sie haben noch keine CO₂-Daten eingereicht"
+                            styleClass="ui-datatable-responsive" rowKey="#{artikel.id}">
+                    <p:column headerText="Land">
+                        <h:outputText value="#{artikel.land}" />
+                    </p:column>
+                    <p:column headerText="Jahr">
+                        <h:outputText value="#{artikel.jahr}" />
+                    </p:column>
+                    <p:column headerText="CO₂-Ausstoß">
+                        <h:outputText value="#{artikel.co2Ausstoss}" />
+                    </p:column>
+                    <p:column headerText="Einheit">
+                        <h:outputText value="#{artikel.einheit}" />
+                    </p:column>
+                    <p:column headerText="Status">
+                        <h:outputText value="#{artikel.status eq 'approved' ? 'Genehmigt' : (artikel.status eq 'rejected' ? 'Abgelehnt' : 'Ausstehend')}" 
+                                      styleClass="#{artikel.status eq 'approved' ? 'status-approved' : (artikel.status eq 'rejected' ? 'status-rejected' : 'status-pending')}" 
+                                      aria-label="Status: #{artikel.status eq 'approved' ? 'Genehmigt' : (artikel.status eq 'rejected' ? 'Abgelehnt' : 'Ausstehend')}" />
+                    </p:column>
+                    <p:column headerText="Eingereicht am">
+                        <h:outputText value="#{artikel.erstelltAm}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Anmerkungen">
+                        <h:outputText value="#{artikel.beschreibung}" 
+                                    rendered="#{artikel.status eq 'rejected'}"
+                                    styleClass="status-rejected" />
+                    </p:column>
+                    <p:column headerText="Aktionen">
+                        <p:commandButton value="Erneut einreichen" 
+                                       rendered="#{artikel.status eq 'rejected'}"
+                                       action="backoffice.xhtml?faces-redirect=true"
+                                       styleClass="ui-button-warning myarticles-btn"
+                                       aria-label="Erneut einreichen" />
+                    </p:column>
+                </p:dataTable>
+                <div style="margin-top: 20px;">
+                    <p:commandButton value="Neue CO₂-Daten eingeben" 
                                    action="backoffice.xhtml?faces-redirect=true"
-                                   styleClass="ui-button-warning" />
-                </p:column>
-            </p:dataTable>
-            
-            <p:messages id="meldungen" showDetail="true" closable="true" />
-            
-            <div style="margin-top: 20px;">
-                <p:commandButton value="Neue CO₂-Daten eingeben" 
-                               action="backoffice.xhtml?faces-redirect=true"
-                               styleClass="ui-button-primary" />
-            </div>
-        </p:panel>
-    </h:form>
+                                   styleClass="ui-button-primary myarticles-btn"
+                                   aria-label="Neue CO₂-Daten eingeben" />
+                </div>
+            </p:panel>
+        </h:form>
+    </div>
 </h:body>
 </html> 

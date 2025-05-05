@@ -8,11 +8,34 @@
     <h:outputStylesheet library="css" name="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style type="text/css">
-        .source-text {
+        .login-container {
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 30px 24px 24px 24px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .page-title {
+            text-align: center;
+            margin-bottom: 24px;
+            font-size: 2em;
+            color: #007bff;
+        }
+        .p-field {
+            margin-bottom: 18px;
+        }
+        .login-panel .ui-panel-content {
+            padding: 0 0 12px 0;
+        }
+        .login-btn {
+            width: 100%;
             margin-top: 10px;
-            word-wrap: break-word;
-            overflow: visible;
-            white-space: normal;
+        }
+        @media (max-width: 600px) {
+            .login-container {
+                padding: 16px 4px;
+            }
         }
     </style>
     <script type="text/javascript">
@@ -26,85 +49,32 @@
     </script>
 </h:head>
 <h:body>
-    <h:panelGroup rendered="#{facesContext.maximumSeverity.ordinal ge 0}">
-        <p:messages id="errorMessages" showDetail="true" closable="true" />
-    </h:panelGroup>
-    
-    <h1 class="page-title">CO2-Daten Portal</h1>
-    
-    <div class="clearfix">
-        <h:panelGroup layout="block" styleClass="login-panel">
-            <h:form id="loginForm">
-                <p:panel header="Login">
-                    <p:messages id="messages" showDetail="true" closable="true" />
-                    
-                    <div class="ui-fluid">
-                        <div class="p-field">
-                            <p:outputLabel for="username" value="Benutzer:" />
-                            <p:inputText id="username" 
-                                       value="#{mainController.userInput}" 
-                                       required="true" 
-                                       requiredMessage="Bitte geben Sie einen Benutzernamen ein"
-                                       placeholder="Benutzername eingeben"/>
-                            <p:message for="username" />
-                        </div>
-
-                        <div class="p-field">
-                            <p:outputLabel for="password" value="Passwort:" />
-                            <p:password id="password" 
-                                      value="#{mainController.passwordInput}" 
-                                      required="true" 
-                                      requiredMessage="Bitte geben Sie ein Passwort ein"
-                                      placeholder="Passwort eingeben"/>
-                            <p:message for="password" />
-                        </div>
-                    </div>
-
-                    <p:commandButton value="Einloggen"
-                                   action="#{mainController.login}"
-                                   update="@form messages"
-                                   process="@form"
-                                   styleClass="ui-button-primary"
-                                   style="width: 100%; margin-top: 10px;"/>
-                </p:panel>
-            </h:form>
-        </h:panelGroup>
-
-        <h:panelGroup layout="block" styleClass="data-panel">
-            <p:panel header="Aktuelle CO2-Daten">
-                <h:form id="co2Form">
-                    <p:selectOneMenu value="#{shop.selectedCountry}">
-                        <f:selectItem itemLabel="-- Land auswählen --" itemValue="" />
-                        <f:selectItems value="#{shop.countries}" />
-                        <p:ajax listener="#{shop.onCountryChange}" update="co2output" />
-                    </p:selectOneMenu>
-
-                    <h:panelGroup id="co2output" styleClass="latest-data">
-                        <h:panelGroup rendered="#{not empty shop.currentArtikel}">
-                            <h:panelGroup layout="block">
-                                <h:outputText value="#{shop.currentArtikel.land}" styleClass="heading-text" />
-                                <h:panelGroup layout="block" styleClass="data-value">
-                                    <h:outputText value="CO2-Ausstoß: #{shop.currentArtikel.co2Ausstoss} #{shop.currentArtikel.einheit}" />
-                                </h:panelGroup>
-                                <h:panelGroup layout="block" styleClass="data-date">
-                                    <h:outputText value="Stand: #{shop.currentArtikel.jahr}" />
-                                    <h:outputText value=" (Aktualisiert am: #{shop.currentArtikel.erstelltAm})">
-                                        <f:convertDateTime pattern="dd.MM.yyyy" />
-                                    </h:outputText>
-                                </h:panelGroup>
-                                <h:panelGroup layout="block" styleClass="source-text">
-                                    <h:outputText value="Wissenschaftler: #{shop.currentArtikel.user.fullName}" />
-                                </h:panelGroup>
-                            </h:panelGroup>
-                        </h:panelGroup>
-                        <h:panelGroup rendered="#{empty shop.currentArtikel}">
-                            <h:outputText value="Bitte wählen Sie ein Land aus, um die aktuellen CO2-Daten anzuzeigen." 
-                                        style="color: #666; display: block; text-align: center; padding: 20px;"/>
-                        </h:panelGroup>
-                    </h:panelGroup>
-                </h:form>
+    <div class="login-container">
+        <h1 class="page-title">CO₂-Daten Portal</h1>
+        <h:form id="loginForm" styleClass="ui-fluid">
+            <p:panel header="Login" styleClass="login-panel">
+                <p:messages id="messages" showDetail="true" closable="true" autoUpdate="true" />
+                <div class="p-field">
+                    <p:outputLabel for="username" value="Benutzer:" />
+                    <p:inputText id="username" value="#{mainController.userInput}" required="true"
+                                 requiredMessage="Bitte geben Sie einen Benutzernamen ein"
+                                 placeholder="Benutzername eingeben" aria-label="Benutzername" />
+                    <p:message for="username" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="password" value="Passwort:" />
+                    <p:password id="password" value="#{mainController.passwordInput}" required="true"
+                                requiredMessage="Bitte geben Sie ein Passwort ein"
+                                placeholder="Passwort eingeben" aria-label="Passwort" />
+                    <p:message for="password" />
+                </div>
+                <p:commandButton value="Einloggen"
+                                 action="#{mainController.login}"
+                                 update="@form messages"
+                                 styleClass="ui-button-primary login-btn"
+                                 aria-label="Einloggen" />
             </p:panel>
-        </h:panelGroup>
+        </h:form>
     </div>
 </h:body>
 </html>

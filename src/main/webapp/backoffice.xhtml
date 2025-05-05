@@ -5,48 +5,80 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
     <title>CO₂-Dateneingabe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <h:outputStylesheet library="css" name="styles.css" />
+    <style type="text/css">
+        .backoffice-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 24px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .p-field {
+            margin-bottom: 18px;
+        }
+        .backoffice-btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+        @media (max-width: 600px) {
+            .backoffice-container {
+                padding: 8px;
+            }
+        }
+    </style>
 </h:head>
 <h:body>
-    <h:form id="backofficeForm">
-        <p:panel header="CO₂-Dateneingabe">
-            <h:panelGrid columns="2" cellpadding="5">
-                <h:outputLabel for="land" value="Land:" />
-                <p:selectOneMenu id="land" value="#{mainController.landInput}" required="true">
-                    <f:selectItems value="#{mainController.availableCountries}" var="country" 
-                                 itemLabel="#{country}" itemValue="#{country}" />
-                </p:selectOneMenu>
-
-                <h:outputLabel for="jahr" value="Jahr:" />
-                <p:spinner id="jahr" value="#{mainController.jahrInput}" required="true" 
-                          minValue="1900" maxValue="2100" />
-
-                <h:outputLabel for="co2Ausstoss" value="CO₂-Ausstoß:" />
-                <p:inputNumber id="co2Ausstoss" value="#{mainController.co2AusstossInput}" 
-                             required="true" decimalPlaces="2" />
-
-                <h:outputLabel for="einheit" value="Einheit:" />
-                <p:selectOneMenu id="einheit" value="#{mainController.einheitInput}" required="true">
-                    <f:selectItem itemLabel="Tonnen" itemValue="t" />
-                    <f:selectItem itemLabel="Kilotonnen" itemValue="kt" />
-                    <f:selectItem itemLabel="Megatonnen" itemValue="Mt" />
-                </p:selectOneMenu>
-
-                <h:outputLabel for="beschreibung" value="Wissenschaftler:" />
-                <h:outputText id="beschreibung" value="Thomas Müller" />
-
-                <h:outputText />
-                <p:commandButton value="Daten speichern" action="#{mainController.saveCO2Data}" 
-                               update="backofficeForm messages" />
-            </h:panelGrid>
-            <p:messages id="messages" autoUpdate="true" />
-            
-            <div style="margin-top: 20px;">
-                <p:commandButton value="Zurück zur Übersicht" 
-                               action="myarticles.xhtml?faces-redirect=true"
-                               styleClass="ui-button-secondary" 
-                               immediate="true" />
-            </div>
-        </p:panel>
-    </h:form>
+    <div class="backoffice-container">
+        <h:form id="backofficeForm" styleClass="ui-fluid">
+            <p:panel header="CO₂-Dateneingabe">
+                <p:messages id="messages" showDetail="true" closable="true" autoUpdate="true" />
+                <div class="p-field">
+                    <p:outputLabel for="land" value="Land:" />
+                    <p:selectOneMenu id="land" value="#{mainController.landInput}" required="true" aria-label="Land">
+                        <f:selectItems value="#{mainController.availableCountries}" var="country"
+                                     itemLabel="#{country}" itemValue="#{country}" />
+                    </p:selectOneMenu>
+                    <p:message for="land" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="jahr" value="Jahr:" />
+                    <p:spinner id="jahr" value="#{mainController.jahrInput}" required="true"
+                              minValue="1900" maxValue="2100" aria-label="Jahr" />
+                    <p:message for="jahr" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="co2Ausstoss" value="CO₂-Ausstoß:" />
+                    <p:inputNumber id="co2Ausstoss" value="#{mainController.co2AusstossInput}"
+                                 required="true" decimalPlaces="2" aria-label="CO₂-Ausstoß" />
+                    <p:message for="co2Ausstoss" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="einheit" value="Einheit:" />
+                    <p:selectOneMenu id="einheit" value="#{mainController.einheitInput}" required="true" aria-label="Einheit">
+                        <f:selectItem itemLabel="Tonnen" itemValue="t" />
+                        <f:selectItem itemLabel="Kilotonnen" itemValue="kt" />
+                        <f:selectItem itemLabel="Megatonnen" itemValue="Mt" />
+                    </p:selectOneMenu>
+                    <p:message for="einheit" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="beschreibung" value="Wissenschaftler:" />
+                    <h:outputText id="beschreibung" value="Thomas Müller" />
+                </div>
+                <p:commandButton value="Daten speichern" action="#{mainController.saveCO2Data}"
+                               update="backofficeForm messages" styleClass="ui-button-primary backoffice-btn" aria-label="Daten speichern" />
+                <div style="margin-top: 20px;">
+                    <p:commandButton value="Zurück zur Übersicht"
+                                   action="myarticles.xhtml?faces-redirect=true"
+                                   styleClass="ui-button-secondary"
+                                   immediate="true"
+                                   aria-label="Zurück zur Übersicht" />
+                </div>
+            </p:panel>
+        </h:form>
+    </div>
 </h:body>
 </html>

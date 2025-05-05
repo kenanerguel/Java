@@ -4,38 +4,24 @@
       xmlns:f="jakarta.faces.core"
       xmlns:p="http://primefaces.org/ui">
 <h:head>
-    <title>Fehler - CO2-Daten Portal</title>
-    <h:outputStylesheet library="css" name="styles.css" />
+    <title>Fehler - CO₂-Daten Portal</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-</h:head>
-<h:body>
-    <div class="error-container">
-        <h1>Ein Fehler ist aufgetreten</h1>
-        
-        <div class="error-message">
-            <p>Es tut uns leid, aber es ist ein Fehler aufgetreten. Bitte versuchen Sie folgendes:</p>
-            
-            <ul>
-                <li>Überprüfen Sie Ihre Internetverbindung</li>
-                <li>Löschen Sie den Browser-Cache und Cookies</li>
-                <li>Versuchen Sie sich erneut einzuloggen</li>
-                <li>Falls das Problem weiterhin besteht, kontaktieren Sie bitte den Administrator</li>
-            </ul>
-        </div>
-        
-        <div class="error-actions">
-            <p:button value="Zurück zur Login-Seite" outcome="/login.xhtml" styleClass="ui-button-primary"/>
-        </div>
-    </div>
-    
+    <h:outputStylesheet library="css" name="styles.css" />
     <style type="text/css">
         .error-container {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
+            max-width: 500px;
+            margin: 60px auto;
+            padding: 32px 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
             text-align: center;
         }
-        
+        .error-title {
+            color: #d32f2f;
+            font-size: 2em;
+            margin-bottom: 18px;
+        }
         .error-message {
             margin: 20px 0;
             padding: 20px;
@@ -43,15 +29,35 @@
             border-radius: 5px;
             text-align: left;
         }
-        
         .error-message ul {
             margin: 10px 0;
             padding-left: 20px;
         }
-        
         .error-actions {
-            margin-top: 20px;
+            margin-top: 24px;
+        }
+        @media (max-width: 600px) {
+            .error-container {
+                padding: 12px 2px;
+            }
         }
     </style>
+</h:head>
+<h:body>
+    <div class="error-container" role="alert" aria-live="assertive">
+        <div class="error-title">Ein Fehler ist aufgetreten</div>
+        <div class="error-message">
+            <p>Es tut uns leid, aber es ist ein Fehler aufgetreten. Bitte versuchen Sie folgendes:</p>
+            <ul>
+                <li>Überprüfen Sie Ihre Internetverbindung</li>
+                <li>Löschen Sie den Browser-Cache und Cookies</li>
+                <li>Versuchen Sie sich erneut einzuloggen</li>
+                <li>Falls das Problem weiterhin besteht, kontaktieren Sie bitte den Administrator</li>
+            </ul>
+        </div>
+        <div class="error-actions">
+            <p:button value="Zurück zur Login-Seite" outcome="/login.xhtml" styleClass="ui-button-primary" aria-label="Zurück zur Login-Seite"/>
+        </div>
+    </div>
 </h:body>
 </html> 

@@ -15,24 +15,24 @@
 
         <properties>
             <!-- Schema-Aktualisierung: update, create, create-drop, validate -->
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
 
-            <!-- SQL-Ausgaben (optional) -->
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
+            <!-- SQL-Ausgaben (optional, nur für Entwicklung aktivieren) -->
+            <!-- <property name="hibernate.show_sql" value="true"/> -->
+            <!-- <property name="hibernate.format_sql" value="true"/> -->
 
-            <!-- Logging Konfiguration -->
-            <property name="hibernate.use_sql_comments" value="true"/>
-            <property name="hibernate.generate_statistics" value="true"/>
+            <!-- Logging Konfiguration (nur Entwicklung) -->
+            <!-- <property name="hibernate.use_sql_comments" value="true"/> -->
+            <!-- <property name="hibernate.generate_statistics" value="true"/> -->
             
             <!-- Connection Pool -->
             <property name="hibernate.connection.pool_size" value="10"/>
             
-            <!-- Cache -->
+            <!-- Cache (optional aktivieren) -->
             <property name="hibernate.cache.use_second_level_cache" value="false"/>
             
-            <!-- Debug -->
-            <property name="hibernate.logger.level" value="DEBUG"/>
+            <!-- Debug (nur Entwicklung) -->
+            <!-- <property name="hibernate.logger.level" value="DEBUG"/> -->
         </properties>
     </persistence-unit>
 </persistence>
