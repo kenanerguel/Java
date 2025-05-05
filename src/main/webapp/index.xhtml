@@ -24,14 +24,6 @@
             font-size: 1.2em;
             font-weight: bold;
         }
-        .wissenschaftler-label {
-            display: block;
-            margin-top: 18px;
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #222;
-            white-space: normal;
-        }
     </style>
 </h:head>
 
@@ -64,11 +56,9 @@
                   <h:outputText value="-" rendered="#{shop.currentArtikel == null}" />
                 </p>
                 <p>
-                  <span style="display:block; margin-top:20px; font-size:1.2em; font-weight:bold; color:#222; background:yellow !important;">
-                    Wissenschaftler:
-                    <h:outputText value="#{shop.currentArtikel.user.fullName}" rendered="#{shop.currentArtikel != null and shop.currentArtikel.user != null and not empty shop.currentArtikel.user.fullName}" />
-                    <h:outputText value="Nicht verfügbar" rendered="#{shop.currentArtikel == null or shop.currentArtikel.user == null or empty shop.currentArtikel.user.fullName}" />
-                  </span>
+                  <h:outputText value="Wissenschaftler: " style="display:block; margin-top:20px; font-size:1.2em; font-weight:bold; color:#222; background:yellow !important; padding-left:16px; position:relative; z-index:2;" />
+                  <h:outputText value="#{shop.currentArtikel.user.fullName}" rendered="#{shop.currentArtikel != null and shop.currentArtikel.user != null and not empty shop.currentArtikel.user.fullName}" />
+                  <h:outputText value="Nicht verfügbar" rendered="#{shop.currentArtikel == null or shop.currentArtikel.user == null or empty shop.currentArtikel.user.fullName}" />
                 </p>
             </p:panel>
         </h:form>
