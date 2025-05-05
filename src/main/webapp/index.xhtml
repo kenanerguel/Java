@@ -48,15 +48,28 @@
                 </p:selectOneMenu>
             </p:panel>
 
-            <p:panel id="dataPanel" styleClass="data-display" rendered="#{shop.currentArtikel != null}">
-                <h2>#{shop.currentArtikel.land}</h2>
+            <p:panel id="dataPanel" styleClass="data-display">
+                <h2>
+                  <h:outputText value="#{shop.currentArtikel.land}" rendered="#{shop.currentArtikel != null}" />
+                  <h:outputText value="(kein Land ausgewählt)" rendered="#{shop.currentArtikel == null}" />
+                </h2>
                 <p>
-                    <span class="co2-value">CO₂-Ausstoß: #{shop.currentArtikel.co2Ausstoss} #{shop.currentArtikel.einheit}</span>
+                    <span class="co2-value">
+                      <h:outputText value="CO₂-Ausstoß: #{shop.currentArtikel.co2Ausstoss} #{shop.currentArtikel.einheit}" rendered="#{shop.currentArtikel != null}" />
+                      <h:outputText value="-" rendered="#{shop.currentArtikel == null}" />
+                    </span>
                 </p>
-                <p>Stand: #{shop.currentArtikel.jahr}</p>
-                <p><span style="display:block; margin-top:20px; font-size:1.2em; font-weight:bold; color:#222; background:yellow !important;">
-                  Wissenschaftler: #{shop.currentArtikel.user.fullName}
-                </span></p>
+                <p>
+                  <h:outputText value="Stand: #{shop.currentArtikel.jahr}" rendered="#{shop.currentArtikel != null}" />
+                  <h:outputText value="-" rendered="#{shop.currentArtikel == null}" />
+                </p>
+                <p>
+                  <span style="display:block; margin-top:20px; font-size:1.2em; font-weight:bold; color:#222; background:yellow !important;">
+                    Wissenschaftler:
+                    <h:outputText value="#{shop.currentArtikel.user.fullName}" rendered="#{shop.currentArtikel != null and shop.currentArtikel.user != null and not empty shop.currentArtikel.user.fullName}" />
+                    <h:outputText value="Nicht verfügbar" rendered="#{shop.currentArtikel == null or shop.currentArtikel.user == null or empty shop.currentArtikel.user.fullName}" />
+                  </span>
+                </p>
             </p:panel>
         </h:form>
     </div>
