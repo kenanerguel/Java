@@ -28,6 +28,16 @@
                 padding: 8px;
             }
         }
+        .wissenschaftler-row {
+            margin-top: 10px;
+            font-size: 1.05em;
+            display: flex;
+            align-items: center;
+        }
+        .wissenschaftler-label {
+            font-weight: bold;
+            margin-right: 8px;
+        }
     </style>
 </h:head>
 <h:body>
@@ -64,9 +74,9 @@
                     </p:selectOneMenu>
                     <p:message for="einheit" />
                 </div>
-                <div class="p-field">
-                    <p:outputLabel for="beschreibung" value="Wissenschaftler:" />
-                    <h:outputText id="beschreibung" value="Thomas Müller" />
+                <div class="p-field wissenschaftler-row">
+                    <span class="wissenschaftler-label">Wissenschaftler:</span>
+                    <span>Thomas Müller</span>
                 </div>
                 <p:commandButton value="Daten speichern" action="#{mainController.saveCO2Data}"
                                update="backofficeForm messages" styleClass="ui-button-primary backoffice-btn" aria-label="Daten speichern" />

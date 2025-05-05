@@ -23,25 +23,31 @@
             width: 100%;
             margin-top: 10px;
         }
-        .ui-datatable tbody tr {
-            height: 48px;
+        #artikelTabelle table {
+            font-size: 1.08em !important;
         }
-        .ui-datatable td, .ui-datatable th {
-            padding-top: 12px !important;
-            padding-bottom: 12px !important;
-            padding-left: 16px !important;
-            padding-right: 16px !important;
+        #artikelTabelle tbody tr {
+            height: 54px !important;
+        }
+        #artikelTabelle td, #artikelTabelle th {
+            padding-top: 16px !important;
+            padding-bottom: 16px !important;
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+            vertical-align: middle !important;
         }
         @media (max-width: 600px) {
             .myarticles-container {
                 padding: 8px;
             }
-            .ui-datatable {
-                font-size: 0.95em;
+            #artikelTabelle table {
+                font-size: 0.98em !important;
             }
-            .ui-datatable td, .ui-datatable th {
+            #artikelTabelle td, #artikelTabelle th {
                 padding-left: 8px !important;
                 padding-right: 8px !important;
+                padding-top: 10px !important;
+                padding-bottom: 10px !important;
             }
         }
     </style>
