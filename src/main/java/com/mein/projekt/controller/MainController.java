@@ -250,14 +250,7 @@ public class MainController implements Serializable {
     }
 
     public void onCountryChange() {
-        List<Number> result = shop.handleLatestValues(selectedCountry);
-        if (result != null && result.size() == 2) {
-            latestCO2 = (double) result.get(0);
-            latestYear = (int) result.get(1);
-        } else {
-            latestCO2 = -1;
-            latestYear = -1;
-        }
+        shop.onCountryChange();
     }
 
     // Getter & Setter für die neuen Felder
