@@ -95,6 +95,7 @@
                   <h:outputText value="-" rendered="#{shop.currentArtikel == null}" />
                 </p>
                 <p>
+                  <span class="wissenschaftler-label">TEST WISSENSCHAFTLER</span>
                   <span class="wissenschaftler-label" aria-label="Wissenschaftler">
                     <h:outputText value="Wissenschaftler: " />
                     <h:outputText value="#{shop.currentArtikel.user.fullName}" rendered="#{shop.currentArtikel != null and shop.currentArtikel.user != null and not empty shop.currentArtikel.user.fullName}" />
