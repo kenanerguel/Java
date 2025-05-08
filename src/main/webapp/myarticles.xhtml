@@ -60,34 +60,34 @@
                 <p:dataTable id="artikelTabelle" value="#{mainController.myArtikel}" var="artikel"
                             emptyMessage="Sie haben noch keine CO₂-Daten eingereicht"
                             styleClass="ui-datatable-responsive" rowKey="#{artikel.id}">
-                    <p:column headerText="Land">
+                    <p:column headerText="Land" style="width: 160px;">
                         <h:outputText value="#{artikel.land}" />
                     </p:column>
-                    <p:column headerText="Jahr">
+                    <p:column headerText="Jahr" style="width: 110px;">
                         <h:outputText value="#{artikel.jahr}" />
                     </p:column>
-                    <p:column headerText="CO₂-Ausstoß">
+                    <p:column headerText="CO₂-Ausstoß" style="width: 140px;">
                         <h:outputText value="#{artikel.co2Ausstoss}" />
                     </p:column>
-                    <p:column headerText="Einheit">
+                    <p:column headerText="Einheit" style="width: 110px;">
                         <h:outputText value="#{artikel.einheit}" />
                     </p:column>
-                    <p:column headerText="Status">
+                    <p:column headerText="Status" style="width: 130px;">
                         <h:outputText value="#{artikel.status eq 'approved' ? 'Genehmigt' : (artikel.status eq 'rejected' ? 'Abgelehnt' : 'Ausstehend')}" 
                                       styleClass="#{artikel.status eq 'approved' ? 'status-approved' : (artikel.status eq 'rejected' ? 'status-rejected' : 'status-pending')}" 
                                       aria-label="Status: #{artikel.status eq 'approved' ? 'Genehmigt' : (artikel.status eq 'rejected' ? 'Abgelehnt' : 'Ausstehend')}" />
                     </p:column>
-                    <p:column headerText="Eingereicht am">
+                    <p:column headerText="Eingereicht am" style="width: 170px;">
                         <h:outputText value="#{artikel.erstelltAm}">
                             <f:convertDateTime pattern="dd.MM.yyyy HH:mm" />
                         </h:outputText>
                     </p:column>
-                    <p:column headerText="Anmerkungen">
+                    <p:column headerText="Anmerkungen" style="width: 140px;">
                         <h:outputText value="#{artikel.beschreibung}" 
                                     rendered="#{artikel.status eq 'rejected'}"
                                     styleClass="status-rejected" />
                     </p:column>
-                    <p:column headerText="Aktionen">
+                    <p:column headerText="Aktionen" style="width: 120px;">
                         <p:commandButton value="Erneut einreichen" 
                                        rendered="#{artikel.status eq 'rejected'}"
                                        action="backoffice.xhtml?faces-redirect=true"
