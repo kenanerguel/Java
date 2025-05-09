@@ -8,34 +8,10 @@
     <h:outputStylesheet library="css" name="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style type="text/css">
-        .login-container {
-            max-width: 400px;
-            margin: 40px auto;
-            padding: 30px 24px 24px 24px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-        }
-        .page-title {
-            text-align: center;
-            margin-bottom: 24px;
-            font-size: 2em;
-            color: #007bff;
-        }
-        .p-field {
-            margin-bottom: 18px;
-        }
-        .login-panel .ui-panel-content {
-            padding: 0 0 12px 0;
-        }
-        .login-btn {
-            width: 100%;
-            margin-top: 10px;
-        }
-        @media (max-width: 600px) {
-            .login-container {
-                padding: 16px 4px;
-            }
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
         }
     </style>
     <script type="text/javascript">
@@ -48,9 +24,9 @@
         //]]>
     </script>
 </h:head>
-<h:body>
+<h:body style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f7f7f7;">
     <h:form id="loginForm" styleClass="ui-fluid">
-        <p:panel header="Login" styleClass="login-panel">
+        <p:panel header="Login" style="min-width:320px; max-width:400px; margin:0 auto;">
             <p:messages id="messages" showDetail="true" closable="true" autoUpdate="true" />
             <div class="p-field">
                 <p:outputLabel for="username" value="Benutzer:" />
