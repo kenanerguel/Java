@@ -40,6 +40,8 @@
             overflow-wrap: anywhere !important;
             word-break: break-word !important;
             max-width: 100% !important;
+            overflow: visible !important;
+            height: auto !important;
         }
         @media (max-width: 600px) {
             .container {
@@ -67,44 +69,62 @@
 </h:head>
 
 <h:body>
-    <span class="wissenschaftler-label">TEST WISSENSCHAFTLER</span>
-    <img src="../../../../src/main/webapp/logo.png" alt="Like Hero to Zero Logo" class="logo-top-right" />
-    <div class="container">
-        <h1>Aktuelle CO₂-Daten</h1>
-        <h:form styleClass="ui-fluid">
-            <p:panel header="CO₂-Daten Anzeige">
-                <p:selectOneMenu value="#{shop.selectedCountry}" style="width: 100%; max-width: 300px;">
-                    <f:selectItem itemLabel="Land auswählen" itemValue="" noSelectionOption="true"/>
-                    <f:selectItems value="#{mainController.availableCountries}"/>
-                    <p:ajax listener="#{shop.onCountryChange}" update="dataPanel messages"/>
-                </p:selectOneMenu>
-            </p:panel>
-            <p:messages id="messages" showDetail="true" closable="true" autoUpdate="true" />
-            <p:panel id="dataPanel" styleClass="data-display">
-                <h2>
-                  <h:outputText value="#{shop.currentArtikel.land}" rendered="#{shop.currentArtikel != null}" />
-                  <h:outputText value="(kein Land ausgewählt)" rendered="#{shop.currentArtikel == null}" />
-                </h2>
-                <p>
-                    <span class="co2-value">
-                      <h:outputText value="CO₂-Ausstoß: #{shop.currentArtikel.co2Ausstoss} #{shop.currentArtikel.einheit}" rendered="#{shop.currentArtikel != null}" />
-                      <h:outputText value="-" rendered="#{shop.currentArtikel == null}" />
-                    </span>
-                </p>
-                <p>
-                  <h:outputText value="Stand: #{shop.currentArtikel.jahr}" rendered="#{shop.currentArtikel != null}" />
-                  <h:outputText value="-" rendered="#{shop.currentArtikel == null}" />
-                </p>
-                <p>
-                  <span class="wissenschaftler-label">TEST WISSENSCHAFTLER</span>
-                  <span class="wissenschaftler-label" aria-label="Wissenschaftler">
-                    <h:outputText value="Wissenschaftler: " />
-                    <h:outputText value="#{shop.currentArtikel.user.fullName}" rendered="#{shop.currentArtikel != null and shop.currentArtikel.user != null and not empty shop.currentArtikel.user.fullName}" />
-                    <h:outputText value="Nicht verfügbar" rendered="#{shop.currentArtikel == null or shop.currentArtikel.user == null or empty shop.currentArtikel.user.fullName}" />
-                  </span>
-                </p>
-            </p:panel>
-        </h:form>
+    <img src="testlogo.png" alt="Like Hero to Zero Logo" style="height: 40px; float: right; margin: 8px 16px 0 0;" />
+    <div style="display: flex; gap: 32px; align-items: flex-start; max-width: 1200px; margin: 0 auto;">
+        <div style="flex: 2; min-width: 0;">
+            <div class="container">
+                <h1>Aktuelle CO₂-Daten</h1>
+                <h:form styleClass="ui-fluid">
+                    <p:panel header="CO₂-Daten Anzeige">
+                        <p:selectOneMenu value="#{shop.selectedCountry}" style="width: 100%; max-width: 300px;">
+                            <f:selectItem itemLabel="Land auswählen" itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{mainController.availableCountries}"/>
+                            <p:ajax listener="#{shop.onCountryChange}" update="dataPanel messages"/>
+                        </p:selectOneMenu>
+                    </p:panel>
+                    <p:messages id="messages" showDetail="true" closable="true" autoUpdate="true" />
+                    <p:panel id="dataPanel" styleClass="data-display">
+                        <h2>
+                          <h:outputText value="#{shop.currentArtikel.land}" rendered="#{shop.currentArtikel != null}" />
+                          <h:outputText value="(kein Land ausgewählt)" rendered="#{shop.currentArtikel == null}" />
+                        </h2>
+                        <p>
+                            <span class="co2-value">
+                              <h:outputText value="CO₂-Ausstoß: #{shop.currentArtikel.co2Ausstoss} #{shop.currentArtikel.einheit}" rendered="#{shop.currentArtikel != null}" />
+                              <h:outputText value="-" rendered="#{shop.currentArtikel == null}" />
+                            </span>
+                        </p>
+                        <p>
+                          <h:outputText value="Stand: #{shop.currentArtikel.jahr}" rendered="#{shop.currentArtikel != null}" />
+                          <h:outputText value="-" rendered="#{shop.currentArtikel == null}" />
+                        </p>
+                        <p>
+                          <span class="wissenschaftler-label" aria-label="Wissenschaftler">
+                            <h:outputText value="Wissenschaftler: " />
+                            <h:outputText value="#{shop.currentArtikel.user.fullName}" rendered="#{shop.currentArtikel != null and shop.currentArtikel.user != null and not empty shop.currentArtikel.user.fullName}" />
+                            <h:outputText value="Nicht verfügbar" rendered="#{shop.currentArtikel == null or shop.currentArtikel.user == null or empty shop.currentArtikel.user.fullName}" />
+                          </span>
+                        </p>
+                    </p:panel>
+                </h:form>
+            </div>
+        </div>
+        <div style="flex: 1; min-width: 320px; max-width: 400px;">
+            <h:form rendered="#{!userController.loggedIn}">
+                <p:panel header="Login">
+                    <p:outputLabel for="username" value="Benutzer: *" />
+                    <p:inputText id="username" value="#{userController.username}" required="true" />
+                    <p:outputLabel for="password" value="Passwort: *" />
+                    <p:password id="password" value="#{userController.password}" required="true" />
+                    <p:commandButton value="Einloggen" action="#{userController.login}" update=":@form" style="margin-top: 12px; width: 100%;" />
+                </p:panel>
+            </h:form>
+            <h:panelGroup rendered="#{userController.loggedIn}">
+                <p:panel header="Willkommen!">
+                    <h:outputText value="Willkommen, #{userController.user.fullName}!" />
+                </p:panel>
+            </h:panelGroup>
+        </div>
     </div>
 </h:body>
 </html> 
