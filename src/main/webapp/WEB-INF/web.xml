@@ -15,8 +15,8 @@
 
     <!-- Welcome-Datei (Startseite) -->
     <welcome-file-list>
-        <welcome-file>index.xhtml</welcome-file>
         <welcome-file>login.xhtml</welcome-file>
+        <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>
 
     <!-- CDI-Listener für die Initialisierung von CDI -->
