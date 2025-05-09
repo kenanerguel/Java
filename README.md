@@ -112,10 +112,10 @@ Die Anwendung wurde im Rahmen eines agilen Projekts für eine PR-Agentur und ver
 ## Screenshots
 
 ### XAMPP Control Panel (MySQL & Apache)
-![XAMPP Control Panel](./screenshots/xampp-controlpanel.png)
+![XAMPP Control Panel](Screenshot/xampp-controlpanel.png)
 
 ### Tomcat Run/Debug Konfiguration in IntelliJ IDEA
-![Tomcat Run/Debug Konfiguration](./screenshots/tomcat-runconfig.png)
+![Tomcat Run/Debug Konfiguration](Screenshot/tomcat-runconfig.png)
 
 *(Weitere Beispiel-Screenshots der Startseite, Login, Backend können hier ergänzt werden)*
 
