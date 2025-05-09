@@ -49,32 +49,29 @@
     </script>
 </h:head>
 <h:body>
-    <div class="login-container">
-        <h1 class="page-title">CO₂-Daten Portal</h1>
-        <h:form id="loginForm" styleClass="ui-fluid">
-            <p:panel header="Login" styleClass="login-panel">
-                <p:messages id="messages" showDetail="true" closable="true" autoUpdate="true" />
-                <div class="p-field">
-                    <p:outputLabel for="username" value="Benutzer:" />
-                    <p:inputText id="username" value="#{mainController.userInput}" required="true"
-                                 requiredMessage="Bitte geben Sie einen Benutzernamen ein"
-                                 placeholder="Benutzername eingeben" aria-label="Benutzername" />
-                    <p:message for="username" />
-                </div>
-                <div class="p-field">
-                    <p:outputLabel for="password" value="Passwort:" />
-                    <p:password id="password" value="#{mainController.passwordInput}" required="true"
-                                requiredMessage="Bitte geben Sie ein Passwort ein"
-                                placeholder="Passwort eingeben" aria-label="Passwort" />
-                    <p:message for="password" />
-                </div>
-                <p:commandButton value="Einloggen"
-                                 action="#{mainController.login}"
-                                 update="@form messages"
-                                 styleClass="ui-button-primary login-btn"
-                                 aria-label="Einloggen" />
-            </p:panel>
-        </h:form>
-    </div>
+    <h:form id="loginForm" styleClass="ui-fluid">
+        <p:panel header="Login" styleClass="login-panel">
+            <p:messages id="messages" showDetail="true" closable="true" autoUpdate="true" />
+            <div class="p-field">
+                <p:outputLabel for="username" value="Benutzer:" />
+                <p:inputText id="username" value="#{mainController.userInput}" required="true"
+                             requiredMessage="Bitte geben Sie einen Benutzernamen ein"
+                             placeholder="Benutzername eingeben" aria-label="Benutzername" />
+                <p:message for="username" />
+            </div>
+            <div class="p-field">
+                <p:outputLabel for="password" value="Passwort:" />
+                <p:password id="password" value="#{mainController.passwordInput}" required="true"
+                            requiredMessage="Bitte geben Sie ein Passwort ein"
+                            placeholder="Passwort eingeben" aria-label="Passwort" />
+                <p:message for="password" />
+            </div>
+            <p:commandButton value="Einloggen"
+                             action="#{mainController.login}"
+                             update="@form messages"
+                             styleClass="ui-button-primary login-btn"
+                             aria-label="Einloggen" />
+        </p:panel>
+    </h:form>
 </h:body>
 </html>
