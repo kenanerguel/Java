@@ -7,54 +7,131 @@ import java.util.List;
 import java.util.ArrayList;
 
 @Entity
+@Table(name = "artikel")
+@NamedQueries({
+    @NamedQuery(
+        name = "Artikel.findLatestByLand",
+        query = "SELECT a FROM Artikel a WHERE a.land = :land AND a.status = 'approved' ORDER BY a.jahr DESC"
+    )
+})
 public class Artikel implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int nr;
+    @Column(name = "nr")
+    private Long id;
 
-    private String name;
+    @Column(name = "beschreibung")
     private String beschreibung;
-    private String bild;
 
-    @ManyToOne
+    @Column(name = "land", nullable = false)
+    private String land;
+
+    @Column(name = "status", nullable = false)
+    private String status = "pending";
+
+    @Column(name = "jahr", nullable = false)
+    private Integer jahr;
+
+    @Column(name = "co2ausstoss")
+    private Double co2Ausstoss;
+    
+    @Column(name = "einheit")
+    private String einheit = "Tonnen";
+    
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
-    private User user;  // Ein Artikel gehört einem User
+    private User user;
 
-
+    @Column(name = "erstellt_am")
     @Temporal(TemporalType.DATE)
-    private Date verfuegbarAb;
+    private Date erstelltAm;
 
     @OneToMany(mappedBy = "artikel", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Bewertung> bewertungen = new ArrayList<>();
 
-    public Artikel() {}
+    @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+    
+    @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+    
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+    
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "updated_by")
+    private User updatedBy;
 
-    public Artikel(String name, String beschreibung, String bild) {
-        this(name, beschreibung, bild, new Date());
+    @PrePersist
+    protected void onCreate() {
+        Date now = new Date();
+        createdAt = now;
+        updatedAt = now;
+        erstelltAm = now;
+        status = "pending";
     }
 
-    public Artikel(String name, String beschreibung, String bild, Date verfuegbarAb) {
-        this.name = name;
+    public Artikel() {
+        this.status = "pending";
+        this.erstelltAm = new Date();
+        this.co2Ausstoss = 0.0;
+    }
+    
+    public Artikel(String land, Double co2Ausstoss, String beschreibung, Integer jahr) {
+        this.land = land;
+        this.co2Ausstoss = co2Ausstoss;
         this.beschreibung = beschreibung;
-        this.bild = bild;
-        this.verfuegbarAb = verfuegbarAb;
+        this.jahr = jahr;
+        this.status = "pending";
+        this.erstelltAm = new Date();
     }
 
     // Getter & Setter
-    public int getNr() { return nr; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
     public String getBeschreibung() { return beschreibung; }
-    public void setNr(int nr) { this.nr = nr; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getText() { return beschreibung; }
     public void setBeschreibung(String beschreibung) { this.beschreibung = beschreibung; }
-    public String getBild() { return bild; }
-    public void setBild(String bild) { this.bild = bild; }
-    public Date getVerfuegbarAb() { return verfuegbarAb; }
-    public void setVerfuegbarAb(Date verfuegbarAb) { this.verfuegbarAb = verfuegbarAb; }
+    
+    public String getLand() { return land; }
+    public void setLand(String land) { this.land = land; }
+    
+    public Integer getJahr() { return jahr; }
+    public void setJahr(Integer jahr) { this.jahr = jahr; }
+    
+    public Double getCo2Ausstoss() { return co2Ausstoss; }
+    public void setCo2Ausstoss(Double co2Ausstoss) { this.co2Ausstoss = co2Ausstoss; }
+    
+    public String getEinheit() { return einheit; }
+    public void setEinheit(String einheit) { this.einheit = einheit; }
+    
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    
+    public Date getErstelltAm() { return erstelltAm; }
+    public void setErstelltAm(Date erstelltAm) { this.erstelltAm = erstelltAm; }
+    
     public List<Bewertung> getBewertungen() { return bewertungen; }
     public void addBewertung(Bewertung bewertung) { bewertungen.add(bewertung); }
+    
+    public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
-    public User getUser() { return this.user; }
+    
+    public Date getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+    
+    public Date getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
+    
+    public User getCreatedBy() { return createdBy; }
+    public void setCreatedBy(User createdBy) { this.createdBy = createdBy; }
+    
+    public User getUpdatedBy() { return updatedBy; }
+    public void setUpdatedBy(User updatedBy) { this.updatedBy = updatedBy; }
 }

@@ -7,56 +7,129 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Base64;
 
 @Named
 @ApplicationScoped
 public class UserDAO {
 
-    private final EntityManager entityManager;
-
+    private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
+    private static final String salt = "vXsia8c04PhBtnG3isvjlemj7Bm6rAhBR8JRkf2z";
+    
     @Inject
-    public UserDAO(EntityManagerProvider entityManagerProvider) {
-        this.entityManager = entityManagerProvider.getEntityManager();
+    private EntityManagerProvider entityManagerProvider;
+
+    // Standardkonstruktor für CDI
+    public UserDAO() {
+        LOGGER.info("UserDAO wurde mit Standard-Konstruktor erstellt");
+    }
+    
+    // Konstruktor für manuelle Instanziierung (z.B. in main Methode)
+    public UserDAO(EntityManagerProvider provider) {
+        LOGGER.info("UserDAO wurde mit EntityManagerProvider erstellt");
+        this.entityManagerProvider = provider;
+    }
+    
+    public void setEntityManagerProvider(EntityManagerProvider provider) {
+        if (provider == null) {
+            LOGGER.severe("EntityManagerProvider ist null");
+            throw new IllegalArgumentException("EntityManagerProvider darf nicht null sein");
+        }
+        this.entityManagerProvider = provider;
+        LOGGER.info("EntityManagerProvider erfolgreich gesetzt");
     }
 
     /**
      * Speichert einen neuen Benutzer in der Datenbank.
      */
     public void saveUser(User user) {
-        EntityTransaction transaction = entityManager.getTransaction();
+        EntityManager em = entityManagerProvider.getEntityManager();
+        if (em == null) {
+            LOGGER.severe("EntityManager ist null - konnte nicht initialisiert werden");
+            return;
+        }
+        
+        // Hash the password before saving
+        user.setPassword(hashPassword(user.getUsername(), user.getPassword()));
+        
+        EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
-            entityManager.persist(user);
+            em.persist(user);
             transaction.commit();
+            LOGGER.info("Benutzer " + user.getUsername() + " erfolgreich gespeichert");
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Fehler beim Speichern des Benutzers", e);
         }
     }
 
     /**
-     * Überprüft, ob ein Benutzer Client (nicht Admin) ist.
-     * Beispielhafte Abfrage: SELECT u FROM User u WHERE ...
-     * Hier wird angenommen, dass User ein Feld "admin" hat,
-     * das angibt, ob er Admin ist oder nicht.
      * Überprüft, ob ein Benutzer Admin oder Client ist.
      */
     public User isAdminOrClient(String username, String password) {
-        try {
-            User user = entityManager.createQuery(
-                            "SELECT u FROM User u WHERE u.username = :uname AND u.password = :pwd",
-                            User.class)
-                    .setParameter("uname", username)
-                    .setParameter("pwd", password)
-                    .getSingleResult();
+        EntityManager em = entityManagerProvider.getEntityManager();
+        if (em == null) {
+            LOGGER.severe("EntityManager ist null - konnte nicht initialisiert werden");
+            return null;
+        }
 
-            // Falls user != null, gib zurück, ob er Admin ist.
-            return user;
+        try {
+            LOGGER.info("Versuche Benutzer zu finden: " + username);
+            
+            // First, try to find the user
+            TypedQuery<User> query = em.createQuery(
+                "SELECT u FROM User u WHERE u.username = :username",
+                User.class);
+            query.setParameter("username", username);
+            
+            User user = null;
+            try {
+                user = query.getSingleResult();
+                LOGGER.info("Benutzer gefunden: " + username);
+                
+                // Hash the provided password for comparison
+                String hashedInputPassword = hashPassword(username, password);
+                LOGGER.info("Gespeicherter Hash: " + user.getPassword());
+                LOGGER.info("Berechneter Hash: " + hashedInputPassword);
+                
+                // Compare the hashed passwords
+                if (user.getPassword().equals(hashedInputPassword)) {
+                    LOGGER.info("Benutzer gefunden und authentifiziert: " + username);
+                    return user;
+                }
+            } catch (NoResultException e) {
+                LOGGER.warning("Kein Benutzer gefunden für: " + username);
+                return null;
+            }
+            
+            LOGGER.warning("Passwort falsch für Benutzer: " + username);
+            return null;
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;  // Falls kein Nutzer gefunden oder Fehler
+            LOGGER.log(Level.SEVERE, "Fehler beim Suchen des Benutzers: " + username, e);
+            return null;
+        }
+    }
+
+    /**
+     * Berechnet den Hash für ein Passwort unter Verwendung des Benutzernamens und eines Salts.
+     */
+    protected String hashPassword(String username, String password) {
+        try {
+            MessageDigest digester = MessageDigest.getInstance("SHA-512");
+            byte[] hashBytes = digester.digest((username + password + salt).getBytes(StandardCharsets.UTF_8));
+            return new String(Base64.getEncoder().encode(hashBytes));
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Fehler beim Hashen des Passworts", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -67,21 +140,18 @@ public class UserDAO {
         EntityManagerProvider entityManagerProvider = new EntityManagerProvider();
         UserDAO userDAO = new UserDAO(entityManagerProvider);
 
-        // Beispiel-User speichern
-        /*
-        User adminUser = new User("root", "root", true);
-        User clientUser1 = new User("Wissenschaftler_1", "Hallo", false);
-        User clientUser2 = new User("Wissenschaftler_2", "Servus", false);
-
-
-        userDAO.saveUser(adminUser);
-        userDAO.saveUser(clientUser1);
-        userDAO.saveUser(clientUser2);
-        */
-
+        // Test password hash
+        String testPassword = "admin123";
+        String username = "admin";
+        String generatedHash = userDAO.hashPassword(username, testPassword);
+        System.out.println("Password verification test:");
+        System.out.println("Username: " + username);
+        System.out.println("Password: " + testPassword);
+        System.out.println("Generated hash: " + generatedHash);
+        
         // Test-Logik: Admin/Client prüfen
-        System.out.println("root isAdmin? " + userDAO.isAdminOrClient("root", "dXRcRLCMz+kUxl9QORmRxyPfliMK/6hF1zild9sVmuu4BHCemIAfqAH8GXjbomZAFmjdAJ0F6nESJhDjCraIRQ==")); // sollte true sein
-        System.out.println("Wissenschaftler_1 isClient? " + userDAO.isAdminOrClient("Wissenschaftler_1", "+sasj0x49+vlfzERhRBCRHazOgEOo2WWljaclLTWv9M7xdYJvX0g0hAxFWhErpEebMCQox83NijXNi4AoC3Jhw==")); // sollte true sein
+        System.out.println("\nadmin isAdmin? " + userDAO.isAdminOrClient("admin", "admin123"));
+        System.out.println("science1 isClient? " + userDAO.isAdminOrClient("science1", "pass123"));
     }
 }
 

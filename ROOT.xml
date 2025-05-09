@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Resource name="jdbc/co2db"
+              auth="Container"
+              type="javax.sql.DataSource"
+              username="co2user"
+              password="co2password"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/co2db"
+              maxTotal="20"
+              maxIdle="10"
+              maxWaitMillis="10000"
+              validationQuery="SELECT 1"/>
+</Context> 

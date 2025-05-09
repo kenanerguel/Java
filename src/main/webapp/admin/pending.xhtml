@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>CO₂-Daten zur Überprüfung</title>
+    <style>
+        .pending-table {
+            margin: 20px;
+        }
+        .status-pending {
+            color: orange;
+            font-weight: bold;
+        }
+        .status-approved {
+            color: green;
+            font-weight: bold;
+        }
+        .status-rejected {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <h:form id="adminForm">
+        <p:panel header="CO₂-Daten zur Überprüfung" styleClass="pending-table">
+            <p:messages id="messages" showDetail="true" closable="true" />
+            
+            <p:dataTable var="artikel" value="#{mainController.pendingArtikel}" 
+                        paginator="true" rows="10"
+                        styleClass="ui-datatable-striped"
+                        id="artikelTable">
+                
+                <p:column headerText="Land">
+                    <h:outputText value="#{artikel.land}" />
+                </p:column>
+                
+                <p:column headerText="Jahr">
+                    <h:outputText value="#{artikel.jahr}" />
+                </p:column>
+                
+                <p:column headerText="CO₂-Ausstoß">
+                    <h:outputText value="#{artikel.co2Ausstoss} #{artikel.einheit}" />
+                </p:column>
+                
+                <p:column headerText="Beschreibung">
+                    <h:outputText value="#{artikel.beschreibung}" />
+                </p:column>
+                
+                <p:column headerText="Eingereicht von">
+                    <h:outputText value="#{artikel.user.username}" />
+                </p:column>
+                
+                <p:column headerText="Aktionen">
+                    <p:commandButton value="Genehmigen" 
+                                   action="#{mainController.approveArticle(artikel)}"
+                                   styleClass="ui-button-success"
+                                   update=":adminForm:messages :adminForm:artikelTable"
+                                   rendered="#{artikel.status eq 'pending'}" />
+                                   
+                    <p:commandButton value="Ablehnen" 
+                                   action="#{mainController.rejectArticle(artikel)}"
+                                   styleClass="ui-button-danger"
+                                   update=":adminForm:messages :adminForm:artikelTable"
+                                   rendered="#{artikel.status eq 'pending'}" />
+                </p:column>
+            </p:dataTable>
+            
+            <p:commandButton value="Zurück" 
+                           action="admin.xhtml?faces-redirect=true"
+                           styleClass="ui-button-secondary" />
+        </p:panel>
+    </h:form>
+</h:body>
+</html> 

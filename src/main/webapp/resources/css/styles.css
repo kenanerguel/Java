@@ -1,0 +1,108 @@
+body {
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.page-title {
+    color: #2c3e50;
+    font-size: 24px;
+    margin-bottom: 30px;
+    padding-left: 20px;
+}
+
+.data-panel {
+    margin: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: calc(65% - 40px);
+    float: left;
+}
+
+.latest-data {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+.data-value {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #2196F3;
+    margin: 15px 0;
+}
+
+.data-date {
+    color: #666;
+    font-size: 0.9em;
+    margin: 10px 0;
+}
+
+.login-panel {
+    margin: 20px;
+    width: calc(35% - 40px);
+    float: right;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.heading-text {
+    font-size: 1.3em;
+    font-weight: bold;
+    margin: 1em 0;
+    color: #2c3e50;
+}
+
+.ui-panel {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.ui-panel .ui-panel-content {
+    padding: 20px !important;
+}
+
+.ui-selectonemenu {
+    width: 100% !important;
+    margin-bottom: 15px;
+}
+
+.ui-selectonemenu-label {
+    padding: 8px !important;
+}
+
+.source-text {
+    font-style: italic;
+    color: #666;
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+@media (max-width: 768px) {
+    .data-panel, .login-panel {
+        width: calc(100% - 40px);
+        float: none;
+    }
+}
+
+/* Verhindert das Abschneiden von Panel-Inhalten und Datenbereichen */
+.data-panel,
+.data-display,
+.ui-panel,
+.ui-widget-content {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding-bottom: 20px !important;
+} 

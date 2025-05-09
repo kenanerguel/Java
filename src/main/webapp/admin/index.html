@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO₂-Daten Administration</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>CO₂-Daten Administration</h1>
+        <form id="co2Form">
+            <div class="form-group">
+                <label for="land">Land:</label>
+                <select id="land" name="land" required>
+                    <option value="">-- Land auswählen --</option>
+                    <option value="Deutschland">Deutschland</option>
+                    <option value="Frankreich">Frankreich</option>
+                    <option value="USA">USA</option>
+                    <option value="China">China</option>
+                    <option value="Japan">Japan</option>
+                    <option value="Indien">Indien</option>
+                    <option value="Brasilien">Brasilien</option>
+                    <option value="Russland">Russland</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="jahr">Jahr:</label>
+                <input type="number" id="jahr" name="jahr" required>
+            </div>
+            <div class="form-group">
+                <label for="co2Ausstoss">CO₂-Ausstoß:</label>
+                <input type="number" step="0.01" id="co2Ausstoss" name="co2Ausstoss" required>
+            </div>
+            <div class="form-group">
+                <label for="einheit">Einheit:</label>
+                <select id="einheit" name="einheit" required>
+                    <option value="Tons">Tons</option>
+                    <option value="Kilotons">Kilotons</option>
+                    <option value="Megatons">Megatons</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="beschreibung">Beschreibung/Quelle:</label>
+                <textarea id="beschreibung" name="beschreibung" rows="4" required></textarea>
+            </div>
+            <button type="submit">Daten speichern</button>
+        </form>
+    </div>
+    <script src="../js/admin.js"></script>
+</body>
+</html> 

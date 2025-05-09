@@ -1,12 +1,7 @@
 package com.mein.projekt.model;
 
-import com.mein.projekt.dao.ArtikelDAO;
-import com.mein.projekt.dao.UserDAO;
-import com.mein.projekt.util.EntityManagerProvider;
 import jakarta.persistence.*;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -16,8 +11,16 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Artikel> artikelListe = new ArrayList<>();
 
+    @ElementCollection
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role")
+    private List<String> roles = new ArrayList<>();
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
@@ -27,18 +30,30 @@ public class User {
     @Column(name = "is_admin", nullable = false)
     private boolean isAdmin;
 
+    @Column(name = "full_name")
+    private String fullName;
+
     // JPA erfordert einen Standard-Konstruktor
     public User() {
     }
 
     // Konstruktor zur Initialisierung
-    public User(String username, String password, boolean isAdmin) {
+    public User(String username, String password, boolean isAdmin, String fullName) {
         this.username = username;
         this.password = password;
         this.isAdmin = isAdmin;
+        this.fullName = fullName;
     }
 
     // Getter & Setter
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -63,6 +78,14 @@ public class User {
         isAdmin = admin;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
     public List<Artikel> getArtikelListe() {
         return artikelListe;
     }
@@ -71,43 +94,11 @@ public class User {
         this.artikelListe = artikelListe;
     }
 
-    public static void main(String[] args) {
-        // EntityManager holen
-        EntityManagerProvider provider = new EntityManagerProvider();
-
-        // DAOs erstellen
-        UserDAO userDAO = new UserDAO(provider);
-        ArtikelDAO artikelDAO = new ArtikelDAO(provider);
-
-        // Benutzer anlegen
-        User admin = new User("admin", "admin123", true);
-        User scientist1 = new User("science1", "pass123", false);
-        User scientist2 = new User("science2", "pass456", false);
-        userDAO.saveUser(admin);
-        userDAO.saveUser(scientist1);
-        userDAO.saveUser(scientist2);
-
-        // Artikel anlegen
-        Artikel artikel1 = new Artikel("Japan", "8,5 t CO₂-Ausstoß pro Kopf", "germany.png", new Date());
-        Artikel artikel2 = new Artikel("Brazil", "5,4 t CO₂-Ausstoß pro Kopf", "france.png", new Date());
-
-        artikel1.setUser(admin);
-        artikel2.setUser(scientist1);
-
-        // Bewertungen hinzufügen
-        Bewertung bewertung1 = new Bewertung("Sehr informativ", 4.5);
-        bewertung1.setArtikel(artikel1);
-        artikel1.addBewertung(bewertung1);
-
-        Bewertung bewertung2 = new Bewertung("Könnte aktueller sein", 3.0);
-        bewertung2.setArtikel(artikel2);
-        artikel2.addBewertung(bewertung2);
-
-        // Artikel mit Bewertungen speichern
-        artikelDAO.saveArtikel(artikel1);
-        artikelDAO.saveArtikel(artikel2);
-
-        System.out.println("Benutzer, Artikel und Bewertungen erfolgreich gespeichert.");
+    public List<String> getRoles() {
+        return roles;
     }
 
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
 }

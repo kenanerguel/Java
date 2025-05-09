@@ -1,27 +1,86 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
-    <title>Shop Client</title>
+    <title>CO₂-Dateneingabe - Wissenschaftler</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <h:outputStylesheet library="css" name="styles.css" />
+    <style>
+        .shopclient-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 24px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .p-field {
+            margin-bottom: 18px;
+        }
+        .shopclient-btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .wissenschaftler-label {
+            display: block;
+            margin-top: 18px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #222;
+            white-space: normal;
+            padding-left: 10px;
+        }
+        @media (max-width: 600px) {
+            .shopclient-container {
+                padding: 8px;
+            }
+        }
+    </style>
 </h:head>
 <h:body>
-    <h:form id="shopForm">
-        <p:growl id="messages" showDetail="true"/>
-
-        <p:dataTable var="artikel" value="#{shopController.artikelList}">
-            <p:column headerText="Artikel">
-                <h:outputText value="#{artikel.name}" />
-            </p:column>
-            <p:column headerText="Preis">
-                <h:outputText value="#{artikel.preis}" />
-            </p:column>
-            <p:column headerText="Aktionen">
-                <p:commandButton value="Kaufen"
-                                 action="#{shopController.kaufen(artikel)}"
-                                 update="messages shopForm" />
-            </p:column>
-        </p:dataTable>
-    </h:form>
+    <div class="shopclient-container">
+        <h:form id="scientistForm" styleClass="ui-fluid">
+            <p:panel header="CO₂-Dateneingabe">
+                <p:messages id="messages" showDetail="true" closable="true" autoUpdate="true" />
+                <div class="p-field">
+                    <p:outputLabel for="land" value="Land:" />
+                    <p:selectOneMenu id="land" value="#{mainController.landInput}" required="true" aria-label="Land">
+                        <f:selectItems value="#{mainController.availableCountries}" var="country"
+                                     itemLabel="#{country}" itemValue="#{country}" />
+                    </p:selectOneMenu>
+                    <p:message for="land" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="jahr" value="Jahr:" />
+                    <p:spinner id="jahr" value="#{mainController.jahrInput}" required="true"
+                              minValue="1900" maxValue="2100" aria-label="Jahr" />
+                    <p:message for="jahr" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="co2Ausstoss" value="CO₂-Ausstoß:" />
+                    <p:inputNumber id="co2Ausstoss" value="#{mainController.co2AusstossInput}"
+                                 required="true" decimalPlaces="2" aria-label="CO₂-Ausstoß" />
+                    <p:message for="co2Ausstoss" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="einheit" value="Einheit:" />
+                    <p:selectOneMenu id="einheit" value="#{mainController.einheitInput}" required="true" aria-label="Einheit">
+                        <f:selectItem itemLabel="Tonnen" itemValue="t" />
+                        <f:selectItem itemLabel="Kilotonnen" itemValue="kt" />
+                        <f:selectItem itemLabel="Megatonnen" itemValue="Mt" />
+                    </p:selectOneMenu>
+                    <p:message for="einheit" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="beschreibung" value="Wissenschaftler:" />
+                    <h:outputText id="beschreibung" value="#{mainController.currentUser.user.fullName}" styleClass="wissenschaftler-label" />
+                </div>
+                <p:commandButton value="Daten speichern" action="#{mainController.saveCO2Data}"
+                               update="scientistForm messages" styleClass="ui-button-primary shopclient-btn" aria-label="Daten speichern" />
+            </p:panel>
+        </h:form>
+    </div>
 </h:body>
 </html>

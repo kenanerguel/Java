@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Meine CO₂-Daten</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <h:outputStylesheet library="css" name="styles.css" />
+    <style type="text/css">
+        .myarticles-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 24px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .status-approved { color: green; font-weight: bold; }
+        .status-rejected { color: red; font-weight: bold; }
+        .status-pending { color: orange; font-weight: bold; }
+        .myarticles-btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+        #artikelTabelle table {
+            font-size: 1.08em !important;
+        }
+        #artikelTabelle tbody tr {
+            height: 54px !important;
+        }
+        #artikelTabelle td, #artikelTabelle th {
+            padding-top: 16px !important;
+            padding-bottom: 16px !important;
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+            vertical-align: middle !important;
+        }
+        #artikelTabelle td:nth-child(1), #artikelTabelle th:nth-child(1) { width: 180px !important; }
+        #artikelTabelle td:nth-child(2), #artikelTabelle th:nth-child(2) { width: 120px !important; }
+        #artikelTabelle td:nth-child(3), #artikelTabelle th:nth-child(3) { width: 150px !important; }
+        #artikelTabelle td:nth-child(4), #artikelTabelle th:nth-child(4) { width: 120px !important; }
+        #artikelTabelle td:nth-child(5), #artikelTabelle th:nth-child(5) { width: 140px !important; }
+        #artikelTabelle td:nth-child(6), #artikelTabelle th:nth-child(6) { width: 180px !important; }
+        #artikelTabelle td:nth-child(7), #artikelTabelle th:nth-child(7) { width: 150px !important; }
+        #artikelTabelle td:nth-child(8), #artikelTabelle th:nth-child(8) { width: 130px !important; }
+        @media (max-width: 600px) {
+            .myarticles-container {
+                padding: 8px;
+            }
+            #artikelTabelle table {
+                font-size: 0.98em !important;
+            }
+            #artikelTabelle td, #artikelTabelle th {
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+                padding-top: 10px !important;
+                padding-bottom: 10px !important;
+            }
+        }
+    </style>
+</h:head>
+<h:body>
+    <div class="myarticles-container">
+        <h:form id="artikelFormular" styleClass="ui-fluid">
+            <p:panel header="Meine CO₂-Daten Einreichungen">
+                <p:messages id="meldungen" showDetail="true" closable="true" autoUpdate="true" />
+                <p:dataTable id="artikelTabelle" value="#{mainController.myArtikel}" var="artikel"
+                            emptyMessage="Sie haben noch keine CO₂-Daten eingereicht"
+                            styleClass="ui-datatable-responsive" rowKey="#{artikel.id}">
+                    <p:column headerText="Land" style="width: 160px;">
+                        <h:outputText value="#{artikel.land}" />
+                    </p:column>
+                    <p:column headerText="Jahr" style="width: 110px;">
+                        <h:outputText value="#{artikel.jahr}" />
+                    </p:column>
+                    <p:column headerText="CO₂-Ausstoß" style="width: 140px;">
+                        <h:outputText value="#{artikel.co2Ausstoss}" />
+                    </p:column>
+                    <p:column headerText="Einheit" style="width: 110px;">
+                        <h:outputText value="#{artikel.einheit}" />
+                    </p:column>
+                    <p:column headerText="Status" style="width: 130px;">
+                        <h:outputText value="#{artikel.status eq 'approved' ? 'Genehmigt' : (artikel.status eq 'rejected' ? 'Abgelehnt' : 'Ausstehend')}" 
+                                      styleClass="#{artikel.status eq 'approved' ? 'status-approved' : (artikel.status eq 'rejected' ? 'status-rejected' : 'status-pending')}" 
+                                      aria-label="Status: #{artikel.status eq 'approved' ? 'Genehmigt' : (artikel.status eq 'rejected' ? 'Abgelehnt' : 'Ausstehend')}" />
+                    </p:column>
+                    <p:column headerText="Eingereicht am" style="width: 170px;">
+                        <h:outputText value="#{artikel.erstelltAm}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Anmerkungen" style="width: 140px;">
+                        <h:outputText value="#{artikel.beschreibung}" 
+                                    rendered="#{artikel.status eq 'rejected'}"
+                                    styleClass="status-rejected" />
+                    </p:column>
+                    <p:column headerText="Aktionen" style="width: 120px;">
+                        <p:commandButton value="Erneut einreichen" 
+                                       rendered="#{artikel.status eq 'rejected'}"
+                                       action="backoffice.xhtml?faces-redirect=true"
+                                       styleClass="ui-button-warning myarticles-btn"
+                                       aria-label="Erneut einreichen" />
+                    </p:column>
+                </p:dataTable>
+                <div style="margin-top: 20px;">
+                    <p:commandButton value="Neue CO₂-Daten eingeben" 
+                                   action="backoffice.xhtml?faces-redirect=true"
+                                   styleClass="ui-button-primary myarticles-btn"
+                                   aria-label="Neue CO₂-Daten eingeben" />
+                </div>
+            </p:panel>
+        </h:form>
+    </div>
+</h:body>
+</html> 

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>CO₂-Daten eingeben</title>
+    <style>
+        .input-form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .status-pending {
+            color: orange;
+            font-weight: bold;
+        }
+        .status-approved {
+            color: green;
+            font-weight: bold;
+        }
+        .status-rejected {
+            color: red;
+            font-weight: bold;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <h:form id="co2Form">
+        <p:panel header="Neue CO₂-Daten eingeben" styleClass="input-form">
+            <p:messages id="messages" showDetail="true" closable="true" />
+            
+            <p:panelGrid columns="2" style="width: 100%">
+                <p:outputLabel for="land" value="Land:" />
+                <p:selectOneMenu id="land" value="#{mainController.landInput}" required="true" style="width: 200px;">
+                    <f:selectItem itemLabel="Land auswählen" itemValue="" noSelectionOption="true"/>
+                    <f:selectItems value="#{shop.countries}"/>
+                    <p:ajax event="change" update="landMessage" />
+                </p:selectOneMenu>
+                <p:message for="land" id="landMessage" />
+                
+                <p:outputLabel for="jahr" value="Jahr:" />
+                <p:spinner id="jahr" value="#{mainController.jahrInput}" required="true"
+                          minValue="1900" maxValue="2100" aria-label="Jahr" />
+                <p:message for="jahr" id="jahrMessage" />
+                
+                <p:outputLabel for="co2" value="CO₂-Ausstoß:" />
+                <p:inputNumber id="co2" value="#{mainController.co2AusstossInput}" required="true">
+                    <f:validateDoubleRange minimum="0" />
+                    <p:ajax event="blur" update="co2Message" />
+                </p:inputNumber>
+                <p:message for="co2" id="co2Message" />
+                
+                <p:outputLabel for="einheit" value="Einheit:" />
+                <p:inputText id="einheit" value="#{mainController.einheitInput}" required="true">
+                    <f:validateLength minimum="1" maximum="50" />
+                    <p:ajax event="blur" update="einheitMessage" />
+                </p:inputText>
+                <p:message for="einheit" id="einheitMessage" />
+                
+                <p:outputLabel for="beschreibung" value="Wissenschaftler:" />
+                <p:inputTextarea id="beschreibung" value="Wissenschaftler" 
+                               rows="1" cols="50" disabled="true">
+                </p:inputTextarea>
+                <p:message for="beschreibung" id="beschreibungMessage" />
+            </p:panelGrid>
+            
+            <p:commandButton value="Daten speichern" 
+                           action="#{mainController.saveCo2Data}"
+                           styleClass="ui-button-primary"
+                           update="messages co2Form"
+                           process="@form"
+                           oncomplete="if(args &amp;&amp; !args.validationFailed) {PF('co2Form').reset();}" />
+            
+            <p:commandButton value="Zurück" 
+                           action="myarticles.xhtml?faces-redirect=true"
+                           styleClass="ui-button-secondary" />
+        </p:panel>
+    </h:form>
+</h:body>
+</html> 
